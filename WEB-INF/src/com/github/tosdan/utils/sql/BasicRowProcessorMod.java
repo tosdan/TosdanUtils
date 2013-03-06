@@ -160,9 +160,7 @@ public class BasicRowProcessorMod implements RowProcessor {
         int cols = rsmd.getColumnCount();
 
         for (int i = 1; i <= cols; i++) {
-        	Object obj = rs.getObject(i);
-        	if (obj == null)
-        		obj = "%null%";
+        	Object obj = rs.getObject(i);        	
             result.put( rsmd.getColumnName(i), obj);
         }
 
