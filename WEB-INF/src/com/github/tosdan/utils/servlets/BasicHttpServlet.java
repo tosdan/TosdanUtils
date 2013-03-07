@@ -66,7 +66,7 @@ public abstract class BasicHttpServlet extends HttpServlet
 
 	/**
 	 * Estrae i parametri dalla request e li inseriesce in una Mappa da stringa a stringa ignorando i parametri che abbiano valori multipli.
-	 * La mappa è mantenuta in un campo della classe.
+	 * La mappa è mantenuta in un campo della classe (Map<String, String> requestParams).
 	 * @param req
 	 * @return Log testuale delle associazioni parametro=>valoreParametro dei parametri estratti
 	 */

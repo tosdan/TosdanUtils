@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import com.github.tosdan.utils.io.IOfrw;
 import com.github.tosdan.utils.stringhe.MapFormat;
@@ -68,17 +69,54 @@ public class QueriesUtils
 	}
 	
 	/**
+	 * @deprecated
 	 * 
-	 * @param nomeFile File che contiene la query
+	 * @param fileAbsPath File che contiene la query
 	 * @param nomeQuery nome della sezione che contiene la query 
 	 * @param parametri mappa con i parametri da sostituire nella query
 	 * @return
 	 * @throws IOException
 	 */
-	public static String compilaQueryDaFile(String nomeFile, String nomeQuery, Map<String, String> parametri, MapFormatTypeValidator validator)
+	public static String compilaQueryDaFile(String fileAbsPath, String nomeQuery, Map<String, String> parametri, MapFormatTypeValidator validator)
 			throws IOException
 	{
-		String contenutoFile = IOfrw.leggiFile( nomeFile );
+		String contenutoFile = IOfrw.leggiFile( fileAbsPath );
+		String query = StrUtils.findSection( contenutoFile, nomeQuery );
+		
+		return MapFormat.format( query, parametri, validator );
+	}
+	
+
+	/**
+	 * 
+	 * @param prop
+	 * @param pathConfigFiles
+	 * @param nomeQuery
+	 * @param parametri
+	 * @return
+	 * @throws IOException
+	 */
+	public static String compilaQueryDaFile(Properties prop, String pathConfigFiles, String nomeQuery, Map<String, String> parametri)
+			throws IOException
+	{
+		return compilaQueryDaFile( prop, pathConfigFiles, nomeQuery, parametri, null );
+	}
+
+	/**
+	 * 
+	 * @param prop
+	 * @param queriesRepoFolderFullPath
+	 * @param nomeQuery
+	 * @param parametri
+	 * @param validator
+	 * @return
+	 * @throws IOException
+	 */
+	public static String compilaQueryDaFile(Properties prop, String queriesRepoFolderFullPath, String nomeQuery, Map<String, String> parametri, MapFormatTypeValidator validator)
+			throws IOException
+	{
+		String nomeFile = prop.getProperty( nomeQuery );
+		String contenutoFile = IOfrw.leggiFile( queriesRepoFolderFullPath + nomeFile );
 		String query = StrUtils.findSection( contenutoFile, nomeQuery );
 		
 		return MapFormat.format( query, parametri, validator );
