@@ -2,6 +2,7 @@ package com.github.tosdan.utils.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -21,6 +22,11 @@ import com.github.tosdan.utils.sql.SqlManagerDAOException;
 import com.github.tosdan.utils.stringhe.MapFormatTypeValidator;
 import com.github.tosdan.utils.stringhe.MapFormatTypeValidatorSQL;
 
+/**
+ * Carica dinamicamente una query da file ed esegue un update o, se specificato un gestore per le select, trasferisce il controllo ad un'altra servlet che se ne occupi. 
+ * @author Daniele
+ * @version 0.9
+ */
 @SuppressWarnings( "serial" )
 public class SqlManagerServlet extends BasicHttpServlet
 {
@@ -55,6 +61,7 @@ public class SqlManagerServlet extends BasicHttpServlet
 		if (nomeSQL == null) 
 			throw new SqlManagerServletException( "Servlet " + this.getServletName() + 
 					": errore, parametro sqlName mancante nella request." );
+		
 		// raccoglie i parametri della request e di initConf della servlet
 		Map<String, String> allParams = new HashMap<String, String>();
 		allParams.putAll( this.requestParams );
@@ -65,11 +72,13 @@ public class SqlManagerServlet extends BasicHttpServlet
 			MapFormatTypeValidator validator = new MapFormatTypeValidatorSQL();
 			// compila la query parametrica sostituendo ai parametri i valori contenuti nella request e nell'initConf della servlet 
 			querySql = QueriesUtils.compilaQueryDaFile( dtrProperties, queriesRepoFolderFullPath , nomeSQL, allParams, validator );
+			
 		} catch ( IOException e1 ) {
 			if ( printStackTrace != null && printStackTrace.equalsIgnoreCase("true") )
 				e1.printStackTrace();
 			throw new SqlManagerServletException(  "Servlet " + this.getServletName() 
 					+ ": errore caricamente query da file. Classe: "+this.getClass().getName(), e1 );
+			
 		}
 
 		/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -78,23 +87,31 @@ public class SqlManagerServlet extends BasicHttpServlet
 		if (azioneSql != null && (azioneSql.equalsIgnoreCase("insert") || azioneSql.equalsIgnoreCase("update") || azioneSql.equalsIgnoreCase("delete")) ) {
 			boolean esitoOK = this.eseguiUpdate( querySql );
 			HttpSession session = req.getSession();
-			if (esitoOK) {
+			if ( esitoOK ) {
 				session.setAttribute( "SqlManagerServlet_OK", "Operazione eseguita con successo." );
+				
 			} else {
 				session.setAttribute( "SqlManagerServlet_Error", "Rchiesta fallita." );
 				// TODO
+				
 			}
 			String paginaPrecedente = req.getHeader("referer");	
+			
 			resp.sendRedirect( paginaPrecedente );
 			
 		} else if ( azioneSql != null && azioneSql.equalsIgnoreCase("select") ) {
 			String nextHandlerServlet = req.getParameter( "NextHandlerServlet" );
 			req.setAttribute( "queryRecuperata", querySql );
-			RequestDispatcher dispatcher = req.getRequestDispatcher(  "/" + nextHandlerServlet + "/go" );
-//			System.out.println(  "/" + nextHandlerServlet + "/go" );
+			
+			// NB: senza il primo / durante un errore andava in loop infinito. Stesso errore ma con / davanti niente loop infinito
+			String destinazione = "/" + nextHandlerServlet + "/go";
+			RequestDispatcher dispatcher = req.getRequestDispatcher( destinazione );
+//			System.out.println(  destinazione );
+			
 			dispatcher.forward( req, resp );
-			//esitoOK = false; // Per ora esegue solo operazioni di insert, update e delete. Per le select e' previsto l'uso della servlet DTReplyServlet, in associazione con DataTables
 		
+		} else {
+			// TODO errore parametri incompleti
 		}
 
 	}
@@ -102,11 +119,8 @@ public class SqlManagerServlet extends BasicHttpServlet
 	
 	/**
 	 * 
-	 * @param sql
-	 * @param req 
-	 * @param resp 
-	 * @param file_dbConf
-	 * @return
+	 * @param sql stringa contenente una query sql
+	 * @return <code>true</code> se la query di aggiornamento ha aggiornato/inserito almeno un record, <code>false</code> altrimenti
 	 * @throws SqlManagerServletException
 	 */
 	private boolean eseguiUpdate( String sql )
@@ -116,6 +130,7 @@ public class SqlManagerServlet extends BasicHttpServlet
 		SqlManagerDAO dao = new SqlManagerDAO( this.getConnectionProvider(file_dbConf) );
 		try {
 			return (dao.update( sql ) > 0);
+			
 		} catch ( SqlManagerDAOException e1 ) {
 			if ( printStackTrace != null && printStackTrace.equalsIgnoreCase("true") )
 				e1.printStackTrace();
@@ -126,9 +141,9 @@ public class SqlManagerServlet extends BasicHttpServlet
 	
 
 	/**
-	 * 
-	 * @param file_dbConf
-	 * @return
+	 * Configura e restituisce un {@link ConnectionProvider}
+	 * @param file_dbConf file {@link Properties} contenente la confiurazione per l'accesso al database.
+	 * @return un oggetto {@link ConnectionProvider} dal quale poter ottenere, senza ulteriori configurazioni, un oggetto {@link Connection} 
 	 * @throws SqlManagerServletException 
 	 */
 	private ConnectionProvider getConnectionProvider(String file_dbConf)
@@ -136,6 +151,7 @@ public class SqlManagerServlet extends BasicHttpServlet
 	{
 		try {
 			return new ConnectionProviderImpl( file_dbConf );
+			
 		} catch ( ConnectionProviderException e ) {
 			if ( printStackTrace != null && printStackTrace.equalsIgnoreCase("true") )
 				e.printStackTrace();
@@ -145,6 +161,12 @@ public class SqlManagerServlet extends BasicHttpServlet
 	}
 
 
+	/**
+	 * Scrive semplicemente una stringa in un file
+	 * @param fileName nome file con percorso completo
+	 * @param content contenuto da scrivere all'interno del file
+	 * @throws IOException
+	 */
 	protected void logOnFile(String fileName, String content) throws IOException
 	{
 		// crea un file di log con il nome passato come parametro nella sottocartella della webapp
@@ -154,7 +176,7 @@ public class SqlManagerServlet extends BasicHttpServlet
 	}
 	
 	/**
-	 * Se nullo recupera da file l'oggetto properties con la configurazione
+	 * Carica e restituisce un oggetto {@link Properties}
 	 * @param propertiesFile
 	 * @throws SqlManagerServletException
 	 */
