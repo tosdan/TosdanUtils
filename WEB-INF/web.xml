@@ -11,9 +11,57 @@
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
   
+	<servlet>
+    <description></description>
+		<servlet-name>QueryRunnerServlet</servlet-name>
+        <servlet-class>com.github.tosdan.utils.servlets.QueryRunnerServlet</servlet-class>
+        
+        <init-param>
+        	<param-name>file_dbConf</param-name>
+        	<param-value>/WEB-INF/dbconf.properties</param-value>
+       	</init-param>
+       	
+        <init-param>
+	        <param-name>logFileName</param-name>
+	        <param-value>/WEB-INF/WebAppsLogFiles/QueryRunner/logQueryRunner.txt</param-value>
+	    </init-param>
+        
+	</servlet>
+    <servlet-mapping>
+        <servlet-name>QueryRunnerServlet</servlet-name>
+        <url-pattern>/servlet/dtreply/*</url-pattern>
+    </servlet-mapping>
+    
+            
+	<servlet>
+    <description></description>
+	    <servlet-name>SqlManagerServlet</servlet-name>
+	    <servlet-class>com.github.tosdan.utils.servlets.SqlManagerServlet</servlet-class>
+	    
+	    <init-param>
+	        <param-name>logFileName</param-name>
+	        <param-value>/WEB-INF/WebAppsLogFiles/SqlManger/logSqlMangerServlet.txt</param-value>
+	    </init-param>
+	    
+	    <init-param>
+	        <param-name>SqlManagerServletConf_File</param-name>
+	        <param-value>/WEB-INF/WebAppsConfigFiles/SqlManager/SqlManagerServletConf.properties</param-value>
+	    </init-param>
+	    
+	    <init-param>
+	        <param-name>SqlManagerServletConf_Path</param-name>
+	        <param-value>/WEB-INF/WebAppsConfigFiles/SqlManager</param-value>
+	    </init-param>
+	    
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>SqlManagerServlet</servlet-name>
+	    <url-pattern>/servlet/sqlmanager/*</url-pattern>
+	</servlet-mapping>
+        
+        
   <servlet>
     <description></description>
-    <display-name>UploadServlet</display-name>
     <servlet-name>UploadServlet</servlet-name>
     <servlet-class>com.github.tosdan.utils.servlets.UploadServletR01</servlet-class>
   </servlet>
