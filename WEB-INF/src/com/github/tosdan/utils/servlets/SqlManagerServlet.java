@@ -20,6 +20,7 @@ import com.github.tosdan.utils.stringhe.MapFormatTypeValidatorSQL;
  * @param logSqlManager <code>Request Parameter</code> Flag (<code>true</code>/<code>false</code>) per determinare se debbano essere stampati nel log i parametri letti nella request
  * @param printStackTrace <code>Request Parameter</code> Flag (<code>true</code>/<code>false</code>) per determinare se lo <code>stacktrace</code> delle eccezioni catturate debba esser stampato in console (<code>System.err</code>) o meno
  * @param sqlName <code>Request Parameter</code> Nome della query che deve esser caricata da file, il nome deve essere censito nel file di configurazione specificato nel web.xml tra gli init param della servlet stessa
+ * @param lasciaQueryParametrica <code>Request Parameter</code> Flag (<code>true</code>/<code>false</code>) per determinare se la query non deve esser compilata in automatico con i parametri passati nella request ( inclusi i parametri init config)
  * @author Daniele
  * @version 0.9
  */
@@ -64,20 +65,22 @@ public class SqlManagerServlet extends BasicHttpServlet
 		allParams.putAll( this._requestParamsMap );
 		allParams.putAll( this._initConfigParamsMap );
 
-		try {
-			// istanza l'oggetto per la validazione dei parametri rispetto ai valori effettivamente passati per evitare problemi sui Tipi
-			MapFormatTypeValidator validator = new MapFormatTypeValidatorSQL();
-			// compila la query parametrica sostituendo ai parametri i valori contenuti nella request e nell'initConf della servlet 
-			querySql = QueriesUtils.compilaQueryDaFile( dtrProperties, queriesRepoFolderFullPath , nomeSQL, allParams, validator );
-			
-		} catch ( IOException e1 ) {
-			if ( printStackTrace )
-				e1.printStackTrace();
-			throw new SqlManagerServletException(  "Servlet " + this.getServletName() 
-					+ ": errore caricamente query da file. Classe: "+this.getClass().getName(), e1 );
-			
+		if ( !_booleanSafeParse(req.getParameter("lasciaQueryParametrica")) )
+		{
+			try {
+				// istanza l'oggetto per la validazione dei parametri rispetto ai valori effettivamente passati per evitare problemi sui Tipi
+				MapFormatTypeValidator validator = new MapFormatTypeValidatorSQL();
+				// compila la query parametrica sostituendo ai parametri i valori contenuti nella request e nell'initConf della servlet 
+				querySql = QueriesUtils.compilaQueryDaFile( dtrProperties, queriesRepoFolderFullPath , nomeSQL, allParams, validator );
+				
+			} catch ( IOException e1 ) {
+				if ( printStackTrace )
+					e1.printStackTrace();
+				throw new SqlManagerServletException(  "Servlet " + this.getServletName() 
+						+ ": errore caricamente query da file. Classe: "+this.getClass().getName(), e1 );
+				
+			}
 		}
-
 		/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 		
 		String nextHandlerServlet = req.getParameter( "NextHandlerServlet" );

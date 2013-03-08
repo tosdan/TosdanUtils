@@ -78,6 +78,8 @@ public class MapFormatTypeValidatorSQL implements MapFormatTypeValidator
         	}
         	else
         		throw new MapFormatTypeValidatorException("Errore di validazione: il tipo di validazione "+ type +" e' sconosciuto.");
+        } else {
+        	throw new MapFormatTypeValidatorException( "Nella stringa passata c'e' almeuno un parametro type mancante." );
         }
 		
 		return result;
@@ -111,14 +113,5 @@ public class MapFormatTypeValidatorSQL implements MapFormatTypeValidator
 	{
 		return "'" + input.replaceAll( "'", "''" ) + "'";
 	}
-	
-	/*
-	 * leggere tutta la query e sostituire ogni segnaposto letterale, della forma ${nome, integer}, con un segnaposto numerico, della forma {i} dove i e' una cifra
-	 * inserendo il nome sostituito in un array di stringhe, proprio alla posizione i
-	 * 
-	 * memorizzare il tipo di dato in un altro array alla medesima posizione i
-	 */
-	
-	
 	
 }

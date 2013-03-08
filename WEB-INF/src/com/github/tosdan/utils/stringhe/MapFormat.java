@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,25 +22,31 @@ public class MapFormat
     public static void main( String[] args )
 	{
 		String example = 
+				"Nunc ${param2, string} vulputate turpis ${param3, string} feugiat. \n"+
+				"Pellentesque ${param1, string} fringilla eleifend arcu id rutrum. \n"+
+				"Proin blandit scelerisque tempus. Pellentesque nec tincidunt elit.\n"+
+				"Nullam rutrum odio ac ante ${param1, string} interdum.\n"+
+				"Fusce ${param2, string} mauris sit amet metus vulputate fermentum sit ${param1, string} at nulla.\n";
+		String example2 = 
 				"Nunc ${param2} vulputate turpis ${param3} feugiat. \n"+
 				"Pellentesque ${param1} fringilla eleifend arcu id rutrum. \n"+
 				"Proin blandit scelerisque tempus. Pellentesque nec tincidunt elit.\n"+
 				"Nullam rutrum odio ac ante ${param1} interdum.\n"+
-				"Fusce ${param2, string} mauris sit amet metus vulputate fermentum sit ${param1} at nulla.\n";
-	
+				"Fusce ${param2} mauris sit amet metus vulputate fermentum sit '${param1}' at nulla.\n";
 		MapFormatTypeValidator validator = new MapFormatTypeValidatorSQL();
 		
-		Map<String, String> mappa = new HashMap<String, String>();
+		Map<String, Object> mappa = new HashMap<String, Object>();
 			mappa.put( "param1", "PARAM1" );
 			mappa.put( "param2", "PARAM2" );
 			mappa.put( "param3", "PARAM3" );
 		MapFormat mf = new MapFormat( mappa, validator );
 		String a = mf.format( example );
-		System.out.println( a + "\n\n\n" + MapFormat.format( example, mappa ));
+		System.out.println( a + "\n\n\n" + MapFormat.format( example2, mappa ));
 		
 	}
 	
     /**
+     * @deprecated
      * 
      * @param template
      * @param params
@@ -66,6 +73,7 @@ public class MapFormat
     }
 
     /**
+     * @deprecated
      * 
      * @param parametri mappa contenente le stringhe di sostituizione per i vari segnaposto usati nel template 
      */
@@ -96,9 +104,10 @@ public class MapFormat
 	 * @param stringTemplate
 	 * @return
 	 */
+	@SuppressWarnings( "unchecked" )
 	public String format(String stringTemplate)
 	{
-		Matcher matcher = schema.matcher("");
+		Matcher matcher = this.schema.matcher("");
 		String result = "";
 		StringReader sr = new StringReader( stringTemplate );
 		BufferedReader bf = new BufferedReader( sr );
@@ -110,37 +119,54 @@ public class MapFormat
 		        StringBuffer sb = new StringBuffer();
 		        
 				matcher.reset(riga);
+				// finche' nella riga trova un match
 		        while ( matcher.find() ) {
-		            String sDaSostituire = matcher.group(); // -> ${stringaDaSostituire}
-		            String chiaveSostituto = matcher.group(1); // -> stringaDaSostituire
-		            String type = matcher.group(4);		            
-		            Object objSostituto = parametri.get(chiaveSostituto);
+		            String sDaSostituire = matcher.group(); 	// pus' esser 	-> ${stringaDaSostituire} oppure ${stringaDaSostituire, integer}
+		            String chiaveSostituto = matcher.group(1); 	// sempre 		-> "stringaDaSostituire"
+		            String type = matcher.group(4);		 		// se presente	-> "integer"
+		            Object objSostituto = this.parametri.get(chiaveSostituto);//-> Null oppure Integer, Boolean o String
 		            
-		            String sostituto = (objSostituto == null) 
-		            	? (this.blanknull ? "" : sDaSostituire)
-		                : objSostituto.toString();
-		            	
-		            if ( !sostituto.equals(sDaSostituire) 
-	            		&& !sostituto.equals("") 
-	            		&& typeValidator != null 
-	            		&& type != null 
-	            		&& !type.equalsIgnoreCase("") )
-		            {
-		            	sostituto = this.typeValidator.validate( sostituto, type );
-		            }
+		            // se nessuna delle condizioni che seguono viene soddisfatta, non viene nemmeno effettuata
+		            // la sostituzione, perche' la sostituta rimarra' uguale al valore da sostituire
+		            String sSostituta = sDaSostituire;
 		            
-		            matcher.appendReplacement( sb, Matcher.quoteReplacement(sostituto) );
+		            // se e' una lista costruisce il contenuto di una IN sql
+		            if (objSostituto instanceof List) {
+		            	sSostituta = "";
+		        		for( Object obj : (List<Object>) objSostituto ) {
+		        			if ( !sSostituta.isEmpty() )
+		        				sSostituta += ", ";
+		        			
+		        			if ( this.typeValidator != null )
+		    		           	sSostituta += this.typeValidator.validate( sSostituta, type );
+		        			else
+		        				sSostituta += "'"+ obj + "'"; // e' una precauzione, ma non sarebbe del tutto corretto. E' consigliato aggiugngere sempre il tipo di dato nel parametro da sostituire
+		        		}
+		        	// se non e' nullo il valore con cui sostituire il parametro	
+		            } else if (objSostituto != null ) {
+			            if ( this.typeValidator != null )
+			            	sSostituta = this.typeValidator.validate( objSostituto.toString(), type );
+			            else
+			            	sSostituta = objSostituto.toString();
+			        // se e' nullo il valore con cui sostituire il parametro ma e' true il flag per usare spazi bianchi al suo posto
+		            } else if ( this.blanknull) {
+		            	sSostituta = ""; 
+		            } 
+		            
+		            matcher.appendReplacement( sb, Matcher.quoteReplacement(sSostituta) );
 		        }
 		        matcher.appendTail(sb);
 		        
+		        // recupera la riga con le sostituzioni dallo string buffer
 		        riga = sb.toString();
 		        
-		        
+		        // ri-testa la riga con il pattern per trovare parametri non sostituiti
 		        matcher.reset(riga);
-		        if ( keepUnMatched || ! matcher.find() ) // verifica che non sia rimaste qualche stringa non sostituita
+		        // se non ne trova o se e' true il flag per tenerli aggiunge la riga alla variabile di output
+		        if ( this.keepUnMatched || ! matcher.find() ) 
 		        	result += riga + "\n";
 			}
-		} catch ( IOException e ) { e.printStackTrace(); } // catturata qui perche' impossibile che venga lanciata
+		} catch ( IOException e ) { e.printStackTrace(); } // riguarda il buffered reader ma qui di I/O c'e' ben poco
 		
         return result;
         
