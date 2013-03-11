@@ -31,7 +31,7 @@ public class QueriesUtils
 	 * @return
 	 * @throws IOException
 	 */
-	public static String compilaQueryDaInputStream(InputStream is, String nomeQuery, Map<String, String> parametri)
+	public static String compilaQueryDaInputStream(InputStream is, String nomeQuery, Map<String, Object> parametri)
 			throws IOException
 	{
 		return compilaQueryDaInputStream( is, nomeQuery, parametri, null );
@@ -45,7 +45,7 @@ public class QueriesUtils
 	 * @return
 	 * @throws IOException
 	 */
-	public static String compilaQueryDaInputStream(InputStream is, String nomeQuery, Map<String, String> parametri, MapFormatTypeValidator validator)
+	public static String compilaQueryDaInputStream(InputStream is, String nomeQuery, Map<String, Object> parametri, MapFormatTypeValidator validator)
 			throws IOException
 	{
 		String contenutoFile = IOfrw.leggiInputStream( is );
@@ -62,7 +62,7 @@ public class QueriesUtils
 	 * @return
 	 * @throws IOException
 	 */
-	public static String compilaQueryDaFile(String nomeFile, String nomeQuery, Map<String, String> parametri)
+	public static String compilaQueryDaFile(String nomeFile, String nomeQuery, Map<String, Object> parametri)
 			throws IOException
 	{
 		return compilaQueryDaFile( nomeFile, nomeQuery, parametri, null );
@@ -77,7 +77,7 @@ public class QueriesUtils
 	 * @return
 	 * @throws IOException
 	 */
-	public static String compilaQueryDaFile(String fileAbsPath, String nomeQuery, Map<String, String> parametri, MapFormatTypeValidator validator)
+	public static String compilaQueryDaFile(String fileAbsPath, String nomeQuery, Map<String, Object> parametri, MapFormatTypeValidator validator)
 			throws IOException
 	{
 		String contenutoFile = IOfrw.leggiFile( fileAbsPath );
@@ -96,7 +96,7 @@ public class QueriesUtils
 	 * @return
 	 * @throws IOException
 	 */
-	public static String compilaQueryDaFile(Properties prop, String pathConfigFiles, String nomeQuery, Map<String, String> parametri)
+	public static String compilaQueryDaFile(Properties prop, String pathConfigFiles, String nomeQuery, Map<String, Object> parametri)
 			throws IOException
 	{
 		return compilaQueryDaFile( prop, pathConfigFiles, nomeQuery, parametri, null );
@@ -112,7 +112,7 @@ public class QueriesUtils
 	 * @return
 	 * @throws IOException
 	 */
-	public static String compilaQueryDaFile(Properties prop, String queriesRepoFolderFullPath, String nomeQuery, Map<String, String> parametri, MapFormatTypeValidator validator)
+	public static String compilaQueryDaFile(Properties prop, String queriesRepoFolderFullPath, String nomeQuery, Map<String, Object> parametri, MapFormatTypeValidator validator)
 			throws IOException
 	{
 		String nomeFile = prop.getProperty( nomeQuery );
@@ -152,7 +152,7 @@ public class QueriesUtils
 		
 		InputStream is = new ByteArrayInputStream( esempio.getBytes("ISO-8859-1") );
 		
-		Map<String, String> mappa = new HashMap<String, String>();
+		Map<String, Object> mappa = new HashMap<String, Object>();
 		mappa.put( "param1", "PARAM1" );
 		mappa.put( "param2", "PARAM2" );
 		mappa.put( "param3", "PARAM3" );

@@ -37,6 +37,7 @@ public class SqlManagerServlet extends BasicHttpServlet
 	{
 		// inizializza la mappa contenente i parametri della request
 		String reqLog = this._processRequestForParams( req );
+		reqLog += this._processRequestForMultipleValuesParams( req );
 		if ( this._booleanSafeParse(req.getParameter("logSqlManager")) && this._initConfigParamsMap.get("logFileName") != null ) 
 			// crea un file di log con il nome passato come parametro nella sottocartella della webapp
 			this._logOnFile( this._app.getRealPath(this._initConfigParamsMap.get("logFileName")), reqLog );
@@ -61,8 +62,9 @@ public class SqlManagerServlet extends BasicHttpServlet
 					": errore, parametro sqlName mancante nella request." );
 		
 		// raccoglie i parametri della request e di initConf della servlet
-		Map<String, String> allParams = new HashMap<String, String>();
+		Map<String, Object> allParams = new HashMap<String, Object>();
 		allParams.putAll( this._requestParamsMap );
+		allParams.putAll( this._requestMultipleValuesParamsMap );
 		allParams.putAll( this._initConfigParamsMap );
 
 		if ( !_booleanSafeParse(req.getParameter("lasciaQueryParametrica")) )

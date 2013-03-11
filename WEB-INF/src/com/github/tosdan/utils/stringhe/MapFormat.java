@@ -130,7 +130,7 @@ public class MapFormat
 		            // la sostituzione, perche' la sostituta rimarra' uguale al valore da sostituire
 		            String sSostituta = sDaSostituire;
 		            
-		            // se e' una lista costruisce il contenuto di una IN sql
+		            // se e' una lista, concatena i valori separandoli con la virgola.
 		            if (objSostituto instanceof List) {
 		            	sSostituta = "";
 		        		for( Object obj : (List<Object>) objSostituto ) {
@@ -142,7 +142,7 @@ public class MapFormat
 		        			else
 		        				sSostituta += "'"+ obj + "'"; // e' una precauzione, ma non sarebbe del tutto corretto. E' consigliato aggiugngere sempre il tipo di dato nel parametro da sostituire
 		        		}
-		        	// se non e' nullo il valore con cui sostituire il parametro	
+		        	// se non e' nullo il valore con cui sostituire il parametro 
 		            } else if (objSostituto != null ) {
 			            if ( this.typeValidator != null )
 			            	sSostituta = this.typeValidator.validate( objSostituto.toString(), type );
