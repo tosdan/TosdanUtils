@@ -37,7 +37,6 @@ public class SqlManagerServlet extends BasicHttpServlet
 	{
 		// inizializza la mappa contenente i parametri della request
 		String reqLog = this._processRequestForParams( req );
-		reqLog += this._processRequestForMultipleValuesParams( req );
 		if ( this._booleanSafeParse(req.getParameter("logSqlManager")) && this._initConfigParamsMap.get("logFileName") != null ) 
 			// crea un file di log con il nome passato come parametro nella sottocartella della webapp
 			this._logOnFile( this._app.getRealPath(this._initConfigParamsMap.get("logFileName")), reqLog );

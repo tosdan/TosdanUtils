@@ -73,81 +73,81 @@ public abstract class BasicHttpServlet extends HttpServlet
 	}
 
 	/**
-	 * Estrae i parametri dalla request e li inseriesce in una Mappa da stringa a stringa ignorando i parametri che abbiano valori multipli.
-	 * La mappa è mantenuta in un campo della classe (Map<String, String> requestParams).
-	 * @param req
+	 * Estrae i parametri dalla request e li inseriesce in una Mappa da stringa a stringa per i parametri a valore singolo; in una mappa da stringa a lista per i parametri che abbiano valori multipli.
+	 * La mappe sono mantenute in un campo della classe (Map&lt;String, String&gt; <code>_requestParams</code> e Map&lt;String, List&lt;String&gt;&gt; <code>_requestMultipleValuesParamsMap</code>).
+	 * @param req oggetto request da processare
 	 * @return Log testuale delle associazioni parametro=>valoreParametro dei parametri estratti
 	 */
 	protected String _processRequestForParams(HttpServletRequest req)
 	{
-		String reqLog = "";
-		@SuppressWarnings( "unchecked" )
-		Enumeration<String> e = req.getParameterNames();
+		String reqLog = "";		
 		this._requestParamsMap = new HashMap<String, String>();
-		while ( e.hasMoreElements() ) {
-			String elem = (String) e.nextElement();
-			String val = req.getParameter(elem);
-			if ( req.getParameterValues(val) == null )
-				this._requestParamsMap.put(elem, val);
-			reqLog += elem+"=>"+val+"\n";
+		this._requestMultipleValuesParamsMap = new HashMap<String, List<String>>();
+		
+		@SuppressWarnings( "unchecked" )
+		Enumeration<String> paramsNames = req.getParameterNames();
+		while ( paramsNames.hasMoreElements() ) {
+			String name = (String) paramsNames.nextElement();
+			String[] paramsValues = req.getParameterValues(name);
+			
+			if ( paramsValues != null && paramsValues.length == 1 ) {
+				this._requestParamsMap.put(name, paramsValues[0]);
+				reqLog += name+"=>"+paramsValues[0]+"\n";
+				
+			} else if ( paramsValues != null && paramsValues.length > 1 ) {
+				List<String> values = new ArrayList<String>();
+				for( int i = 0 ; i < paramsValues.length ; i++ ) {
+					values.add( paramsValues[i] );
+				}
+				this._requestMultipleValuesParamsMap.put(name, values);
+				reqLog += name+"=>"+values+"\n";
+			}
+			
 		}
 		reqLog += "---- Fine parametri ----";
 		
 		return reqLog;
 	}
-
-	/**
-	 * Estrae dalla request solo i parametri con valori multiplie e li inseriesce in una Mappa da stringa a lista di stringhe.
-	 * E' pensato per oggetti HTML come ad esempio le checkbox che anche se contengono un unico valore vanno estratte per forza con questo sistema.
-	 * La mappa è mantenuta in un campo della classe.
-	 * @param req
-	 * @return Log testuale delle associazioni parametro => valoreParametro dei parametri estratti
-	 */
-	protected String _processRequestForMultipleValuesParams(HttpServletRequest req)
-	{
-		String reqLog = "";
-		@SuppressWarnings( "unchecked" )
-		Enumeration<String> e = req.getParameterNames();
-		this._requestMultipleValuesParamsMap = new HashMap<String, List<String>>();
-		while ( e.hasMoreElements() ) {
-			String elem = (String) e.nextElement();
-			String val = req.getParameter(elem);
-			String[] paramValues;
-			if ( (paramValues = req.getParameterValues(val)) != null )
-			{
-				List<String> values = new ArrayList<String>();
-				for( int i = 0 ; i < paramValues.length ; i++ ) {
-					values.add( paramValues[i] );
-				}
-				this._requestMultipleValuesParamsMap.put(elem, values);
-				reqLog += elem+"=>"+values+"\n";
-			}
-		}
-		reqLog += "---- Fine parametri checkbox ----";
-		
-		return reqLog;
-	}
 	
 
 	/**
-	 * Esegue il parse di una stringa per restituire un valore booleano, in caso di null o di valore passato mal formato restituisce false
+	 * Effettua il <code>parse</code> su una stringa per restituire un <code>boolean</code>, in caso di null o o in caso di fallimento del parse restituisce <code>false</code>.
 	 * @param s stringa da valutare
 	 * @return
 	 */
 	protected boolean _booleanSafeParse(String s) {
-		return _defaultBoolean( s, false );
+		return _defaultBoolean( (Object) s, false );
 	}
 	
 	/**
-	 * Esegue il parse di una stringa per restituire un valore booleano, in caso di null o di valore passato mal formato restituisce il defaultValue passato
+	 * Effettua il <code>parse</code> su una stringa per restituire un <code>boolean</code>, in caso di null o in caso di fallimento del parse restituisce il valore booleano passato come parametro.
 	 * @param s stringa da valutare
 	 * @param defaultValue valore di ritorno di default: <code>true/false</code>
 	 * @return
 	 */
 	protected boolean _defaultBoolean(String s, boolean defaultValue) {
+		return this._defaultBoolean( (Object) s, defaultValue );
+	}
+
+	/**
+	 * Effettua il <code>parse</code> su un oggetto per restituire un <code>boolean</code>. In caso di oggetto nullo o in caso di fallimento del parse restituisce <code>false</code>.
+	 * @param obj oggetto da valutare
+	 * @return
+	 */
+	protected boolean _booleanSafeParse(Object obj) {
+		return _defaultBoolean( obj, false );
+	}
+	
+	/**
+	 * Effettua il <code>parse</code> su un oggetto per restituire un <code>boolean</code>. In caso di oggetto nullo o in caso di fallimento del parse restituisce il valore booleano passato come parametro.
+	 * @param obj oggetto da valutare
+	 * @param defaultValue valore di ritorno di default: <code>true/false</code>
+	 * @return
+	 */
+	protected boolean _defaultBoolean(Object obj, boolean defaultValue) {
 		boolean result = false;
 		try {
-			result = Boolean.valueOf(s);
+			result = Boolean.valueOf(obj.toString());
 		} catch ( Exception e ) {
 			return defaultValue;
 		}
@@ -161,6 +161,15 @@ public abstract class BasicHttpServlet extends HttpServlet
 	 */
 	protected String _blankIfNull(String s) {
 		return (s == null) ? "" : s;
+	}
+	
+	/**
+	 * Restituisce una stringa vuota nel caso il valore passato sia null
+	 * @param s oggetto da valutare
+	 * @return 
+	 */
+	protected String _blankIfNull(Object o) {
+		return (o == null) ? "" : o.toString();
 	}
 
 	/**
