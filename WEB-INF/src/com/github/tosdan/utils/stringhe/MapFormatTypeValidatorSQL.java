@@ -25,7 +25,7 @@ public class MapFormatTypeValidatorSQL implements MapFormatTypeValidator
 	@Override
 	public String getTypes()
 	{
-		return "string|integer|numeric|boolean|compactDate|revCompDate|itaDate|revItaDate|date|reverseDate";
+		return "stringa|integer|numeric|boolean|compactDate|revCompDate|itaDate|revItaDate|date|reverseDate";
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class MapFormatTypeValidatorSQL implements MapFormatTypeValidator
 		String result = "";
 		
         if ( type != null ) {
-        	if 		( type.equalsIgnoreCase("string" ) ) {
+        	if 		( type.equalsIgnoreCase("stringa" ) ) {
         		result = quote(source);
         	}
         	else if ( type.equalsIgnoreCase("boolean") ) {

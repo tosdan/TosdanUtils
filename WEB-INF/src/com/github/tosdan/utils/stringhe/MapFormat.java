@@ -95,7 +95,7 @@ public class MapFormat
 		if (typeValidator != null)
 			tipi = typeValidator.getTypes();
 		
-		this.schema = Pattern.compile("\\$\\{([a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z][a-zA-Z0-9_]*)*)(,[ ]?(" + tipi + "))?\\}");
+		this.schema = Pattern.compile("\\$\\{([a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z][a-zA-Z0-9_]*)*)(,[ ]?(?i)(" + tipi + "))?\\}");
 		
 	}
 	
