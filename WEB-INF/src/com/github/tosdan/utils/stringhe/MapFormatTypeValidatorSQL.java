@@ -25,7 +25,7 @@ public class MapFormatTypeValidatorSQL implements MapFormatTypeValidator
 	@Override
 	public String getTypes()
 	{
-		return "stringa|integer|numeric|boolean|compactDate|revCompDate|itaDate|revItaDate|date|reverseDate";
+		return "stringa|integer|numeric|boolean|compactDate|revCompDate|itaDate|revItaDate|date|reverseDate|table";
 	}
 
 	/**
@@ -38,7 +38,8 @@ public class MapFormatTypeValidatorSQL implements MapFormatTypeValidator
 	public String validate(String source, String type)
 	{
 		String result = "";
-		
+
+		System.out.println( "entrato: " +source + " - "+result );
         if ( type != null ) {
         	if 		( type.equalsIgnoreCase("stringa" ) ) {
         		result = quote(source);
@@ -53,28 +54,31 @@ public class MapFormatTypeValidatorSQL implements MapFormatTypeValidator
         		result = this.checkMatching( "([0-9])+(.([0-9])+)?", source, type );
         	}
         	else if ( type.equalsIgnoreCase("compactDate") ) {
-        		dateFormat = new SimpleDateFormat( "ddMMyyyy" );        	
+        		this.dateFormat = new SimpleDateFormat( "ddMMyyyy" );        	
         		result = parseDate(source);
         	}
         	else if ( type.equalsIgnoreCase("revCompDate") ) {
-        		dateFormat = new SimpleDateFormat( "yyyyMMdd" );        	
+        		this.dateFormat = new SimpleDateFormat( "yyyyMMdd" );        	
         		result = parseDate(source);
         	}
         	else if ( type.equalsIgnoreCase("itaDate") ) {
-        		dateFormat = new SimpleDateFormat( "dd/MM/yyyy" );        	
+        		this.dateFormat = new SimpleDateFormat( "dd/MM/yyyy" );        	
         		result = parseDate(source);        		
         	}
         	else if ( type.equalsIgnoreCase("revItaDate") ) {
-        		dateFormat = new SimpleDateFormat( "yyyy/MM/dd" );        	
+        		this.dateFormat = new SimpleDateFormat( "yyyy/MM/dd" );        	
         		result = parseDate(source);        		
         	}
         	else if ( type.equalsIgnoreCase("date") ) {
-        		dateFormat = new SimpleDateFormat( "dd-MM-yyyy" );        	
+        		this.dateFormat = new SimpleDateFormat( "dd-MM-yyyy" );        	
         		result = parseDate(source);        		
         	}
         	else if ( type.equalsIgnoreCase("reverseDate") ) {
-        		dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );        	
+        		this.dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );        	
         		result = parseDate(source);        		
+        	}
+        	else if ( type.equalsIgnoreCase("table") ) {
+        		result = this.checkMatching( "[a-zA-Z][a-zA-Z0-9_]*", source, type );   
         	}
         	else
         		throw new MapFormatTypeValidatorException("Errore di validazione: il tipo di validazione "+ type +" e' sconosciuto.");
