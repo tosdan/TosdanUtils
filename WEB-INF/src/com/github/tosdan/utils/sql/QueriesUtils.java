@@ -1,7 +1,9 @@
 package com.github.tosdan.utils.sql;
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -16,9 +18,10 @@ public class QueriesUtils
 	/**
 	 * 
 	 * @param args
-	 * @throws IOException
+	 * @throws QueriesUtilsException 
+	 * @throws UnsupportedEncodingException 
 	 */
-	public static void main( String[] args ) throws IOException {
+	public static void main( String[] args ) throws QueriesUtilsException, UnsupportedEncodingException {
 		testCompilaQueryDaFile();
 	}
 
@@ -29,29 +32,118 @@ public class QueriesUtils
 	 * @param nomeQuery nome della sezione che contiene la query 
 	 * @param parametri mappa con i parametri da sostituire nella query
 	 * @return
-	 * @throws IOException
+	 * @throws QueriesUtilsException 
 	 */
 	public static String compilaQueryDaInputStream(InputStream is, String nomeQuery, Map<String, Object> parametri)
-			throws IOException
-	{
-		return compilaQueryDaInputStream( is, nomeQuery, parametri, null );
+			throws QueriesUtilsException {
+		return compilaQueryDaInputStream( is, nomeQuery, parametri, null, null );
 	}
-	
+
+
 	/**
 	 * 
-	 * @param is InputStream che contiene la query
+	 * @param is (opzionale se si passa direttamente un <code>File</code>) InputStream che contiene la query
+	 * @param nomeQuery nome della sezione che contiene la query 
+	 * @param parametri mappa con i parametri da sostituire nella query
+	 * @param validator (opzionale) oggetto per validare, tramite verifiche dei tipi, i parametri passati per compilare la query
+	 * @param nomeFile (opzionale se si passa direttamente un <code>InputStream</code>) nome file per lo storage delle queies
+	 * @return
+	 * @throws QueriesUtilsException
+	 */
+	public static String compilaQueryDaInputStream(InputStream is, String nomeQuery, Map<String, Object> parametri, MapFormatTypeValidator validator, String nomeFile) 
+			throws QueriesUtilsException 
+	{
+		String contenutoFile = null;
+		try {
+			if (nomeFile != null)
+				is = new FileInputStream( nomeFile );
+			contenutoFile = IOfrw.leggiInputStream( is );
+		} catch ( IOException e ) {
+			String msg = (nomeFile == null) 
+					? "Errore in lettura dalla sorgente." 
+					: "Errore nel tentativo di lettura del file '"+ nomeFile+"'";
+			throw new QueriesUtilsException( msg, e );
+		}		
+		if (contenutoFile == null || contenutoFile.isEmpty()) {
+			String msg = (nomeFile == null) 
+					? "Nessun contenuto valido per la query '" + nomeQuery + "' nella sorgente passata."
+					: "Nessun contenuto valido per la query '" + nomeQuery + "' nel file queries repository: '" + nomeFile + "'.";			
+			throw new QueriesUtilsException( msg );
+		}
+		
+		String query = StrUtils.findSection( contenutoFile, nomeQuery );
+		if ( query.equals("") ) {
+			String msg = (nomeFile == null) 
+					? "Associazione vuota o mancante per la query '" + nomeQuery + "' nella sorgente passata."
+					: "Associazione vuota o mancante per la query '" + nomeQuery + "' nel file queries repository: '" + nomeFile + "'.";
+			throw new QueriesUtilsException( msg );
+		}
+		
+		return MapFormat.format( query, parametri, validator );
+	}
+
+	/**
+	 * @deprecated
+	 * @param prop oggetto property con le associazione tra i nomi delle queries e il file repository in cui reperirle
+	 * @param queriesRepoFolderFullPath percorso completo in cui trovare il file repository delle queries
+	 * @param nomeQuery nome della sezione che contiene la query 
+	 * @param parametri mappa con i parametri da sostituire nella query
+	 * @param validator (opzionale) oggetto per validare, tramite verifiche dei tipi, i parametri passati per compilare la query
+	 * @return
+	 * @throws QueriesUtilsException 
+	 */
+	public static String compilaQueryDaFileOld(Properties prop, String queriesRepoFolderFullPath, String nomeQuery, Map<String, Object> parametri, MapFormatTypeValidator validator) throws QueriesUtilsException
+	{
+		String nomeFile = prop.getProperty( nomeQuery );
+		if (nomeFile == null || nomeFile.equals("") )
+			throw new QueriesUtilsException( "Nessun file per lo store delle queries associato alla query '" + nomeQuery + "' nel file di configurazione della webapp." );
+		String contenutoFile = null;
+		try {
+			contenutoFile = IOfrw.leggiFile( queriesRepoFolderFullPath + nomeFile );
+		} catch ( IOException e ) {
+			throw new QueriesUtilsException( "Errore di nel tentativo di lettura del file '"+queriesRepoFolderFullPath + nomeFile+"'", e );
+		}
+		if (contenutoFile == null || contenutoFile.isEmpty())
+			throw new QueriesUtilsException( "Nessun contenuto valido per la query '" + nomeQuery + "' nel file '"+ queriesRepoFolderFullPath + nomeFile +"' per lo store delle queries.");
+		String query = StrUtils.findSection( contenutoFile, nomeQuery );
+		if ( query.equals("") )
+			throw new QueriesUtilsException( "Associazione vuota o mancante per la query '" + nomeQuery + "' nel file per lo store delle queries: '" +queriesRepoFolderFullPath + nomeFile + "'." );
+		
+		return MapFormat.format( query, parametri, validator );
+	}
+
+	/**
+	 * 
+	 * @param prop oggetto property con le associazione tra i nomi delle queries e il file repository in cui reperirle
+	 * @param queriesRepoFolderFullPath percorso completo in cui trovare il file repository delle queries
 	 * @param nomeQuery nome della sezione che contiene la query 
 	 * @param parametri mappa con i parametri da sostituire nella query
 	 * @return
-	 * @throws IOException
+	 * @throws QueriesUtilsException 
 	 */
-	public static String compilaQueryDaInputStream(InputStream is, String nomeQuery, Map<String, Object> parametri, MapFormatTypeValidator validator)
-			throws IOException
+	public static String compilaQueryDaFile(Properties prop, String queriesRepoFolderFullPath, String nomeQuery, Map<String, Object> parametri)
+			throws QueriesUtilsException {
+		return compilaQueryDaFile( prop, queriesRepoFolderFullPath, nomeQuery, parametri, null );
+	}
+
+	/**
+	 * 
+	 * @param prop oggetto property con le associazione tra i nomi delle queries e il file repository in cui reperirle
+	 * @param queriesRepoFolderFullPath percorso completo in cui trovare il file repository delle queries
+	 * @param nomeQuery nome della sezione che contiene la query 
+	 * @param parametri mappa con i parametri da sostituire nella query
+	 * @param validator (opzionale) oggetto per validare, tramite verifiche dei tipi, i parametri passati per compilare la query
+	 * @return
+	 * @throws QueriesUtilsException
+	 */
+	public static String compilaQueryDaFile(Properties prop, String queriesRepoFolderFullPath, String nomeQuery, Map<String, Object> parametri, MapFormatTypeValidator validator) 
+			throws QueriesUtilsException
 	{
-		String contenutoFile = IOfrw.leggiInputStream( is );
-		String query = StrUtils.findSection( contenutoFile, nomeQuery );
-		
-		return MapFormat.format( query, parametri, validator );
+		String nomeFile = prop.getProperty( nomeQuery );
+		if (nomeFile == null || nomeFile.equals("") ) {
+			throw new QueriesUtilsException( "Nessun file queries repository associato alla query '" + nomeQuery + "' nel file di configurazione della webapp." );
+		}
+		return compilaQueryDaInputStream( null, nomeQuery, parametri, validator, queriesRepoFolderFullPath + nomeFile ); 
 	}
 	
 	/**
@@ -87,48 +179,16 @@ public class QueriesUtils
 	}
 	
 
-	/**
-	 * 
-	 * @param prop
-	 * @param pathConfigFiles
-	 * @param nomeQuery
-	 * @param parametri
-	 * @return
-	 * @throws IOException
-	 */
-	public static String compilaQueryDaFile(Properties prop, String pathConfigFiles, String nomeQuery, Map<String, Object> parametri)
-			throws IOException
-	{
-		return compilaQueryDaFile( prop, pathConfigFiles, nomeQuery, parametri, null );
-	}
-
-	/**
-	 * 
-	 * @param prop
-	 * @param queriesRepoFolderFullPath
-	 * @param nomeQuery
-	 * @param parametri
-	 * @param validator
-	 * @return
-	 * @throws IOException
-	 */
-	public static String compilaQueryDaFile(Properties prop, String queriesRepoFolderFullPath, String nomeQuery, Map<String, Object> parametri, MapFormatTypeValidator validator)
-			throws IOException
-	{
-		String nomeFile = prop.getProperty( nomeQuery );
-		String contenutoFile = IOfrw.leggiFile( queriesRepoFolderFullPath + nomeFile );
-		String query = StrUtils.findSection( contenutoFile, nomeQuery );
-		
-		return MapFormat.format( query, parametri, validator );
-	}
+	
 	
 	/* * * * * * * * * * * * * * * * * * * * * TEST * * * * * * * * * * * * * * * * * * * * * * */
 	
 	/**
 	 * 
-	 * @throws IOException
+	 * @throws QueriesUtilsException 
+	 * @throws UnsupportedEncodingException 
 	 */
-	public static void testCompilaQueryDaFile() throws IOException
+	public static void testCompilaQueryDaFile() throws QueriesUtilsException, UnsupportedEncodingException
 	{  	// Esempio di un file contenente piu' stringhe in diverse sezioni
 		String esempio = 
 			 	"%[sezione1]%\n" +

@@ -1,7 +1,8 @@
-package com.github.tosdan.utils.servlets;
+package com.github.tosdan.utils.filters;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -9,19 +10,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletConfig;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * 
- * @author Daniele
- *
- */
-@SuppressWarnings( "serial" )
-public abstract class BasicHttpServlet extends HttpServlet
+public class BasicFilter implements Filter
 {
 	/** 
 	 * ServletContext di questa servlet
@@ -53,50 +51,38 @@ public abstract class BasicHttpServlet extends HttpServlet
 	 * Mappa degli <code>Attributes</code> della request
 	 */
 	protected Map<String, Object> _requestAttributes;
+
+	protected FilterConfig _filterConfig;
 	
 	@Override
-	public void init( ServletConfig config ) throws ServletException {
-		super.init( config );
-		this._app = config.getServletContext();
-		
+	public void destroy() {
+		this._filterConfig = null;
+	}
+
+	@Override
+	public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException, ServletException
+	{ 	}
+
+	@Override
+	public void init( FilterConfig filterConfig ) throws ServletException {
+		this._filterConfig = filterConfig;
+		this._app = filterConfig.getServletContext();
 		this._initConfigParamsMap = new HashMap<String, String>();
 		this._appRealPath = this._app.getRealPath( "/" );
 		this._initConfigParamsMap.put( "realPath", this._appRealPath );
 		
 		@SuppressWarnings( "rawtypes" )
-		Enumeration parametriServlet = config.getInitParameterNames();
+		Enumeration parametriServlet = filterConfig.getInitParameterNames();
 		while (parametriServlet.hasMoreElements()) {
 			String nomeParam = ( String ) parametriServlet.nextElement();
-			String valore = config.getInitParameter( nomeParam );
+			String valore = filterConfig.getInitParameter( nomeParam );
 			this._initConfigParamsMap.put( nomeParam, valore );
 			
 //			System.out.println( nomeParam + " - " + valore );
 //			System.out.println( System.getProperty("catalina.base") );
 		}
-		
 	}
 
-	/**
-	 * Memorizza un oggetto in sessione
-	 * @param key nome da associare all'oggetto da memorizzare in sessione
-	 * @param obj oggetto da memorizzare in sessione
-	 * @param req request della servlet corrente
-	 */
-	protected void _toSession(String key, Object obj, HttpServletRequest req) {
-		req.getSession().setAttribute( key, obj );
-	}
-	
-	/**
-	 * Memorizza una stringa in sessione criptandola con una chiave standard
-	 * @since Per ora memorizza la stringa in chiaro: e' pensato per una implementazione futura
-	 * @param key nome da associare alla stringa da memorizzare in sessione
-	 * @param str stringa da criptare e memorizzare in sessione
-	 * @param req request della servlet corrente
-	 */
-	protected void _cryptToSession(String key, String str, HttpServletRequest req) {
-		req.getSession().setAttribute( key, str );
-	}
-	
 	/**
 	 * Estrae i parametri dalla request e li inseriesce in una Mappa da stringa a stringa per i parametri a valore singolo; in una mappa da stringa a lista per i parametri che abbiano valori multipli.
 	 * La mappe sono mantenute in un campo della classe (Map&lt;String, String&gt; <code>_requestParams</code> e Map&lt;String, List&lt;String&gt;&gt; <code>_requestMultipleValuesParamsMap</code>).
@@ -144,7 +130,6 @@ public abstract class BasicHttpServlet extends HttpServlet
 		
 		return reqLog;
 	}
-	
 
 	/**
 	 * Effettua il <code>parse</code> su una stringa per restituire un <code>boolean</code>, in caso di null o o in caso di fallimento del parse restituisce <code>false</code>.
@@ -260,10 +245,9 @@ public abstract class BasicHttpServlet extends HttpServlet
 			// qualsiasi eccezione nella stampa del log non deve essere bloccante
 			String astks = "*************************************";
 			String ecc = astks+"\n* Eccezione catturata, ma non gestita\n"+astks+"\n"; 
-			System.err.println( ecc+ "Servlet " + this.getServletName()+"\nErrore nel tentativo di scrivere il logfile\n"+logFile.getName()+"\nnella cartella\n"+logPath.getAbsolutePath()+"\nClasse: "+this.getClass().getName() +"\n");
+			System.err.println( ecc+ "Servlet " + this._filterConfig.getFilterName()+"\nErrore nel tentativo di scrivere il logfile\n"+logFile.getName()+"\nnella cartella\n"+logPath.getAbsolutePath()+"\nClasse: "+this.getClass().getName() +"\n");
 			e.printStackTrace();
 			System.err.println( "\n"+astks );
 		} 
 	}
-	
 }

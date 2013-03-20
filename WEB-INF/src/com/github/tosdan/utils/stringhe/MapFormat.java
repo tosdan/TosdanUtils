@@ -3,6 +3,8 @@ package com.github.tosdan.utils.stringhe;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,25 +133,27 @@ public class MapFormat
 		            String sSostituta = sDaSostituire;
 		            
 		            // se e' una lista, concatena i valori separandoli con la virgola.
-		            if (objSostituto instanceof List) {
+		            if ( objSostituto instanceof List && !((List<Object>) objSostituto).isEmpty() ) {
 		            	sSostituta = "";
-		        		for( Object obj : (List<Object>) objSostituto ) {
+		        		for( Object listElem : (List<Object>) objSostituto ) {
+		        			if (! this.isTipoAmmesso(listElem) )
+		        				continue;
 		        			if ( !sSostituta.isEmpty() )
 		        				sSostituta += ", ";
 		        			
 		        			if ( this.typeValidator != null )
-		    		           	sSostituta += this.typeValidator.validate( sSostituta, type );
+		    		           	sSostituta += this.typeValidator.validate( listElem.toString(), type );
 		        			else
-		        				sSostituta += "'"+ obj + "'"; // e' una precauzione, ma non sarebbe del tutto corretto. E' consigliato aggiugngere sempre il tipo di dato nel parametro da sostituire
+		        				sSostituta += "'"+ listElem + "'"; // e' una precauzione, ma non sarebbe del tutto corretto. E' consigliato aggiugngere sempre il tipo di dato nel parametro da sostituire
 		        		}
 		        	// se non e' nullo il valore con cui sostituire il parametro 
-		            } else if (objSostituto != null ) {
+		            } else if ( this.isTipoAmmesso(objSostituto) ) {
 			            if ( this.typeValidator != null )
 			            	sSostituta = this.typeValidator.validate( objSostituto.toString(), type );
 			            else
 			            	sSostituta = objSostituto.toString();
 			        // se e' nullo il valore con cui sostituire il parametro ma e' true il flag per usare spazi bianchi al suo posto
-		            } else if ( this.blanknull) {
+		            } else if ( objSostituto == null && this.blanknull) {
 		            	sSostituta = ""; 
 		            } 
 		            
@@ -170,6 +174,12 @@ public class MapFormat
 		
         return result;
         
+	}
+	
+	private boolean isTipoAmmesso(Object o) {
+		return ( o instanceof String || o instanceof Integer || o instanceof Boolean 
+				|| o instanceof Double || o instanceof Float  || o instanceof BigDecimal 
+				|| o instanceof BigInteger );
 	}
 	
 	/**
