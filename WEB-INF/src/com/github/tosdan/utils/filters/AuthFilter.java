@@ -1,7 +1,6 @@
 package com.github.tosdan.utils.filters;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -27,12 +26,13 @@ public class AuthFilter implements Filter
 		HttpServletRequest req = ( HttpServletRequest ) request;
 		HttpSession session = req.getSession();
 		String userIDIdentifier = this.filterConfig.getInitParameter( "userIDIdentifier" );
+		String warnPage = this.filterConfig.getInitParameter( "warnPage" );
 		String sUserID = req.getParameter( userIDIdentifier );
 		
 		if ( session.getAttribute(sUserID) != null ) {
 			chain.doFilter( req, response );
 		} else {
-			request.getRequestDispatcher("/sessionWarn.jsp").include(request, response);
+			request.getRequestDispatcher(warnPage).include(request, response);
 		}
 		
 	}

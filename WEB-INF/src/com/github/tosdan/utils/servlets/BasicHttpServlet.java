@@ -165,13 +165,33 @@ public abstract class BasicHttpServlet extends HttpServlet
 	
 	/**
 	 * Restituisce una stringa vuota nel caso il valore passato sia null
-	 * @param s oggetto da valutare
+	 * @param o oggetto da valutare
 	 * @return 
 	 */
 	protected String _blankIfNull(Object o) {
-		return (o == null) ? "" : o.toString();
+		return this._defaultString( o, "" );
+	}
+	
+	/**
+	 * Se la stringa passata e' nulla restituisce il valore di default
+	 * @param s stringa in ingresso
+	 * @param defaultValue
+	 * @return
+	 */
+	protected String _defaultString(String s, String defaultValue) {
+		return this._defaultString( (Object) s, defaultValue );
 	}
 
+	/**
+	 * Se l'oggetto passato e' nullo restituisce il valore di default
+	 * @param o oggetto da valutare
+	 * @param defaultValue
+	 * @return
+	 */
+	protected String _defaultString(Object o, String defaultValue) {
+		return (o == null) ? defaultValue : o.toString();
+	}
+	
 	/**
 	 * Scrive semplicemente una stringa in un file
 	 * @param fileName nome file con percorso completo
