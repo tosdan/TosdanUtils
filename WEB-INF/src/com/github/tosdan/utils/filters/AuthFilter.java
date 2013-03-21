@@ -1,6 +1,8 @@
 package com.github.tosdan.utils.filters;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -27,16 +29,22 @@ public class AuthFilter implements Filter
 		HttpSession session = req.getSession();
 		String userIDIdentifier = this.filterConfig.getInitParameter( "userIDIdentifier" );
 		String warnPage = this.filterConfig.getInitParameter( "warnPage" );
-		String sUserID = req.getParameter( userIDIdentifier );
+		String sUserID = (String) session.getAttribute(userIDIdentifier);
+		String usefulSessionParamsIdentifier = this.filterConfig.getInitParameter( "UsefullSessionParamsIdentifier" );
 		
-		if ( session.getAttribute(sUserID) != null ) {
+		if ( sUserID != null ) {
+			@SuppressWarnings( "unchecked" )
+			Map<String, Object> mapUsefulParams = (Map<String, Object>) session.getAttribute( usefulSessionParamsIdentifier );
+			if (mapUsefulParams == null) {
+				mapUsefulParams = new HashMap<String, Object>();
+				session.setAttribute( usefulSessionParamsIdentifier, mapUsefulParams );
+			}
+			mapUsefulParams.put( userIDIdentifier, sUserID );
 			chain.doFilter( req, response );
 		} else {
 			request.getRequestDispatcher(warnPage).include(request, response);
 		}
-		
 	}
-
 
 	@Override
 	public void destroy() {

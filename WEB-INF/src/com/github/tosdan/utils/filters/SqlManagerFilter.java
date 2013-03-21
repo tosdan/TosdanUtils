@@ -11,6 +11,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.github.tosdan.utils.sql.QueriesUtils;
 import com.github.tosdan.utils.sql.QueriesUtilsException;
@@ -32,7 +33,7 @@ public class SqlManagerFilter extends BasicFilter
 		String reqLog = this._processRequestForParams( req );
 		if ( this._booleanSafeParse(req.getParameter("logSqlManager")) && this._initConfigParamsMap.get("logFileName") != null ) 
 			// crea un file di log con il nome passato come parametro nella sottocartella della webapp
-			this._logOnFile( this._app.getRealPath(this._initConfigParamsMap.get("logFileName")), reqLog );
+			this._logOnFile( this._ctx.getRealPath(this._initConfigParamsMap.get("logFileName")), reqLog );
 		
 		// flag per verbose stacktrace delle eccezioni catturate da questa servlet
 		this.printStackTrace = this._booleanSafeParse( req.getParameter("printStackTrace") );
@@ -59,7 +60,8 @@ public class SqlManagerFilter extends BasicFilter
 		allParams.putAll( this._requestMultipleValuesParamsMap );
 		allParams.putAll( this._initConfigParamsMap );
 		allParams.putAll( this._requestAttributes );
-
+		allParams.putAll( this.getSessionUsefulParams(req) );
+		
 		if ( !_booleanSafeParse(req.getParameter("lasciaQueryParametrica")) )
 		{
 			try {
@@ -82,6 +84,18 @@ public class SqlManagerFilter extends BasicFilter
 //		System.out.println( this._filterConfig.getFilterName() +"\n" + req.getSession().getAttribute( "JsonDataTableString" ) + " - " + req.getSession().getAttribute( "DataTableQuery" ));
 	}
 	
+	protected Map<String, Object> getSessionUsefulParams(HttpServletRequest req) {
+		HttpSession session = req.getSession();	
+		String usefulSessionParamsIdentifier = this._initConfigParamsMap.get( "UsefullSessionParamsIdentifier" );
+		@SuppressWarnings( "unchecked" )
+		Map<String, Object> mapUsefulParams = (Map<String, Object>) session.getAttribute(usefulSessionParamsIdentifier);
+		if (mapUsefulParams == null) 
+			mapUsefulParams = new HashMap<String, Object>();
+		
+		return mapUsefulParams;
+	}
+	
+	
 	/**
 	 * Carica e restituisce un oggetto {@link Properties}
 	 * @param propertiesFile
@@ -93,7 +107,7 @@ public class SqlManagerFilter extends BasicFilter
 		
 		try {
 			// carica, dal file passato, l'oggetto Properties salvandolo in un campo della servlet 
-			dtrSettings.load( this._app.getResourceAsStream( propertiesFile ) );
+			dtrSettings.load( this._ctx.getResourceAsStream( propertiesFile ) );
 			
 		} catch ( IOException e ) {
 			if ( printStackTrace )

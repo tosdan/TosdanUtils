@@ -24,7 +24,7 @@ public class BasicFilter implements Filter
 	/** 
 	 * ServletContext di questa servlet
 	 */
-	protected ServletContext _app;
+	protected ServletContext _ctx;
 	
 	/**
 	 * Contiene i parametri di inizializzazione specifici della servlet (per intendersi: presi dall'oggetto ServletConfig)
@@ -66,9 +66,9 @@ public class BasicFilter implements Filter
 	@Override
 	public void init( FilterConfig filterConfig ) throws ServletException {
 		this._filterConfig = filterConfig;
-		this._app = filterConfig.getServletContext();
+		this._ctx = filterConfig.getServletContext();
 		this._initConfigParamsMap = new HashMap<String, String>();
-		this._appRealPath = this._app.getRealPath( "/" );
+		this._appRealPath = this._ctx.getRealPath( "/" );
 		this._initConfigParamsMap.put( "realPath", this._appRealPath );
 		
 		@SuppressWarnings( "rawtypes" )

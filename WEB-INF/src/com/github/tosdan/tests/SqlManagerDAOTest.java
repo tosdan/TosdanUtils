@@ -1,4 +1,4 @@
-package com.github.tosdan.utils.sql.tests;
+package com.github.tosdan.tests;
 
 import java.util.List;
 import java.util.Map;

@@ -26,7 +26,7 @@ public abstract class BasicHttpServlet extends HttpServlet
 	/** 
 	 * ServletContext di questa servlet
 	 */
-	protected ServletContext _app;
+	protected ServletContext _ctx;
 	
 	/**
 	 * Contiene i parametri di inizializzazione specifici della servlet (per intendersi: presi dall'oggetto ServletConfig)
@@ -57,10 +57,10 @@ public abstract class BasicHttpServlet extends HttpServlet
 	@Override
 	public void init( ServletConfig config ) throws ServletException {
 		super.init( config );
-		this._app = config.getServletContext();
+		this._ctx = config.getServletContext();
 		
 		this._initConfigParamsMap = new HashMap<String, String>();
-		this._appRealPath = this._app.getRealPath( "/" );
+		this._appRealPath = this._ctx.getRealPath( "/" );
 		this._initConfigParamsMap.put( "realPath", this._appRealPath );
 		
 		@SuppressWarnings( "rawtypes" )

@@ -40,7 +40,7 @@ public class SqlManagerServlet extends BasicHttpServlet
 		String reqLog = this._processRequestForParams( req );
 		if ( this._booleanSafeParse(req.getParameter("logSqlManager")) && this._initConfigParamsMap.get("logFileName") != null ) 
 			// crea un file di log con il nome passato come parametro nella sottocartella della webapp
-			this._logOnFile( this._app.getRealPath(this._initConfigParamsMap.get("logFileName")), reqLog );
+			this._logOnFile( this._ctx.getRealPath(this._initConfigParamsMap.get("logFileName")), reqLog );
 		
 		// flag per verbose stacktrace delle eccezioni catturate da questa servlet
 		this.printStackTrace = this._booleanSafeParse( req.getParameter("printStackTrace") );
@@ -91,7 +91,7 @@ public class SqlManagerServlet extends BasicHttpServlet
 		
 //		String destinazione = nextHandlerServlet + "/go"; // URL Relativo
 //		RequestDispatcher dispatcher = req.getRequestDispatcher( destinazione );
-		RequestDispatcher dispatcher = _app.getNamedDispatcher( nextHandlerServlet );
+		RequestDispatcher dispatcher = _ctx.getNamedDispatcher( nextHandlerServlet );
 		
 		dispatcher.forward( req, resp );
 
@@ -108,7 +108,7 @@ public class SqlManagerServlet extends BasicHttpServlet
 		
 		try {
 			// carica, dal file passato, l'oggetto Properties salvandolo in un campo della servlet 
-			dtrSettings.load( this._app.getResourceAsStream( propertiesFile ) );
+			dtrSettings.load( this._ctx.getResourceAsStream( propertiesFile ) );
 			
 		} catch ( IOException e2 ) {
 			if ( printStackTrace )

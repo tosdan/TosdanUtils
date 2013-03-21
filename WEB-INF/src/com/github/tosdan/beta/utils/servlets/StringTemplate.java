@@ -1,4 +1,4 @@
-package com.github.tosdan.utils.stringhe;
+package com.github.tosdan.beta.utils.servlets;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -39,7 +39,6 @@ public class MapFormatTypeValidatorSQL implements MapFormatTypeValidator
 	{
 		String result = "";
 
-		System.out.println( "entrato: " +source + " - "+result );
         if ( type != null ) {
         	if 		( type.equalsIgnoreCase("stringa" ) ) {
         		result = quote(source);

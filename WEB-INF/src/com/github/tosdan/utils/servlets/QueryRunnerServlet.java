@@ -35,7 +35,7 @@ public class QueryRunnerServlet extends BasicHttpServlet
 		String reqLog = this._processRequestForParams( req );
 		if ( this._booleanSafeParse(req.getParameter("logQueryRunner")) && this._initConfigParamsMap.get("logFileName") != null ) 
 			// crea un file di log con il nome passato come parametro nella sottocartella della webapp
-			this._logOnFile( this._app.getRealPath(this._initConfigParamsMap.get("logFileName")), reqLog );
+			this._logOnFile( this._ctx.getRealPath(this._initConfigParamsMap.get("logFileName")), reqLog );
 
 		// flag per verbose stacktrace delle eccezioni catturate da questa servlet
 		this.printStackTrace = this._booleanSafeParse( req.getParameter("printStackTrace") );
