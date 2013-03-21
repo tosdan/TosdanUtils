@@ -79,9 +79,7 @@ public class SqlManagerFilter extends BasicFilter
 		
 		req.setAttribute( "queryRecuperata", querySql );
 		chain.doFilter( req, resp );
-		System.out.println( this._filterConfig.getFilterName() +"\n"
-				+ req.getSession().getAttribute( "JsonDataTableString" ) 
-				+ " - " + req.getSession().getAttribute( "DataTableQuery" ));
+//		System.out.println( this._filterConfig.getFilterName() +"\n" + req.getSession().getAttribute( "JsonDataTableString" ) + " - " + req.getSession().getAttribute( "DataTableQuery" ));
 	}
 	
 	/**
