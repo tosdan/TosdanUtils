@@ -136,7 +136,7 @@ public class UploadServletR01 extends HttpServlet
 
 		// returnQueryString prelevato da query string
 		if ( request.getParameter( "returnQueryString" ) != null ) {
-			returnQueryString = "?" + URLDecoder.decode( request.getParameter( "returnQueryString" ), "UTF-8" );
+			this.returnQueryString = "?" + URLDecoder.decode( request.getParameter( "returnQueryString" ), "UTF-8" );
 		}
 		
 //		System.out.println( "returnQueryString -> "+returnQueryString );
@@ -147,7 +147,7 @@ public class UploadServletR01 extends HttpServlet
 			urlChiamante = urlChiamante.substring( 0, urlChiamante.lastIndexOf( "?" ) );
 		}
 
-		response.sendRedirect( urlChiamante + returnQueryString );
+		response.sendRedirect( urlChiamante + this.returnQueryString );
 		
 	}
 	

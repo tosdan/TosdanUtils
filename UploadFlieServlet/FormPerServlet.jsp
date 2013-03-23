@@ -1,7 +1,4 @@
-<%@page import="java.util.regex.Matcher"%>
-<%@page import="java.util.regex.Pattern"%>
-<%@page import="java.util.GregorianCalendar"%>
-<%@page import="java.util.Enumeration"%>
+<?xml version="1.0" encoding="ISO-8859-1" ?>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -15,10 +12,13 @@
   	width: 300px;
   }
  </style>
+ <script type="text/javascript">
+ 	console.log("${ pageContext.request.contextPath }");
+ </script>
 </head>
 <body>
 
-	<form action="<%= application.getContextPath() %>/UploadServlet?returnQueryString=prova%3Dciao&upload-path=d:/temp/upsrvlt/" enctype="multipart/form-data" method="post">
+	<form action="${ pageContext.request.contextPath }/UploadServlet?returnQueryString=prova%3Dciao&upload-path=d:/temp/upsrvlt/" enctype="multipart/form-data" method="post">
 		<div>
 			<h2>UploadFlieServlet Demo</h2>
 			<p>${ sessionScope["UploadServlet-result"] } &nbsp;</p>

@@ -63,7 +63,7 @@
   <servlet>
     <description></description>
     <servlet-name>UploadServlet</servlet-name>
-    <servlet-class>com.github.tosdan.utils.servlets.UploadServletR01</servlet-class>
+    <servlet-class>com.github.tosdan.beta.utils.servlets.UploadServletR01</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>UploadServlet</servlet-name>

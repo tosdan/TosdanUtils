@@ -42,6 +42,7 @@ public class AuthFilter implements Filter
 			mapUsefulParams.put( userIDIdentifier, sUserID );
 			chain.doFilter( req, response );
 		} else {
+			response.setContentType( "text/html; charset=ISO-8859-1" );
 			request.getRequestDispatcher(warnPage).include(request, response);
 		}
 	}

@@ -3,10 +3,6 @@ package org.apache.jsp.UploadFlieServlet;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.GregorianCalendar;
-import java.util.Enumeration;
 
 public final class FormPerServlet_jsp extends org.apache.jasper.runtime.HttpJspBase
     implements org.apache.jasper.runtime.JspSourceDependent {
@@ -54,10 +50,7 @@ public final class FormPerServlet_jsp extends org.apache.jasper.runtime.HttpJspB
       out = pageContext.getOut();
       _jspx_out = out;
 
-      out.write("\r\n");
-      out.write("\r\n");
-      out.write("\r\n");
-      out.write("\r\n");
+      out.write("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\r\n");
       out.write("\r\n");
       out.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n");
       out.write("<html xmlns=\"http://www.w3.org/1999/xhtml\" >\r\n");
@@ -70,6 +63,11 @@ public final class FormPerServlet_jsp extends org.apache.jasper.runtime.HttpJspB
       out.write("  \twidth: 300px;\r\n");
       out.write("  }\r\n");
       out.write(" </style>\r\n");
+      out.write(" <script type=\"text/javascript\">\r\n");
+      out.write(" \tconsole.log('");
+      out.write((java.lang.String) org.apache.jasper.runtime.PageContextImpl.proprietaryEvaluate("${ pageContext.request.contextPath }", java.lang.String.class, (PageContext)_jspx_page_context, null, false));
+      out.write("');\r\n");
+      out.write(" </script>\r\n");
       out.write("</head>\r\n");
       out.write("<body>\r\n");
       out.write("\r\n");
