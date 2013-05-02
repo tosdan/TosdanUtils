@@ -123,7 +123,7 @@ public class MapFormat
 				matcher.reset(riga);
 				// finche' nella riga trova un match
 		        while ( matcher.find() ) {
-		            String sDaSostituire = matcher.group(); 	// pus' esser 	-> ${stringaDaSostituire} oppure ${stringaDaSostituire, integer}
+		            String sDaSostituire = matcher.group(); 	// puo' esser 	-> ${stringaDaSostituire} oppure ${stringaDaSostituire, integer}
 		            String chiaveSostituto = matcher.group(1); 	// sempre 		-> "stringaDaSostituire"
 		            String type = matcher.group(4);		 		// se presente	-> "integer"
 		            Object objSostituto = this.parametri.get(chiaveSostituto);//-> Null oppure Integer, Boolean o String

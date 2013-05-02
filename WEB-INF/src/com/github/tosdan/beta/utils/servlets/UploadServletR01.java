@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.URLDecoder;
 //import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -97,28 +96,24 @@ public class UploadServletR01 extends HttpServlet
 		}
 
 		try { // Parse della request
-			@SuppressWarnings( "rawtypes" )
-			List formItems = upload.parseRequest( request );
-			@SuppressWarnings( "rawtypes" )
-			Iterator iter = formItems.iterator();
+			@SuppressWarnings( { "unchecked" } )
+			List<FileItem> formItems = upload.parseRequest( request );
 
-			// iterates over form's fields
-			while ( iter.hasNext() ) {
-				FileItem item = ( FileItem ) iter.next();
+			for( FileItem oggettoRequest : formItems ) {
 				
-				if ( !item.isFormField() && !item.getName().equals("") ) { // processes only fields that are not form fields
-					String fileName = new File( item.getName() ).getName();
-					String filePath = this.uploadPath + "/" + fileName;
-					File storeFile = new File( filePath );
+				if ( !oggettoRequest.isFormField() && !oggettoRequest.getName().equals("") ) { // processes only fields that are not form fields
+					String fileName = oggettoRequest.getName();
+					String fileAbsPath = this.uploadPath + "/" + fileName;
+					File fileToStore = new File( fileAbsPath );
 					
-					item.write( storeFile ); // saves the file on disk
-				} else if ( item.isFormField() ) {
-					String fieldName = item.getFieldName();
-					reqParams.put( fieldName, item.getString() );
+					oggettoRequest.write( fileToStore ); // saves the file on disk
+				} else if ( oggettoRequest.isFormField() ) {
+					String fieldName = oggettoRequest.getFieldName();
+					reqParams.put( fieldName, oggettoRequest.getString() );
 //					System.out.println( "Nome campo: " + fieldName + " - Valore: " + item.getString() );
 					
 					if ( fieldName.equalsIgnoreCase( "returnQueryString" ) ) { // returnQueryString prelevato da campo input del form
-						this.returnQueryString = "?" + item.getString();
+						this.returnQueryString = "?" + oggettoRequest.getString();
 					}
 				} else {
 //					System.out.println( "Campo file che non e' stato compilato: " + item.getFieldName() + " ->'" + item.getString()+"'" );
