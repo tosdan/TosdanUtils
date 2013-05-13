@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.DbUtils;
-import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
 import org.apache.commons.dbutils.handlers.ArrayListHandler;
@@ -17,24 +16,51 @@ import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 
 
-
+/**
+ * 
+ * @author Daniele
+ *
+ */
 public class BasicDAO
 {
 	private DataSource dataSource;
 	private ConnectionProvider provider;
 	private Connection conn;
 	
+	/**
+	 * 
+	 * @param dataSource
+	 */
+	@Deprecated
 	public BasicDAO( DataSource dataSource ) {
 		this.dataSource = dataSource;
 	}
 
+	/**
+	 * 
+	 * @param provider
+	 */
 	public BasicDAO( ConnectionProvider provider ) {
 		this.provider = provider;
 	}
+	
+	/**
+	 * 
+	 * @param conn
+	 */
+	public BasicDAO( Connection conn ) {
+		this.conn = conn;
+	}
 
+	/**
+	 * 
+	 * @param sql
+	 * @return
+	 * @throws BasicDAOException
+	 */
 	public int update( String sql ) throws BasicDAOException {
 		Connection conn = this.getConnection();
-		QueryRunner run = new QueryRunner();
+		MyQueryRunner run = new MyQueryRunner();
 		
 		try {
 			return run.update( conn, sql );
@@ -46,6 +72,12 @@ public class BasicDAO
 	}
 	
 
+	/**
+	 * 
+	 * @param sql
+	 * @return
+	 * @throws BasicDAOException
+	 */
 	public List<Map<String, Object>> runAndGetMapList(String sql)
 			throws BasicDAOException 
 	{
@@ -53,6 +85,12 @@ public class BasicDAO
 		return ( List<Map<String, Object>> ) runAndGetSomething( sql, rsh );
 	}
 	
+	/**
+	 * 
+	 * @param sql
+	 * @return
+	 * @throws BasicDAOException
+	 */
 	public Map<String, Object> runAndGetMap(String sql) 
 			throws BasicDAOException 
 	{
@@ -61,6 +99,12 @@ public class BasicDAO
 	}
 	
 
+	/**
+	 * 
+	 * @param sql
+	 * @return
+	 * @throws BasicDAOException
+	 */
 	public List<Object[]> runAndGetArrayList(String sql) 
 			throws BasicDAOException 
 	{
@@ -69,6 +113,12 @@ public class BasicDAO
 	}
 	
 
+	/**
+	 * 
+	 * @param sql
+	 * @return
+	 * @throws BasicDAOException
+	 */
 	public Object[] runAndGetArray(String sql) 
 			throws BasicDAOException 
 	{
@@ -76,6 +126,13 @@ public class BasicDAO
 		return ( Object[] ) runAndGetSomething( sql, rsh );
 	}
 	
+	/**
+	 * 
+	 * @param sql
+	 * @param columnToBeKey
+	 * @return
+	 * @throws BasicDAOException
+	 */
 	public Map<String, Map<String, Object>> runAndGetKeyedMap(String sql, String columnToBeKey) throws BasicDAOException 
 	{
 		ResultSetHandler<Map<String, Map<String, Object>>> rsh = new KeyedHandler<String>( columnToBeKey );
@@ -83,11 +140,18 @@ public class BasicDAO
 	}
 	
 	
+	/**
+	 * 
+	 * @param sql
+	 * @param rsh
+	 * @return
+	 * @throws BasicDAOException
+	 */
 	public Object runAndGetSomething(String sql, ResultSetHandler<? extends Object> rsh ) 
 			throws BasicDAOException 
 	{
 		Connection conn = this.getConnection();
-		QueryRunner run = new QueryRunner();
+		MyQueryRunner run = new MyQueryRunner();
 		
 		try {
 			return run.query( conn, sql, rsh );
@@ -125,7 +189,7 @@ public class BasicDAO
 				}
 				
 			} else {
-				throw new BasicDAOException("Datasource e ConnectionProvider sono stati entrambi forniti nulli.");
+				throw new BasicDAOException("Non è stata fornita una sorgente valida per stabilire una connessione. Datasource, ConnectinProvider o Connection sono null.");
 			}
 		}
 

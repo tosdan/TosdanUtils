@@ -24,13 +24,13 @@
 			success: function ( data, textStatus, jqXHR ) {
 				 console.log('success');
 					console.log(data);
-					console.log(jqXHR);
-					console.log(textStatus);
+// 					console.log(jqXHR);
+// 					console.log(textStatus);
 			} ,
 			complete: function (jqXHR, textStatus) {
 				console.log('complete');
-				console.log(jqXHR);
-				console.log(jqXHR.responseText);
+// 				console.log(jqXHR);
+// 				console.log(jqXHR.responseText);
 			}
 		});
 	}

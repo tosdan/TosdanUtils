@@ -77,13 +77,13 @@ public final class sql_002dmanager_002dconf_jsp extends org.apache.jasper.runtim
       out.write("\t\t\tsuccess: function ( data, textStatus, jqXHR ) {\r\n");
       out.write("\t\t\t\t console.log('success');\r\n");
       out.write("\t\t\t\t\tconsole.log(data);\r\n");
-      out.write("\t\t\t\t\tconsole.log(jqXHR);\r\n");
-      out.write("\t\t\t\t\tconsole.log(textStatus);\r\n");
+      out.write("// \t\t\t\t\tconsole.log(jqXHR);\r\n");
+      out.write("// \t\t\t\t\tconsole.log(textStatus);\r\n");
       out.write("\t\t\t} ,\r\n");
       out.write("\t\t\tcomplete: function (jqXHR, textStatus) {\r\n");
       out.write("\t\t\t\tconsole.log('complete');\r\n");
-      out.write("\t\t\t\tconsole.log(jqXHR);\r\n");
-      out.write("\t\t\t\tconsole.log(jqXHR.responseText);\r\n");
+      out.write("// \t\t\t\tconsole.log(jqXHR);\r\n");
+      out.write("// \t\t\t\tconsole.log(jqXHR.responseText);\r\n");
       out.write("\t\t\t}\r\n");
       out.write("\t\t});\r\n");
       out.write("\t}\r\n");
