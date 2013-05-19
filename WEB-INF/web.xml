@@ -80,8 +80,12 @@
 		<servlet-name>SqlManagerConfig</servlet-name>
         <servlet-class>com.github.tosdan.beta.utils.servlets.SqlManagerConfig</servlet-class>
         <init-param>
-	        <param-name>SqlManagerServletConf_File</param-name>
+	        <param-name>SqlManagerConf_File</param-name>
 	        <param-value>/WEB-INF/WebAppsConfigFiles/SqlManager/SqlManagerServletConf.properties</param-value>
+	    </init-param>        
+        <init-param>
+	        <param-name>SqlManagerServletConf_File</param-name>
+	        <param-value>/WEB-INF/WebAppsConfigFiles/SqlManager/SqlManagerServletQueriesRepos.properties</param-value>
 	    </init-param>        
         <init-param>
 	        <param-name>SqlManagerServletConf_Path</param-name>

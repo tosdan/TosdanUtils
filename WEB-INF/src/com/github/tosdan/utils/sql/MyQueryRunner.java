@@ -340,59 +340,60 @@ import org.apache.commons.dbutils.ResultSetHandler;
 	            throw new SQLException("Null ResultSetHandler");
 	        }
 	        
-	        ResultSet rs = null;
-	        T result = null;
-	        rs = this.getResultset( conn, sql, params );
-
-	        try {
-	            result = rsh.handle(rs);
-
-	        } catch (SQLException e) {
-	            this.rethrow(e, sql, params);
-
-	        } finally {
-	            try {
-	                close(rs);
-	            } finally {
-//	                close(stmt);
-	                if (closeConn) {
-	                    close(conn);
-	                }
-	            }
-	        }
+	        T result = this.getResult( conn, closeConn, sql, rsh, params );
 
 	        return result;
 	    }
 
-	    private ResultSet getResultset(Connection conn, String sql, Object... params) throws SQLException {
+	    private <T> T getResult(Connection conn, boolean closeConn, String sql, ResultSetHandler<T> rsh, Object... params) throws SQLException {
+	        T result = null; 
 	    	ResultSet rs = null;
 	    	if ( params == null ) {
-	    		rs = this.getResultset( conn, sql );
+	    		result = this.getResult( conn, closeConn, sql, rsh );
 	    	} else {
 		       	PreparedStatement stmt = null;
 	            try {
 					stmt = this.prepareStatement(conn, sql);
 					this.fillStatement(stmt, params);
 					rs = this.wrap(stmt.executeQuery());
+		            result = rsh.handle(rs);
 				} catch ( SQLException e ) {
 		            this.rethrow(e, sql, params);
+				} finally {
+		            try {
+		                close(rs);
+		            } finally {
+		                close(stmt);
+		                if (closeConn) {
+		                    close(conn);
+		                }
+		            }
 				}
-	            close(stmt);
 	    	}
-	        return rs;  
+	        return result;  
 	    }
 	    
-	    private ResultSet getResultset(Connection conn, String sql) throws SQLException {
+	    private <T> T getResult(Connection conn, boolean closeConn, String sql, ResultSetHandler<T> rsh) throws SQLException {
+	        T result = null; 
 	       	Statement stmt = null;
 	       	ResultSet rs = null;
 			try {
 				stmt = conn.createStatement();
 				rs = this.wrap( stmt.executeQuery(sql) );
+	            result = rsh.handle(rs);
 			} catch ( SQLException e ) {
 	            this.rethrow(e, sql);
+			} finally {
+	            try {
+	                close(rs);
+	            } finally {
+	                close(stmt);
+	                if (closeConn) {
+	                    close(conn);
+	                }
+	            }
 			}
-	       	close(stmt);
-	    	return rs;
+	    	return result;
 	    }
 	    
 	    /**
@@ -538,8 +539,9 @@ import org.apache.commons.dbutils.ResultSetHandler;
 					rows = stmt.executeUpdate();
 				} catch ( SQLException e ) {
 		            this.rethrow(e, sql, params);
+				} finally {
+					close(stmt);
 				}
-	            close(stmt);
 	    	}
 	        return rows;  
 	    }
@@ -552,8 +554,9 @@ import org.apache.commons.dbutils.ResultSetHandler;
 				rows = stmt.executeUpdate(sql);
 			} catch ( SQLException e ) {
 	            this.rethrow(e, sql);
+			} finally {
+				close(stmt);
 			}
-	       	close(stmt);
 	    	return rows;
 	    }
 	    
