@@ -60,7 +60,7 @@ public class SqlManagerFilter extends BasicFilter
 		allParams.putAll( this._requestMultipleValuesParamsMap );
 		allParams.putAll( this._initConfigParamsMap );
 		allParams.putAll( this._requestAttributes );
-		allParams.putAll( this.getSessionUsefulParams(req) );
+		allParams.putAll( this.getParametriAggiuntivi(req) );
 		
 		if ( !_booleanSafeParse(req.getParameter("lasciaQueryParametrica")) )
 		{
@@ -79,20 +79,20 @@ public class SqlManagerFilter extends BasicFilter
 		}
 		/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 		
-		req.setAttribute( "queryRecuperata", querySql );
+		req.setAttribute( "queryRecuperata", querySql ); // per retro compatibilita'
+		req.setAttribute( nomeSQL, querySql );
 		chain.doFilter( req, resp );
 //		System.out.println( this._filterConfig.getFilterName() +"\n" + req.getSession().getAttribute( "JsonDataTableString" ) + " - " + req.getSession().getAttribute( "DataTableQuery" ));
 	}
 	
-	protected Map<String, Object> getSessionUsefulParams(HttpServletRequest req) {
-		HttpSession session = req.getSession();	
-		String usefulSessionParamsIdentifier = this._initConfigParamsMap.get( "UsefullSessionParamsIdentifier" );
+	protected Map<String, Object> getParametriAggiuntivi(HttpServletRequest req) {
+		String idParametriAggiuntiviDaSessione = req.getParameter( "SqlMngrSessionCustomParamsMap" );
 		@SuppressWarnings( "unchecked" )
-		Map<String, Object> mapUsefulParams = (Map<String, Object>) session.getAttribute(usefulSessionParamsIdentifier);
-		if (mapUsefulParams == null) 
-			mapUsefulParams = new HashMap<String, Object>();
+		Map<String, Object> mappaParametriAggiuntivi = (Map<String, Object>) req.getSession().getAttribute(idParametriAggiuntiviDaSessione);
+		if (mappaParametriAggiuntivi == null) 
+			mappaParametriAggiuntivi = new HashMap<String, Object>();
 		
-		return mapUsefulParams;
+		return mappaParametriAggiuntivi;
 	}
 	
 	
