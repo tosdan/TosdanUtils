@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
@@ -42,6 +43,9 @@ public class SqlManagerConfig extends BasicHttpServlet
 	protected void doService( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
 	{
 //		this.stampaMappa(this._initConfigParamsMap);
+//		this.stampaMappa( this._requestParamsMap );
+		System.out.println( this.get_requestMultipleValuesParamsMap( req ) );
+		System.out.println( this.get_requestParamsMap( req ) );
 		this.configPath = this._initConfigParamsMap.get( "SqlManagerServletConf_Path" );	
 		this.configFileName =  this._initConfigParamsMap.get( "SqlManagerServletConf_File" );
 		this.configDir = new File( this._appRealPath + this.configPath );
@@ -96,7 +100,7 @@ public class SqlManagerConfig extends BasicHttpServlet
 	 * 
 	 * @param mappa
 	 */
-	protected void stampaMappa(HashMap<String, String> mappa) {
+	protected void stampaMappa(Map<String, String> mappa) {
 		Set<Entry<String, String>> mappaEntrySet = mappa.entrySet();		
 		for( Entry<String, String> entry : mappaEntrySet ) 
 			System.out.println( entry.getKey() + " - " + entry.getValue());

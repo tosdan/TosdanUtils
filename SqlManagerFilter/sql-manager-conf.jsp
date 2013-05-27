@@ -14,13 +14,13 @@
 
 <SCRIPT type="text/javascript">
 	var context = '${ pageContext.request.contextPath }' ,
-		address = context+'/servlet/sqlmanagerconf/test' ;
+		address = context+'/servlet/sqlmanagerconf/test?dato=ciao&dato=addio' ;
 	
 	function test() {
 		$.ajax({
 			url: address ,
 			type: 'post' ,
-			data: { } ,
+// 			data: { dato: 'ciao', dato: 'addio' } ,
 			success: function ( data, textStatus, jqXHR ) {
 				 console.log('success');
 					console.log(data);

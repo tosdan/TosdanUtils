@@ -67,13 +67,13 @@ public final class sql_002dmanager_002dconf_jsp extends org.apache.jasper.runtim
       out.write("\tvar context = '");
       out.write((java.lang.String) org.apache.jasper.runtime.PageContextImpl.proprietaryEvaluate("${ pageContext.request.contextPath }", java.lang.String.class, (PageContext)_jspx_page_context, null, false));
       out.write("' ,\r\n");
-      out.write("\t\taddress = context+'/servlet/sqlmanagerconf/test' ;\r\n");
+      out.write("\t\taddress = context+'/servlet/sqlmanagerconf/test?dato=ciao&dato=addio' ;\r\n");
       out.write("\t\r\n");
       out.write("\tfunction test() {\r\n");
       out.write("\t\t$.ajax({\r\n");
       out.write("\t\t\turl: address ,\r\n");
       out.write("\t\t\ttype: 'post' ,\r\n");
-      out.write("\t\t\tdata: { } ,\r\n");
+      out.write("// \t\t\tdata: { dato: 'ciao', dato: 'addio' } ,\r\n");
       out.write("\t\t\tsuccess: function ( data, textStatus, jqXHR ) {\r\n");
       out.write("\t\t\t\t console.log('success');\r\n");
       out.write("\t\t\t\t\tconsole.log(data);\r\n");
