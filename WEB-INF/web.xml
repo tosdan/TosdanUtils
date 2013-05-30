@@ -7,6 +7,13 @@
 	id="WebApp_ID" 
 	version="2.5">
 	
+<!-- Tomcat 5.5 (supporto terminato Sett 2012) Support Servlet 2.4 -->
+<!-- Tomcat 6 Support Servlet 2.5 -->
+<!-- Tomcat 7 Support Servlet 3 -->
+<!-- xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" -->
+<!-- version="3.0"-->
+
+    
 	<display-name>TosdanUtils</display-name>
   
 	<welcome-file-list>
@@ -32,10 +39,6 @@
 			<param-name>userIDIdentifier</param-name>
 			<param-value>UserID</param-value>
 		</init-param>
-		<init-param>
-			<param-name>UsefullSessionParamsIdentifier</param-name>
-			<param-value>MappaParametriUtili</param-value>
-		</init-param>	
 		<init-param>
 			<param-name>warnPage</param-name>
 			<param-value>/sessionWarn.jsp</param-value>
@@ -65,7 +68,7 @@
 	</filter-mapping>
 	<filter-mapping>
 		<filter-name>AuthFilter</filter-name>
-		<url-pattern>/niente/*</url-pattern>
+		<url-pattern>/jsp/AuthFilter/*</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
 		<filter-name>SqlManagerFilter</filter-name>
