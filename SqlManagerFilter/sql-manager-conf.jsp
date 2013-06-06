@@ -6,11 +6,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Configurazione Sql Manager</title>
-<LINK rel="stylesheet" href="../css-3rd-party/bootstrap.css"/>
-<LINK rel="stylesheet" href="../css-3rd-party/bootstrap_integration.css"/>
+<link rel="stylesheet" href="../css-3rd-party/bootstrap.css"/>
+<link rel="stylesheet" href="../css-3rd-party/bootstrap_integration.css"/>
 
-<SCRIPT type="text/javascript" src="../js-3rd-party/jquery-1.9.1.js"></SCRIPT>
-<SCRIPT type="text/javascript" src="../js-3rd-party/bootstrap.js"></SCRIPT>
+<script type="text/javascript" src="../js-3rd-party/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="../js-3rd-party/bootstrap.js"></script>
 
 <SCRIPT type="text/javascript">
 	var context = '${ pageContext.request.contextPath }' ,

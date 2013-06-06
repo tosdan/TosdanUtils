@@ -82,6 +82,15 @@
 
   
 	<servlet>
+		<servlet-name>DownloadServlet</servlet-name>
+        <servlet-class>com.github.tosdan.beta.utils.servlets.DownloadServlet</servlet-class>
+        <init-param>
+        	<param-name>dummy</param-name>
+        	<param-value>dummy</param-value>
+       	</init-param>
+	</servlet>
+  
+	<servlet>
 		<servlet-name>QueryRunnerServlet</servlet-name>
         <servlet-class>com.github.tosdan.utils.servlets.QueryRunnerServlet</servlet-class>
         <init-param>
@@ -156,6 +165,20 @@
 		<servlet-class>com.github.tosdan.beta.utils.servlets.UploadServletR01</servlet-class>
 	</servlet>
 	
+	<servlet>
+		<description>Test per jQueryFileDownload.js</description>
+		<servlet-name>JqueryFileDownloadJSTests</servlet-name>
+		<servlet-class>com.github.tosdan.tests.JqueryFileDownloadJSTests</servlet-class>
+	</servlet>
+	
+    <servlet-mapping>
+        <servlet-name>JqueryFileDownloadJSTests</servlet-name>
+        <url-pattern>/servlet/jqdownjs/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DownloadServlet</servlet-name>
+        <url-pattern>/servlet/download/*</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>SqlManagerServlet</servlet-name>
         <url-pattern>/servlet/sqlmanager/*</url-pattern>

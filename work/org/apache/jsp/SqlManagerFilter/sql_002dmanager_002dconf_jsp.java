@@ -57,11 +57,11 @@ public final class sql_002dmanager_002dconf_jsp extends org.apache.jasper.runtim
       out.write("<head>\r\n");
       out.write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\r\n");
       out.write("<title>Configurazione Sql Manager</title>\r\n");
-      out.write("<LINK rel=\"stylesheet\" href=\"../css-3rd-party/bootstrap.css\"/>\r\n");
-      out.write("<LINK rel=\"stylesheet\" href=\"../css-3rd-party/bootstrap_integration.css\"/>\r\n");
+      out.write("<link rel=\"stylesheet\" href=\"../css-3rd-party/bootstrap.css\"/>\r\n");
+      out.write("<link rel=\"stylesheet\" href=\"../css-3rd-party/bootstrap_integration.css\"/>\r\n");
       out.write("\r\n");
-      out.write("<SCRIPT type=\"text/javascript\" src=\"../js-3rd-party/jquery-1.9.1.js\"></SCRIPT>\r\n");
-      out.write("<SCRIPT type=\"text/javascript\" src=\"../js-3rd-party/bootstrap.js\"></SCRIPT>\r\n");
+      out.write("<script type=\"text/javascript\" src=\"../js-3rd-party/jquery-1.9.1.js\"></script>\r\n");
+      out.write("<script type=\"text/javascript\" src=\"../js-3rd-party/bootstrap.js\"></script>\r\n");
       out.write("\r\n");
       out.write("<SCRIPT type=\"text/javascript\">\r\n");
       out.write("\tvar context = '");
