@@ -7,50 +7,30 @@
 <meta http-equiv="X-UA-Compatible" content="IE=8; IE=7; Chrome=1" /> <!-- Problemi con IE9+ quindi forzatura ad IE 8. Si potrebbe risovere anche impostando a get il methed di fileDownload.js -->
 <title>jQuery Download.js Tests</title>
 
-<!--[if lt IE 9]>
-	<script src="../../js-3rd-party/html5shiv.js"></script>
-<![endif]-->
 
+<!--[if lt IE 9]>	<script src="../../js-3rd-party/html5shiv.js"></script>		<![endif]-->
 <script type="text/javascript" src="[JS library]"></script>
 <!--[if (gte IE 6)&(lte IE 8)]>
    <script type="text/javascript" src="../../js-3rd-party/selectivizr.js"></script>
    <noscript><link rel="stylesheet" href="[fallback css]" /></noscript>
 <![endif]--> 
-
 <script type="text/javascript" src="../../js-3rd-party/jquery-1.9.1.js"></script>
 <script type="text/javascript" src="../../js-3rd-party/bootstrap.js"></script>
-
-<%--! 
-	// shim per abilitare jquery 2 solo su IE9+ 
-	<!--[if lt IE 9]>
-	    <script  type="text/javascript" src="../../js-3rd-party/jquery-1.9.1.js"></script>
-	<![endif]-->
-	<!--[if gte IE 9]><!-->
-	    <script  type="text/javascript" src="../../js-3rd-party/jquery-2.0.2.js"></script>
-	<!--<![endif]-->
---%>
-
-<!-- 
-	<script type="text/javascript" src="../../js-3rd-party/jquery-ui-1.10.0.custom.min.js"></script> 
--->
+<%-- // shim per abilitare jquery 2 solo su IE9+ 
+	<!--[if lt IE 9]>	<script  type="text/javascript" src="../../js-3rd-party/jquery-1.9.1.js"></script>			<![endif]-->
+	<!--[if gte IE 9]><!--> 	<script  type="text/javascript" src="../../js-3rd-party/jquery-2.0.2.js"></script> 	<!--<![endif]-->	--%>
 <script type="text/javascript" src="../../js-3rd-party/jquery-ui-1.10.3/ui/jquery-ui.js"></script>
+<!-- <script type="text/javascript" src="../../js-3rd-party/jquery-ui-1.10.0.custom.min.js"></script> 	-->
 <script type="text/javascript" src="../../js-3rd-party/jquery.fileDownload.js"></script>
 
 
-
 <link rel="stylesheet" href="../../css-3rd-party/bootstrap.css"/>
-<!--[if lt IE 8]>
-	<link rel="stylesheet" href="../../css-3rd-party/bootstrap-ie7buttonfix.css">
-<![endif]-->
-<!--[if IE 8]>
-	<link rel="stylesheet" href="../../css-3rd-party/bootstrap-ie8buttonfix.css">
-<![endif]-->
+<!--[if lt IE 8]>	<link rel="stylesheet" href="../../css-3rd-party/bootstrap-ie7buttonfix.css"> 	<![endif]-->
+<!--[if IE 8]>		<link rel="stylesheet" href="../../css-3rd-party/bootstrap-ie8buttonfix.css"> 	<![endif]-->
 <link rel="stylesheet" href="../../css-3rd-party/custom-theme/jquery-ui-1.10.0.custom.css"/>
 <link rel="stylesheet" href="../../css-3rd-party/custom-theme/jquery.ui.1.10.0.ie.css"/>
 <link rel="stylesheet" href="../../css-3rd-party/bootstrap_integration.css"/>
-<!-- 
-	<link rel="stylesheet" href="../../js-3rd-party/jquery-ui-1.10.3/themes/redmond/jquery-ui.css"/> 
--->
+<!-- <link rel="stylesheet" href="../../js-3rd-party/jquery-ui-1.10.3/themes/redmond/jquery-ui.css"/>		-->
 
 
 <script type="text/javascript">
@@ -103,6 +83,7 @@ $(function () {
 <!--     There was a problem generating your report, please try again. -->
 </div>
 	<div class="row span12"><p></p></div>
+	
 	<div class="row span12">
 		<div class="row span4 well">
 			<a class="fileDownloadCustomRichExperience" href="${pageContext.request.contextPath}/servlet/jqdownjs/getFile?richiesta=successful">Prova.xls (Success)</a>
@@ -114,7 +95,9 @@ $(function () {
 			<a class="fileDownloadCustomRichExperience" href="${pageContext.request.contextPath}/servlet/jqdownjs/getFile?richiesta=fileIntrovabile">Prova.xls (file introvabile)</a>
 		</div>
 	</div>
+	
 	<div class="row span12">
+	<h4>Test Css3 selectivizr.js per IE8/IE7</h4>
 		<div class="span2">
 			<table class="table table-striped ">
 				<tbody>
@@ -152,6 +135,7 @@ $(function () {
 			</table>
 		</div>
 	</div>
+	
 </body>
 
 </html>

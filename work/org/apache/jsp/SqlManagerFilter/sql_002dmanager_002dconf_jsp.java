@@ -52,7 +52,7 @@ public final class sql_002dmanager_002dconf_jsp extends org.apache.jasper.runtim
 
       out.write("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\r\n");
       out.write("\r\n");
-      out.write("<!DOCTYPE html\">\r\n");
+      out.write("<!DOCTYPE html>\r\n");
       out.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n");
       out.write("<head>\r\n");
       out.write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\r\n");
