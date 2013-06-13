@@ -1,13 +1,19 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="ISO-8859-1">
-<title>Indice</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Indice applicazioni</title>
 </head>
 <body>
-<div>
-<a href="./UploadFlieServlet/FormPerServlet.jsp">Pagina con Form che chiama una servlet</a> <br />
-<a href="./UploadFlieServlet/FormConScriptlet.jsp">Pagina con Form che gestisce tutto all'interno del jsp</a>
-</div>
+	<div>
+		<ul>
+			<li><a href="./UploadFlieServlet/FormPerServlet.jsp">Pagina con Form che chiama una servlet</a></li>
+			<li><a href="./UploadFlieServlet/FormConScriptlet.jsp">Pagina con Form che gestisce tutto all'interno del jsp</a></li>
+			<li><a href="./jsp/FolderTree/ftree.jsp">Folder Tree</a></li>
+		</ul>
+	</div>
 </body>
 </html>

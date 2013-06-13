@@ -9,10 +9,10 @@
 
 
 <!--[if lt IE 9]>	<script src="../../js-3rd-party/html5shiv.js"></script>		<![endif]-->
-<script type="text/javascript" src="[JS library]"></script>
 <!--[if (gte IE 6)&(lte IE 8)]>
-   <script type="text/javascript" src="../../js-3rd-party/selectivizr.js"></script>
-   <noscript><link rel="stylesheet" href="[fallback css]" /></noscript>
+	<script type="text/javascript" src="[JS library]"></script>
+	<script type="text/javascript" src="../../js-3rd-party/selectivizr.js"></script>
+	<noscript><link rel="stylesheet" href="[fallback css]" /></noscript>
 <![endif]--> 
 <script type="text/javascript" src="../../js-3rd-party/jquery-1.9.1.js"></script>
 <script type="text/javascript" src="../../js-3rd-party/bootstrap.js"></script>

@@ -31,7 +31,12 @@
 	    <filter-name>NoCacheFilter</filter-name>
 	    <filter-class>com.github.tosdan.utils.filters.NoCacheFilter</filter-class>
 	</filter>
-
+	<filter-mapping>	
+		<filter-name>NoCacheFilter</filter-name>
+		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping>
+	
+	
 	<filter>
 		<filter-name>AuthFilter</filter-name>
 		<filter-class>com.github.tosdan.utils.filters.AuthFilter</filter-class>		
@@ -43,7 +48,12 @@
 			<param-name>warnPage</param-name>
 			<param-value>/sessionWarn.jsp</param-value>
 		</init-param>		
-	</filter>
+	</filter>	
+	<filter-mapping>
+		<filter-name>AuthFilter</filter-name>
+		<url-pattern>/jsp/AuthFilter/*</url-pattern>
+	</filter-mapping>
+	
 	
 	<filter>
 		<filter-name>SqlManagerFilter</filter-name>
@@ -60,16 +70,7 @@
 	        <param-name>SqlManagerServletConf_Path</param-name>
 	        <param-value>/WEB-INF/WebAppsConfigFiles/SqlManager</param-value>
 	    </init-param>
-	</filter>
-	
-	<filter-mapping>	
-		<filter-name>NoCacheFilter</filter-name>
-		<url-pattern>*.jsp</url-pattern>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>AuthFilter</filter-name>
-		<url-pattern>/jsp/AuthFilter/*</url-pattern>
-	</filter-mapping>
+	</filter>	
 	<filter-mapping>
 		<filter-name>SqlManagerFilter</filter-name>
 		<url-pattern>/filter/sqlmanager/*</url-pattern>
@@ -78,9 +79,21 @@
 	</filter-mapping>
 
 
-<!-- ** FINE Filtri Inizio Servlets ** -->
+<!-- ** FINE Filtri ** Inizio Servlets ** -->
 
-  
+
+	<servlet>
+			<servlet-name>FolderTreeServlet</servlet-name>
+			<servlet-class>
+				com.github.tosdan.beta.utils.servlets.FolderTreeServlet
+			</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FolderTreeServlet</servlet-name>
+		<url-pattern>/servlet/ftree/*</url-pattern>
+	</servlet-mapping>
+	
+	
 	<servlet>
 		<servlet-name>DownloadServlet</servlet-name>
         <servlet-class>com.github.tosdan.beta.utils.servlets.DownloadServlet</servlet-class>
@@ -89,8 +102,13 @@
         	<param-value>dummy</param-value>
        	</init-param>
 	</servlet>
-  
-	<servlet>
+	<servlet-mapping>
+        <servlet-name>DownloadServlet</servlet-name>
+        <url-pattern>/servlet/download/*</url-pattern>
+    </servlet-mapping>
+    
+    
+    <servlet>
 		<servlet-name>QueryRunnerServlet</servlet-name>
         <servlet-class>com.github.tosdan.utils.servlets.QueryRunnerServlet</servlet-class>
         <init-param>
@@ -102,6 +120,11 @@
 	        <param-value>/WEB-INF/WebAppsLogFiles/QueryRunner/logQueryRunner.txt</param-value>
 	    </init-param>
 	</servlet>
+    <servlet-mapping>
+        <servlet-name>QueryRunnerServlet</servlet-name>
+        <url-pattern>/servlet/dtreply/*</url-pattern>
+    </servlet-mapping>
+    
     
     <servlet>
 		<servlet-name>SqlManagerConfig</servlet-name>
@@ -119,6 +142,11 @@
 	        <param-value>/WEB-INF/WebAppsConfigFiles/SqlManager</param-value>
 	    </init-param>
     </servlet>
+	<servlet-mapping>
+        <servlet-name>SqlManagerConfig</servlet-name>
+        <url-pattern>/servlet/sqlmanagerconf/*</url-pattern>
+    </servlet-mapping>
+    
     
 	<servlet>
         <servlet-name>ExcelOutServlet</servlet-name>
@@ -127,9 +155,14 @@
         	<param-name>dummy</param-name>
         	<param-value>dummy</param-value>
        	</init-param>
-    </servlet>
-        
-	<servlet>
+    </servlet>        
+	<servlet-mapping>
+        <servlet-name>ExcelOutServlet</servlet-name>
+        <url-pattern>/servlet/excelout/*</url-pattern>
+    </servlet-mapping>
+    
+    
+    <servlet>
         <servlet-name>DTReplyServlet</servlet-name>
         <servlet-class>com.github.tosdan.dataTableServerSide.DTReplyServlet</servlet-class>
         <init-param>
@@ -140,9 +173,15 @@
 	        <param-name>logFileName</param-name>
 	        <param-value>/WEB-INF/WebAppsLogFiles/DTReplyLog/logDtReplyServlet.txt</param-value>
 	    </init-param>
-    </servlet>
-        
-	<servlet>
+    </servlet>        
+	<servlet-mapping>
+        <servlet-name>DTReplyServlet</servlet-name>
+        <url-pattern>/filter/sqlmanager/dtreply/*</url-pattern>
+        <url-pattern>/servlet/dtreply/*</url-pattern>
+    </servlet-mapping>
+    
+    
+    <servlet>
         <servlet-name>SqlManagerServlet</servlet-name>
         <servlet-class>com.github.tosdan.utils.servlets.SqlManagerServlet</servlet-class>
         <init-param>
@@ -157,55 +196,32 @@
 	        <param-name>SqlManagerServletConf_Path</param-name>
 	        <param-value>/WEB-INF/WebAppsConfigFiles/SqlManager</param-value>
 	    </init-param>
-    </servlet> 
+	</servlet>
+	<servlet-mapping>
+        <servlet-name>SqlManagerServlet</servlet-name>
+        <url-pattern>/servlet/sqlmanager/*</url-pattern>
+    </servlet-mapping>
     
-	<servlet>
+    
+    <servlet>
 		<description>Servlet di Upload</description>
 		<servlet-name>UploadServlet</servlet-name>
 		<servlet-class>com.github.tosdan.beta.utils.servlets.UploadServletR01</servlet-class>
-	</servlet>
+	</servlet>	
+	<servlet-mapping>
+		<servlet-name>UploadServlet</servlet-name>
+		<url-pattern>/UploadServlet/*</url-pattern>
+	</servlet-mapping>
+	
 	
 	<servlet>
 		<description>Test per jQueryFileDownload.js</description>
 		<servlet-name>JqueryFileDownloadJSTests</servlet-name>
 		<servlet-class>com.github.tosdan.tests.JqueryFileDownloadJSTests</servlet-class>
 	</servlet>
-	
-    <servlet-mapping>
+	<servlet-mapping>
         <servlet-name>JqueryFileDownloadJSTests</servlet-name>
         <url-pattern>/servlet/jqdownjs/*</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DownloadServlet</servlet-name>
-        <url-pattern>/servlet/download/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>SqlManagerServlet</servlet-name>
-        <url-pattern>/servlet/sqlmanager/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>SqlManagerConfig</servlet-name>
-        <url-pattern>/servlet/sqlmanagerconf/*</url-pattern>
-    </servlet-mapping>    
-    <servlet-mapping>
-        <servlet-name>ExcelOutServlet</servlet-name>
-        <url-pattern>/servlet/excelout/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DTReplyServlet</servlet-name>
-        <url-pattern>/filter/sqlmanager/dtreply/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DTReplyServlet</servlet-name>
-        <url-pattern>/servlet/dtreply/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>QueryRunnerServlet</servlet-name>
-        <url-pattern>/servlet/dtreply/*</url-pattern>
-    </servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>UploadServlet</servlet-name>
-		<url-pattern>/UploadServlet/*</url-pattern>
-	</servlet-mapping>
   
 </web-app>

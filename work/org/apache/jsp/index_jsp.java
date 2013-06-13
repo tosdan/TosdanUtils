@@ -40,7 +40,7 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
 
 
     try {
-      response.setContentType("text/html");
+      response.setContentType("text/html; charset=UTF-8");
       pageContext = _jspxFactory.getPageContext(this, request, response,
       			null, true, 8192, true);
       _jspx_page_context = pageContext;
@@ -50,16 +50,26 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
       out = pageContext.getOut();
       _jspx_out = out;
 
+      out.write("\r\n");
       out.write("<!DOCTYPE html>\r\n");
       out.write("<html>\r\n");
       out.write("<head>\r\n");
-      out.write("<meta charset=\"ISO-8859-1\">\r\n");
-      out.write("<title>Indice</title>\r\n");
+      out.write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\r\n");
+      out.write("\r\n");
+      out.write("<title>Indice applicazioni</title>\r\n");
       out.write("</head>\r\n");
       out.write("<body>\r\n");
       out.write("<div>\r\n");
-      out.write("<a href=\"./UploadFlieServlet/FormPerServlet.jsp\">Pagina con Form che chiama una servlet</a> <br />\r\n");
-      out.write("<a href=\"./UploadFlieServlet/FormConScriptlet.jsp\">Pagina con Form che gestisce tutto all'interno del jsp</a>\r\n");
+      out.write("<ul>\r\n");
+      out.write("<li><a href=\"./UploadFlieServlet/FormPerServlet.jsp\">Pagina con Form che chiama una servlet</a></li>\r\n");
+      out.write("<li><a href=\"./UploadFlieServlet/FormConScriptlet.jsp\">Pagina con Form che gestisce tutto all'interno del jsp</a></li>\r\n");
+      out.write("<li><a href=\"./jsp/FolderTree/ftree.jsp\">Folder Tree</a></li>\r\n");
+      out.write("</ul>\r\n");
+      out.write("\r\n");
+      out.write("\r\n");
+      out.write("\r\n");
+      out.write("\r\n");
+      out.write("\r\n");
       out.write("</div>\r\n");
       out.write("</body>\r\n");
       out.write("</html>");
