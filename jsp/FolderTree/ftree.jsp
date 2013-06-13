@@ -40,7 +40,7 @@
 <link rel="stylesheet" href="../../css-3rd-party/bootstrap-fileupload.css"/>
 <!-- <link rel="stylesheet" href="../../js-3rd-party/jquery-ui-1.10.3/themes/redmond/jquery-ui.css"/>		-->
 <link rel="stylesheet" href="../../css-3rd-party/fuelux.css"/>
-<!-- <link rel="stylesheet" href="../../css-3rd-party/fuelux-integrations.css"/> -->
+<link rel="stylesheet" href="../../css-3rd-party/fuelux-integrations.css"/>
 	
 <script type="text/javascript">
 
@@ -56,14 +56,13 @@ $(function () {
 		data: function (options, callback) {
 			console.log('options: ');
 			console.log(options);
-			var dataSourceOptions = this;
+			var dataSrcOpts = this;
 			var additionalParams =  options.additionalParameters ? options.additionalParameters : {};
-			console.log( additionalParams );
+// 			console.log( additionalParams );
 			
 			$.ajax({
 				method: 'post' ,
-// 				async: false , 
-				url: dataSourceOptions._url ,
+				url: dataSrcOpts._url ,
 				data: additionalParams ,
 				success: function ( jsonData, textStatus, jqXHR ) {
 					var json = $.parseJSON(jsonData);
@@ -78,7 +77,7 @@ $(function () {
 	/* * * * */
 	
 	var dataSourceTree = new DataSourceTree({
-		data:  [ { name: "root" , type: "folder" , additionalParameters: { idfolder: '0' } } ],
+// 		data:  [ { name: "root" , type: "folder" , additionalParameters: { idfolder: '0' } } ],
 		url: '/TosdanUtils/servlet/ftree/' 
 	});
 	
@@ -105,38 +104,11 @@ $(function () {
 		console.log('Close Event: ', info);
 	});
 });
+
+
 </script>
 
 <style type="text/css">
-.fuelux .tree .tree-item .tree-dot {
-	position: absolute;
-	top: 1px;
-	left: 5px;
-	float: left;
-	display: inline-block;
-	width: 14px;
-	height: 14px;
-	margin-top: 1px;
-	line-height: 14px;
-	vertical-align: text-top;
-	background-image: url("../img/glyphicons-halflings.png");
-	background-repeat: no-repeat;
-}
-
-
-.fuelux .tree-dot {
-    width: 16px;
-    background-position: -384px -120px;
-}
-
-.fuelux .icon-ok {
-    width: 16px;
-    background-position: -408px -120px;
-}
-.fuelux .icon-folder-close {
-    width: 16px;
-    background-position: -384px -120px;
-}
 
 	
 </style>

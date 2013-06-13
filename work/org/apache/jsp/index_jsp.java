@@ -59,18 +59,13 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("<title>Indice applicazioni</title>\r\n");
       out.write("</head>\r\n");
       out.write("<body>\r\n");
-      out.write("<div>\r\n");
-      out.write("<ul>\r\n");
-      out.write("<li><a href=\"./UploadFlieServlet/FormPerServlet.jsp\">Pagina con Form che chiama una servlet</a></li>\r\n");
-      out.write("<li><a href=\"./UploadFlieServlet/FormConScriptlet.jsp\">Pagina con Form che gestisce tutto all'interno del jsp</a></li>\r\n");
-      out.write("<li><a href=\"./jsp/FolderTree/ftree.jsp\">Folder Tree</a></li>\r\n");
-      out.write("</ul>\r\n");
-      out.write("\r\n");
-      out.write("\r\n");
-      out.write("\r\n");
-      out.write("\r\n");
-      out.write("\r\n");
-      out.write("</div>\r\n");
+      out.write("\t<div>\r\n");
+      out.write("\t\t<ul>\r\n");
+      out.write("\t\t\t<li><a href=\"./UploadFlieServlet/FormPerServlet.jsp\">Pagina con Form che chiama una servlet</a></li>\r\n");
+      out.write("\t\t\t<li><a href=\"./UploadFlieServlet/FormConScriptlet.jsp\">Pagina con Form che gestisce tutto all'interno del jsp</a></li>\r\n");
+      out.write("\t\t\t<li><a href=\"./jsp/FolderTree/ftree.jsp\">Folder Tree</a></li>\r\n");
+      out.write("\t\t</ul>\r\n");
+      out.write("\t</div>\r\n");
       out.write("</body>\r\n");
       out.write("</html>");
     } catch (Throwable t) {
