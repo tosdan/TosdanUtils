@@ -13,6 +13,7 @@
 			<li><a href="./UploadFlieServlet/FormPerServlet.jsp">Pagina con Form che chiama una servlet</a></li>
 			<li><a href="./UploadFlieServlet/FormConScriptlet.jsp">Pagina con Form che gestisce tutto all'interno del jsp</a></li>
 			<li><a href="./jsp/FolderTree/ftree.jsp">Folder Tree</a></li>
+			<li><a href="./jsp/QueriesFormatter/qformatter.jsp">Folder Tree</a></li>
 		</ul>
 	</div>
 </body>
