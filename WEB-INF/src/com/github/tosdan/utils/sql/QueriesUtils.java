@@ -46,6 +46,20 @@ public class QueriesUtils
 	 * @param nomeQuery nome della sezione che contiene la query 
 	 * @param parametri mappa con i parametri da sostituire nella query
 	 * @param validator (opzionale) oggetto per validare, tramite verifiche dei tipi, i parametri passati per compilare la query
+	 * @return
+	 * @throws QueriesUtilsException
+	 */
+	public static String compilaQueryDaInputStream(InputStream is, String nomeQuery, Map<String, Object> parametri, MapFormatTypeValidator validator) 
+			throws QueriesUtilsException  {
+		return compilaQueryDaInputStream( is, nomeQuery, parametri, validator, null );
+	}
+	
+	/**
+	 * 
+	 * @param is (opzionale se si passa direttamente un <code>File</code>) InputStream che contiene la query
+	 * @param nomeQuery nome della sezione che contiene la query 
+	 * @param parametri mappa con i parametri da sostituire nella query
+	 * @param validator (opzionale) oggetto per validare, tramite verifiche dei tipi, i parametri passati per compilare la query
 	 * @param nomeFile (opzionale se si passa direttamente un <code>InputStream</code>) nome file per lo storage delle queies
 	 * @return
 	 * @throws QueriesUtilsException
@@ -56,6 +70,7 @@ public class QueriesUtils
 		String contenutoFile = null;
 		try {
 			if (nomeFile != null)
+				// Se viene passato un file (percorso completo) l'eventuale InputStream passato verrebbe sovrasritto 
 				is = new FileInputStream( nomeFile );
 			contenutoFile = IOfrw.leggiInputStream( is );
 		} catch ( IOException e ) {
@@ -83,7 +98,7 @@ public class QueriesUtils
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated 
 	 * @param prop oggetto property con le associazione tra i nomi delle queries e il file repository in cui reperirle
 	 * @param queriesRepoFolderFullPath percorso completo in cui trovare il file repository delle queries
 	 * @param nomeQuery nome della sezione che contiene la query 
@@ -147,6 +162,7 @@ public class QueriesUtils
 	}
 	
 	/**
+	 * @deprecated
 	 * 
 	 * @param nomeFile File che contiene la query
 	 * @param nomeQuery nome della sezione che contiene la query 

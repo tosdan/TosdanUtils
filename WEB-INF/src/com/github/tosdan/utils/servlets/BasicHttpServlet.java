@@ -141,7 +141,8 @@ public abstract class BasicHttpServlet extends HttpServlet
 		while ( attributes.hasMoreElements() ) {
 			String attribName = (String) attributes.nextElement();
 			Object attriValue = req.getAttribute(attribName);
-			this._requestAttributes.put( attribName, attriValue  );
+			if (attriValue instanceof String)
+				this._requestAttributes.put( attribName, attriValue  );
 			this.reqLog += attribName+"=>"+attriValue+"\n";
 		}
 
