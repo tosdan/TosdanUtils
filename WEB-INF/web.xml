@@ -25,7 +25,21 @@
 		<welcome-file>default.jsp</welcome-file>
 	</welcome-file-list>
 
-
+	
+	<filter>
+		<filter-name>SqlLoaderFilter</filter-name>
+		<filter-class>com.github.tosdan.utils.filters.sqlLoader.SqlLoaderFilter</filter-class>        
+        <init-param>
+	        <param-name>SqlLoaderConf_File</param-name>
+	        <param-value>/WEB-INF/WebAppsConfigFiles/SqlLoader/SqlLoaderConf.yaml</param-value>
+	    </init-param>        
+	</filter>
+	<filter-mapping>
+		<filter-name>SqlLoaderFilter</filter-name>
+		<url-pattern>/filter/sqlloader/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>		
+	</filter-mapping>
 
 	<filter>
 	    <filter-name>NoCacheFilter</filter-name>
