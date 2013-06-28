@@ -1,5 +1,6 @@
 package com.github.tosdan.utils.sql;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import com.github.tosdan.utils.stringhe.TemplatePicker;
 /**
  * 
  * @author Daniele
- * @version 0.1.0-b2013-06-28
+ * @version 0.1.1-b2013-06-28
  */
 public class MassiveQueryCompiler
 {
@@ -114,12 +115,20 @@ public class MassiveQueryCompiler
 				
 				Map<String, Object> tmpSingleShiftAndConstantParamsMap = null;
 				for( Map<String, Object> singleShiftParamsMap : this.shiftingParamsMapsList ) {
-					
+					this.templateInputStram.mark( 0 );
+
 					tmpSingleShiftAndConstantParamsMap = new HashMap<String, Object>();
 					tmpSingleShiftAndConstantParamsMap.putAll( paramsMap );
 					tmpSingleShiftAndConstantParamsMap.putAll( singleShiftParamsMap ); // sovrascrive eventuali parametri con stessa chiave presenti nella mappa dei parametri costanti
 					
-					compiledQueriesList.add( this.getCompiledQuery(nomiQueriesDaCompilare[i], singleShiftParamsMap) );							
+					compiledQueriesList.add( this.getCompiledQuery(nomiQueriesDaCompilare[i], tmpSingleShiftAndConstantParamsMap) );
+					try {
+						this.templateInputStram.reset();
+					} catch ( IOException e ) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
 				}
 				
 			} else {

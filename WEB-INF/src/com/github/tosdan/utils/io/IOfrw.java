@@ -42,7 +42,6 @@ public class IOfrw
      		available = is.available();
      	}
      	
-     	bf.close();
      	return builder.toString();
 	}
 	

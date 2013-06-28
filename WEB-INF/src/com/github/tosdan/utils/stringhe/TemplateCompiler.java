@@ -8,14 +8,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
-
 import com.github.tosdan.utils.io.IOfrw;
 
 /**
  * 
  * @author Daniele
- * @version 1.1.0-b2013-06-28
+ * @version 1.1.1-b2013-06-28
  */
 public class TemplateCompiler
 {
@@ -193,9 +191,6 @@ public class TemplateCompiler
 					? "Impossibile leggere la sorgente dati." 
 					: "Errore nel tentativo di lettura del file '"+ templatesRepositoryFilename+"'";
 			throw new TemplateCompilerException( msg, e );
-			
-		} finally {
-			IOUtils.closeQuietly( is );
 			
 		}
 		
