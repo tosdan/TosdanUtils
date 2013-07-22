@@ -4,19 +4,47 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
+/**
+ * 
+ * @author Daniele
+ * @version 0.0.3-b2013-07-22
+ */
 public class StrUtils
 {
-	
-	public static <T extends Object> String safeToStr(T obj) {
+	/**
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	public static <T> String safeToStr(T obj) {
 		return safeToStr( obj, "" );
 	}
 	
-	public static <T extends Object> String safeToStr(T obj, String defaultString) {
+	/**
+	 * 
+	 * @param obj
+	 * @param defaultString
+	 * @return
+	 */
+	public static <T> String safeToStr(T obj, String defaultString) {
 		try {
 			return obj.toString();
 		} catch ( Exception e ) {
 			return defaultString;
 		}
+	}
+	
+	/**
+	 * 
+	 * @param args
+	 * @return 
+	 */
+	public static <T> String coalesce(T... args) {
+		for( int i = 0 ; i < args.length ; i++ ) {
+			if (args[i] != null)
+				return args[i].toString();
+		}
+		return null;
 	}
 	
 	/**

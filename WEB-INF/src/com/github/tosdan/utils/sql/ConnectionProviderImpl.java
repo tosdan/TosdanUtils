@@ -8,6 +8,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+/**
+ * Utilizzare ConnectionProviderImplV2 
+ * @author Daniele
+ *
+ */
 @Deprecated
 public class ConnectionProviderImpl implements ConnectionProvider
 {
