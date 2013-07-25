@@ -3,12 +3,13 @@ package com.github.tosdan.utils.stringhe;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Map;
 /**
  * Validator per T-SQL
  * @author Daniele
- *
+ * @version 0.2.0-b2013-07-25
  */
-public class MapFormatTypeValidatorSQL implements MapFormatTypeValidator
+public class MapFormatTypeValidatorSQL extends MapFormatAbstractTypeValidator
 {
 	public static void main( String[] args ) throws MapFormatTypeValidatorException
 	{
@@ -23,23 +24,34 @@ public class MapFormatTypeValidatorSQL implements MapFormatTypeValidator
 	
 	private DateFormat dateFormat;
 
-	/**
-	 * @return Elenco di tipi separati da pipe "|"
-	 */
 	@Override
-	public String getTypes() {
-		return "string|stringa|integer|numeric|boolean|compactDate|revCompDate|itaDate|revItaDate|date|reverseDate|table|tablePart|free";
+	public String[] getSupportedTypes() {
+		return new String [] {"string", "stringa", "integer", "numeric", "boolean", "compactDate", "revCompDate",
+								"itaDate", "revItaDate", "date", "reverseDate", "table", "tablePart", "free"};
 	}
 
 	/**
 	 * Effettua un opportuno controllo sul valore passato in base al tipo di dato e restituisce il valore tale com'era oppure opportunamente formattato 
-	 * @param source
-	 * @param type
-	 * @return
-	 * @throws MapFormatTypeValidatorException 
+	 * @param source sorgente da validare
+	 * @param type Tipo del parametro da validare
+	 * @return La stringa sorgente normalizzata
+	 * @throws MapFormatTypeValidatorException Se la stringa sorgente non e' conforme al tipo specificato o se non e' stato specificato il parametro type.
 	 */
 	@Override
 	public String validate(String source, String type) throws MapFormatTypeValidatorException {
+		return validate( source, type, null );
+	}
+	
+	/**
+	 * Effettua un opportuno controllo sul valore passato in base al tipo di dato e restituisce il valore tale com'era oppure opportunamente formattato 
+	 * @param source sorgente da validare
+	 * @param type Tipo del parametro da validare
+	 * @param customAttributes <i>Parametro non utilizzato</i>
+	 * @return La stringa sorgente normalizzata
+	 * @throws MapFormatTypeValidatorException Se la stringa sorgente non e' conforme al tipo specificato o se non e' stato specificato il parametro type.
+	 */
+	@Override
+	public String validate( String source, String type, Map<String, Object> customAttributes ) throws MapFormatTypeValidatorException {
 		String result = "";
 
         if ( type != null ) {
@@ -91,10 +103,10 @@ public class MapFormatTypeValidatorSQL implements MapFormatTypeValidator
         	else if ( type.equalsIgnoreCase("free") ) {
         		result = source;   
         	} else
-        		throw new MapFormatTypeValidatorException("Errore di validazione: il tipo di validazione "+ type +" e' sconosciuto.");
+        		throw new MapFormatTypeValidatorException("Errore di validazione: il tipo di validazione '"+ type +"' e' sconosciuto. Parametro source="+source);
         	
         } else {
-        	throw new MapFormatTypeValidatorException( "Nella stringa passata c'e' almeuno un parametro type mancante." );
+        	throw new MapFormatTypeValidatorException( "Parametro type mancante." );
         }
 		
 		return result;
@@ -128,5 +140,6 @@ public class MapFormatTypeValidatorSQL implements MapFormatTypeValidator
 	public static String quote(String input) {
 		return "'" + input.replaceAll( "'", "''" ) + "'";
 	}
+
 	
 }

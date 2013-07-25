@@ -8,9 +8,12 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+/**
+ * 
+ * @author Daniele
+ * @version 0.4.0-b2013-07-25
+ */
 public class MapFormat
 {
     public static void main( String[] args )
@@ -39,16 +42,16 @@ public class MapFormat
 		
 	}
 
-	// TODO metodi per personalizzazione sulla forma del placeholder: parentesi da usare e/o presenza del $ in testa
-	// TODO prendere spunto da qui per una NamedPreparedStatement, ma anche no...
-	private Pattern schema;
+	// TODO prendere spunto da qui per una NamedPreparedStatement... ma anche no.
+    
 	private boolean blankSeNull = false;
 	private boolean keepUnMatched = false;
 	private Map<String, ? extends Object> parametri;
 	private MapFormatTypeValidator typeValidator;
+	private String tipi;
+	private MapFormatMatcher matcher;
 
     /**
-     * @deprecated
      * 
      * @param template
      * @param params
@@ -75,30 +78,48 @@ public class MapFormat
     }
 
     /**
-     * @deprecated
      * 
      * @param parametri mappa contenente le stringhe di sostituizione per i vari segnaposto usati nel template 
      */
 	public MapFormat(Map<String, ? extends Object> parametri) {
-		this( parametri, null );
+		this( parametri, null, null );
 		
+	}
+	
+	/**
+	 * 
+	 * @param parametri mappa contenente le stringhe di sostituizione per i vari segnaposto usati nel template 
+	 * @param typeValidator oggetto che implementa metodi di controllo sui tipi specificati nel testo da sostituire
+	 */
+	public MapFormat(Map<String, ? extends Object> parametri, MapFormatTypeValidator typeValidator) {
+		this( parametri, typeValidator, null );
 	}
 	
     /**
      * 
      * @param parametri mappa contenente le stringhe di sostituizione per i vari segnaposto usati nel template 
      * @param typeValidator oggetto che implementa metodi di controllo sui tipi specificati nel testo da sostituire
+     * @param matcher
      */
-	public MapFormat(Map<String, ? extends Object> parametri, MapFormatTypeValidator typeValidator) {
+	public MapFormat(Map<String, ? extends Object> parametri, MapFormatTypeValidator typeValidator, MapFormatMatcher matcher) {
 		
 		this.parametri = parametri;
 		this.typeValidator = typeValidator;
-		String tipi = "";
+		
 		if (typeValidator != null)
-			tipi = typeValidator.getTypes();
+			this.tipi = typeValidator.getTypes();
 		
-		this.schema = Pattern.compile("\\$\\{([a-zA-Z_][a-zA-Z0-9_]*(\\.[a-zA-Z_][a-zA-Z0-9_]*)*)(,[ ]?(?i)(" + tipi + "))?\\}");
+		if (matcher == null) 
+			setMatcher( new MapFormatMatcherImpl("") );
+		else 
+			setMatcher( matcher );
 		
+	}
+	
+	public MapFormat setMatcher(MapFormatMatcher matcher) {
+		this.matcher = matcher;
+		this.matcher.setTipi(this.tipi);
+		return this;
 	}
 	
 	/**
@@ -109,7 +130,6 @@ public class MapFormat
 	@SuppressWarnings( "unchecked" )
 	public String format(String stringTemplate)
 	{
-		Matcher matcher = this.schema.matcher("");
 		String result = "";
 		StringReader sr = new StringReader( stringTemplate );
 		BufferedReader bf = new BufferedReader( sr );
@@ -119,36 +139,37 @@ public class MapFormat
 			while ( (riga = bf.readLine()) != null ) {
 				
 		        StringBuffer sb = new StringBuffer();
+		        matcher.reset( riga );
 		        
-				matcher.reset(riga);
-				// finche' nella riga trova un match
-		        while ( matcher.find() ) {
-		            String placeHolderDaRimpiazzare = matcher.group(); 	// puo' esser 	-> ${stringaDaSostituire} oppure ${stringaDaSostituire, integer}
-		            String strDentroAlPlaceHolder = matcher.group(1);	// sempre 		-> "stringaDaSostituire"
-		            String type = matcher.group(4);		 				// se presente	-> "integer"
+		        while ( matcher.find() ) { // <- Finche' nella riga trova un match
+		            
+		        	String placeHolderDaRimpiazzare = matcher.getPlaceHolderDaRimpiazzare();
+		            String strDentroAlPlaceHolder = matcher.getStrDentroAlPlaceHolder();
+		            String type = matcher.getType();
+		            Map<String, Object> customAttributes = matcher.getCustomAttributes();
+		            
 		            // La stringa del placeholder viene usata come chiave per trovare il valore sostitutivo nella mappa delle sostituzioni.
-		            Object objSostitutivo = this.parametri.get(strDentroAlPlaceHolder);//-> Null oppure Integer, Boolean o String...
+		            Object objSostitutivo = parametri.get(strDentroAlPlaceHolder);//-> Null oppure Integer, Boolean o String...
 		            
 		            // Se nessuna delle condizioni che seguono viene soddisfatta, non viene nemmeno effettuata
 		            // la sostituzione, perche' la sostituita rimarra' uguale al valore da sostituire
 		            String strSostituita = placeHolderDaRimpiazzare;
 		            
-		            // Se e' una lista: forma una sequenza con i valori sostitutivi separati da virgola.
+		            // Se e' una lista: forma una sequenza composta dai valori sostitutivi separati da virgola.
 		            if ( objSostitutivo instanceof List && !((List<Object>) objSostitutivo).isEmpty() ) {
 		            	strSostituita = "";
 		        		for( Object listElem : (List<Object>) objSostitutivo ) {
 		        			
-		        			if (! this.isTipoAmmesso(listElem) )
+		        			if (! isTipoAmmesso(listElem) )
 		        				continue;
 		        			
-		        			if ( !strSostituita.isEmpty() )
-		        				strSostituita += ", ";
+		        			strSostituita += strSostituita.isEmpty() ? "" : ", ";
 		        			
-		        			if ( this.typeValidator != null ) {
+		        			if ( typeValidator != null ) {
 		    		           	
 		        				try {
 		    		           		
-									strSostituita += this.typeValidator.validate( listElem.toString(), type );
+									strSostituita += typeValidator.validate( listElem.toString(), type, customAttributes );
 									
 								} catch ( MapFormatTypeValidatorException e ) {
 									throw new MapFormatException( "Errore in validazione per '" +listElem.toString() + "'. " + e.getMessage(), e );
@@ -158,13 +179,13 @@ public class MapFormat
 		        				strSostituita += listElem.toString();
 		        		}
 		        	// se il valore con cui sostituire il parametro non e' nullo (ed e' un oggetto ammesso)
-		            } else if ( this.isTipoAmmesso(objSostitutivo) ) {
+		            } else if ( isTipoAmmesso(objSostitutivo) ) {
 		            	
-			            if ( this.typeValidator != null ) {
+			            if ( typeValidator != null ) {
 			            	
 			            	try {
 			            		
-								strSostituita = this.typeValidator.validate( objSostitutivo.toString(), type );
+								strSostituita = typeValidator.validate( objSostitutivo.toString(), type, customAttributes );
 								
 							} catch ( MapFormatTypeValidatorException e ) {
 								throw new MapFormatException( "Errore in validazione per '" +objSostitutivo.toString() + "'. " + e.getMessage(), e );
@@ -174,21 +195,20 @@ public class MapFormat
 			            	strSostituita = objSostitutivo.toString();
 			            
 			        // se e' nullo il valore con cui sostituire il parametro, ma e' true il flag per usare spazi bianchi al suo posto
-		            } else if ( objSostitutivo == null && this.blankSeNull) {
+		            } else if ( objSostitutivo == null && blankSeNull) {
 		            	strSostituita = ""; 
-		            } 
-		            
-		            matcher.appendReplacement( sb, Matcher.quoteReplacement(strSostituita) );
+		            }
+		            matcher.appendReplacement( sb, matcher.quoteReplacement(strSostituita) );
 		        }
-		        matcher.appendTail(sb);
+		        matcher.appendTail( sb );
 		        
 		        // recupera la riga con le sostituzioni dallo string buffer
 		        riga = sb.toString();
 		        
 		        // ri-testa la riga con il pattern per trovare parametri non sostituiti
-		        matcher.reset(riga);
+		        matcher.reset( riga );
 		        // se non ne trova o se e' true il flag per tenerli aggiunge la riga alla variabile di output
-		        if ( this.keepUnMatched || ! matcher.find() ) 
+		        if ( keepUnMatched || ! matcher.find() ) 
 		        	result += riga + "\n";
 			}
 		} catch ( IOException e ) { e.printStackTrace(); } // e' obbligatorio intercettarla per via del BufferedReader, ma qui di I/O c'e' ben poco
@@ -198,10 +218,16 @@ public class MapFormat
 	}
 	
 	private boolean isTipoAmmesso(Object o) {
-		return ( o instanceof String || o instanceof Integer || o instanceof Boolean 
-				|| o instanceof Double || o instanceof Float  || o instanceof BigDecimal 
-				|| o instanceof BigInteger || o instanceof Long || o instanceof Byte
-				|| o instanceof Short || o instanceof Character);
+		return (   o instanceof String 
+				|| o instanceof Integer 
+				|| o instanceof Boolean 
+				|| o instanceof Double 
+				|| o instanceof Float  
+				|| o instanceof BigDecimal 
+				|| o instanceof BigInteger 
+				|| o instanceof Long 
+				|| o instanceof Short 
+				|| o instanceof Character);
 	}
 	
 	/**
@@ -227,7 +253,7 @@ public class MapFormat
 	 * @return
 	 */
     public MapFormat setBlankSeNull() {
-        this.blankSeNull = true;
+        blankSeNull = true;
         return this;
         
     }
@@ -237,7 +263,8 @@ public class MapFormat
      * @return
      */
 	public MapFormat setKeepUnMatched() {
-		this.keepUnMatched = true;
+		keepUnMatched = true;
+		blankSeNull = false;
 		return this;
 		
 	}
