@@ -13,6 +13,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.Yaml;
@@ -25,7 +26,7 @@ import com.github.tosdan.utils.stringhe.TemplatePickerSections;
 /**
  * 
  * @author Daniele
- * @version 0.2.2-b2013-07-23
+ * @version 0.2.3-b2013-08-01
  */
 public class SqlLoaderFilter extends BasicFilterV2
 {
@@ -219,17 +220,19 @@ public class SqlLoaderFilter extends BasicFilterV2
 	{
 		Map<String, String> contentMap;
 		Yaml yaml = new Yaml();
-		
+		InputStream is = null;
 		try {
-			InputStream is =  this.ctx.getResourceAsStream( configFile );
-			contentMap = (Map<String, String>) yaml.load( is );
-			is.close();
+			is =  this.ctx.getResourceAsStream( configFile );
+			String configFileContent = IOUtils.toString( is );
+			contentMap = (Map<String, String>) yaml.load( configFileContent );
 			
 		} catch ( IOException e ) {
 			if ( this.printStackTrace )
 				e.printStackTrace();
 			throw new SqlLoaderFilterException( "Filtro " + this.filterConfig.getFilterName()
 					+ ": errore caricamento file configurazione. Classe: "+this.getClass().getName(), e );
+		} finally {
+			IOUtils.closeQuietly( is );
 		}
 		
 		return contentMap;
