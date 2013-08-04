@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Validator per T-SQL
  * @author Daniele
- * @version 0.2.2-b2013-07-29
+ * @version 0.2.3-b2013-08-02
  */
 public class MapFormatTypeValidatorSQL extends MapFormatAbstractTypeValidator
 {
@@ -99,7 +99,7 @@ public class MapFormatTypeValidatorSQL extends MapFormatAbstractTypeValidator
         	else if ( type.equalsIgnoreCase("free") ) {
         		result = source;   
         	} else
-        		throw new MapFormatTypeValidatorException("Errore di validazione: il tipo di validazione '"+ type +"' e' sconosciuto. Parametro source="+source);
+        		throw new MapFormatTypeValidatorException("Errore di validazione: il tipo di validazione '"+ type +"' e' sconosciuto. Parametro source='"+source+"'");
         	
         } else {
         	throw new MapFormatTypeValidatorException( "Parametro type mancante." );
