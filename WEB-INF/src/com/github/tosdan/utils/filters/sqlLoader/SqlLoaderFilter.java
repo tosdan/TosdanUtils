@@ -26,19 +26,21 @@ import com.github.tosdan.utils.stringhe.TemplatePickerSections;
 /**
  * 
  * @author Daniele
- * @version 0.2.3-b2013-08-01
+ * @version 0.2.4-b2013-08-02
  */
 public class SqlLoaderFilter extends BasicFilterV2
 {
-	private String[] nomiQueriesDaCompilare;
-	private List<Map<String, Object>> updateParamsMapsList;
+	// Contenitore configurazione filtro
+	private Map<String, String> settings;
+	// Configurazione specifica per recupero/compilazione queries
 	private Map<String, String> queriesRepositoryIndexMap;
+	private String queriesRepositoryIndexFilename;
 	private String queriesRepoFolderPath;
+	// Opzioni
 	private boolean isLogEnabled;
 	private boolean lasciaParametrica;
 	private boolean printStackTrace;
-	private Map<String, String> sqlLoaderSettings;
-	private String queriesRepositoryIndexFilename;
+	private boolean retroCompatibilitaTemplate;
 
 	@Override
 	public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain )	throws IOException, ServletException
@@ -46,63 +48,97 @@ public class SqlLoaderFilter extends BasicFilterV2
 		HttpServletRequest req = ( HttpServletRequest ) request;
 		HttpServletResponse resp = ( HttpServletResponse ) response;
 
-		/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-		this.nomiQueriesDaCompilare = this.getNomiQueriesDaCompilare( req );
+		String[] nomiQueriesDaCompilare = getNomiQueriesDaCompilare( req );
 		
-		// Nome dell'attributo inserito nella request, inviato alla servlet cliente, che conterra' le queries richieste
-		// sqlLoaderMappaQueries e' la chiave di default per recuperare (nella servlet cliente) la mappa con le queries compilate
-		String contenitoreMultiQueries = StringUtils.defaultString( req.getParameter("MultiQueryContainer"), "sqlLoaderMappaQueries" );
-		
-		// Lista eventuali parametri per query di update (anche piu' di un update per volta essendo appunto una lista di parametri)
-		this.updateParamsMapsList = (List<Map<String, Object>>) req.getAttribute("sqlLoaderParametriUpdate");
-
-		this.getSqlLoaderOptions(req);
-		this.loadConfiguration();
-
-		String reqLog = this.getRequestParamsProcessLog( req );
-		if ( this.isLogEnabled && this.sqlLoaderSettings.get("logFileName") != null ) 
-			// crea un file di log con il nome passato come parametro nella sottocartella della webapp
-			FileUtils.toFile( this.realPath + sqlLoaderSettings.get("logFileName"), reqLog );
-
-		/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-		boolean retroCompatibilitaTemplate = BooleanUtils.toBoolean(req.getParameter("noYamlPicker"));
+		getSqlLoaderOptions(req);
+		loadConfiguration();
+		logParametersToFile( req );
 		
 		if ( ! this.lasciaParametrica ) {
-			Map<String, Object> allPossibleParams = this.getAllParamsMap( req );
-			MassiveQueryCompiler mqc = new MassiveQueryCompiler( this.queriesRepositoryIndexMap, this.queriesRepoFolderPath, this.updateParamsMapsList );
+			// Lista eventuali parametri per query di update (anche piu' di un update per volta essendo appunto una lista di parametri)
+			@SuppressWarnings( "unchecked" )
+			List<Map<String, Object>> updateParamsMapsList = (List<Map<String, Object>>) req.getAttribute("sqlLoaderParametriUpdate");
+			MassiveQueryCompiler mqc = new MassiveQueryCompiler( this.queriesRepositoryIndexMap, this.queriesRepoFolderPath, updateParamsMapsList );
 			
 			if ( retroCompatibilitaTemplate  )
 				mqc.setPicker( new TemplatePickerSections() ); // TODO convertire i template delle query vecchie in yaml
 
 			try {
-				Map<String, List<String>> queries = mqc.getQueriesListMap( this.nomiQueriesDaCompilare, allPossibleParams );
+				Map<String, List<String>> queries = mqc.getQueriesListMap( nomiQueriesDaCompilare, getAllParamsMap(req) );
 				
-				// Se c'e' un solo valore per il parametro 'sqlName', allora la query e' anche recuperabile,  
-				// direttamente come stringa, dall'attributo con chiave uguale ad 'sqlName'.
-				req.setAttribute( this.nomiQueriesDaCompilare[0], (queries.get(this.nomiQueriesDaCompilare[0])).get(0) ); // giusto per comodita' in caso di un unica query da gestire
-				req.setAttribute( "queryRecuperata", (queries.get(this.nomiQueriesDaCompilare[0])).get(0) ); // retro compatibilita' con sqlManagerFilter
-				
-				// Essendo possibile specificare piu' di un valore per il parametro sqlName
-				// viene creata anche una mappa con chiave sqlName[i] e valore Query[i]
-				// nel caso sia fornito il parametro 'sqlLoaderParametriUpdate' la mappa avra' chiave sqlName[i] e valore List<Query[i]>
-				req.setAttribute( contenitoreMultiQueries, queries );
-				req.setAttribute( "sqlManagerMappaQueries", queries ); // retro compatibilita' con sqlManagerFilter
+				// Ogni query e' recuperabile usando il nome specificato in sqlName nella request ajax
+				for( int i = 0 ; i < nomiQueriesDaCompilare.length ; i++ ) {
+					
+					List<String> listaQueryTemp = queries.get(nomiQueriesDaCompilare[i]);
+					
+					if (listaQueryTemp.size() == 1) {
+						
+						req.setAttribute( nomiQueriesDaCompilare[i], listaQueryTemp.get(0) );
+					} else {
+						
+						req.setAttribute( nomiQueriesDaCompilare[i], listaQueryTemp );
+					}
+					
+				}
+				doOldCompatilityStuff(req, queries, nomiQueriesDaCompilare);
 				
 			} catch ( TemplateCompilerException e ) {
-				if ( this.printStackTrace )
+				if ( printStackTrace )
 					e.printStackTrace();
 				throw new SqlLoaderFilterException(  "Filtro " + this.filterConfig.getFilterName()
-						+ ": errore caricamento query da file. Classe: "+this.getClass().getName(), e );
+						+ ": errore compilazione query. Classe: "+this.getClass().getName(), e );
 			}
 			
 		} else {
 			// TODO recupero query senza compilarla
 			
 		}
+		
+		
 		chain.doFilter( req, resp );
-//		System.out.println( this._filterConfig.getFilterName() +"\n" + req.getSession().getAttribute( "JsonDataTableString" ) + " - " + req.getSession().getAttribute( "DataTableQuery" ));
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * 
+	 * @param req
+	 */
+	private void logParametersToFile(HttpServletRequest req) {
+		String reqLog = getRequestParamsProcessLog(req);
+		if ( isLogEnabled && settings.get("logFileName") != null ) 
+			FileUtils.toFile( realPath + settings.get("logFileName"), reqLog ); // crea un file di log con il nome passato come parametro nella sottocartella della webapp
+
+	}
+	
+	
+	
+	/**
+	 * 
+	 * @param req
+	 * @param queries
+	 * @param nomiQueriesDaCompilare
+	 */
+	private void doOldCompatilityStuff(HttpServletRequest req, Map<String, List<String>> queries, String[] nomiQueriesDaCompilare) {
+
+		// Nome dell'attributo inserito nella request, inviato alla servlet cliente, che conterra' le queries richieste.
+		// sqlLoaderMappaQueries e' la chiave di default per recuperare (nella servlet cliente) la mappa con le queries compilate
+		String contenitoreMultiQueries = StringUtils.defaultString( req.getParameter("MultiQueryContainer"), "sqlLoaderMappaQueries" );
+		
+		// Essendo possibile specificare piu' di un valore per il parametro sqlName
+		// viene creata anche una mappa con chiave sqlName[i] e valore Query[i]. 
+		// Tale mappa finisce in un attribute con chiave: var contenitoreMultiQueries oppure  "sqlManagerMappaQueries"
+		// nel caso sia fornito il parametro 'sqlLoaderParametriUpdate' la mappa avra' chiave sqlName[i] e valore List<Query[i]>
+		req.setAttribute( contenitoreMultiQueries, queries ); // TODO deprecato: ogni query e' inserita come attributo usando il nome della request ajax (prima implementazione per query multiple)
+		req.setAttribute( "sqlManagerMappaQueries", queries ); // TODO deprecato: retro compatibilita' con sqlManagerFilter (prima implementazione per query multiple)
+		req.setAttribute( "queryRecuperata", (queries.get(nomiQueriesDaCompilare[0])).get(0) ); // TODO deprecato: retro compatibilita' con sqlManagerFilter (primissima implementazione)
+		
+	}
+	
+	
 	
 	/**
 	 * Dalla request recupera 'sqlName' (parametro) oppure 'sqlOverride' (attributo)
@@ -118,9 +154,11 @@ public class SqlLoaderFilter extends BasicFilterV2
 		Object sqlOverride = req.getAttribute("sqlOverride");
 		
 		if (sqlOverride instanceof String[]) {
-			nomiQueriesDaCompilare = (String[]) sqlOverride;
+			
+			nomiQueriesDaCompilare = (String[]) sqlOverride;			
 		} else if (sqlOverride instanceof String) {
-			nomiQueriesDaCompilare = new String[] { (String) sqlOverride };
+			
+			nomiQueriesDaCompilare = new String[] { sqlOverride.toString() };
 		}		
 		
 		if (nomiQueriesDaCompilare == null)
@@ -129,6 +167,8 @@ public class SqlLoaderFilter extends BasicFilterV2
 		return nomiQueriesDaCompilare;
 
 	}
+	
+	
 	
 	/**
 	 * Raccoglie tutti i <code>parameters</code> della <code>request</code> compresi <code>attributes</code> eventualmente aggiunti da servlet o filtri precedenti e parametri custom contenuti in mappe inserite in sessione o in un attribute della request
@@ -141,9 +181,11 @@ public class SqlLoaderFilter extends BasicFilterV2
 		allParams.putAll( this.getRequestMultipleValuesParamsMap( req ) );
 //		allParams.putAll( this._initConfigParamsMap ); // TODO prevedere caricamento parametri costanti da file, magari su base di sqlName
 		allParams.putAll( this.getRequestAttributes( req ) );
-		allParams.putAll( this.getParametriAggiuntivi(req) );
+		allParams.putAll( getParametriAggiuntivi(req) );
 		return allParams;
 	}
+	
+	
 	
 	/**
 	 * 
@@ -151,18 +193,20 @@ public class SqlLoaderFilter extends BasicFilterV2
 	 */
 	private void loadConfiguration() throws SqlLoaderFilterException {
 		// Cerca nel web.xml il nome del file contenente la configurazione di questo Filter (completo di percorso relativo) 
-		String sqlLoaderConfigFile = this.initConfigParamsMap.get("SqlLoaderConf_File");
+		String sqlLoaderConfigFile = initConfigParamsMap.get("SqlLoaderConf_File");
 		// Carica la configurazione per SqlLoaderFilter da file.
-		this.sqlLoaderSettings = this.loadMapFromConfFile( sqlLoaderConfigFile );
+		settings = getMapFromConfFile( sqlLoaderConfigFile );
 		
-		// Percorso completo del file contenente l'index delle queries
-		this.queriesRepositoryIndexFilename = this.sqlLoaderSettings.get("SqlLoaderQueriesReposIndex_File").toString(); //TODO sotto try/catch
+		// Percorso relativo del file contenente l'index delle queries
+		queriesRepositoryIndexFilename = settings.get("SqlLoaderQueriesReposIndex_File").toString(); //TODO sotto try/catch + rethrow
 		// Crea una mappa con l'index delle queries
-		this.queriesRepositoryIndexMap = this.loadMapFromConfFile( this.queriesRepositoryIndexFilename );
+		queriesRepositoryIndexMap = getMapFromConfFile( queriesRepositoryIndexFilename );
 		// Percorso assoluto dei file contenenti i templates delle queries
-		this.queriesRepoFolderPath = this.realPath + this.sqlLoaderSettings.get("SqlLoaderConf_Path");
+		queriesRepoFolderPath = realPath + settings.get("SqlLoaderConf_Path");
 		
 	}
+	
+	
 	
 	/**
 	 * Legge dalla request eventuali opzioni inserite nella chiamata e imposta le relative variabili di istanza con i valori recuperati
@@ -170,12 +214,16 @@ public class SqlLoaderFilter extends BasicFilterV2
 	 */
 	private void getSqlLoaderOptions(HttpServletRequest req) {
 		// Opzione per verbose stacktrace delle eccezioni catturate
-		this.printStackTrace = BooleanUtils.toBoolean(req.getParameter("printStackTrace"));
+		printStackTrace = BooleanUtils.toBoolean(req.getParameter("printStackTrace"));
 		// Opzione per abilitare il log
-		this.isLogEnabled =  BooleanUtils.toBoolean(req.getParameter("logSqlLoader"));
+		isLogEnabled =  BooleanUtils.toBoolean(req.getParameter("logSqlLoader"));
 		// Opzione per evitare la compilazione automatica della query. Fondamentalmente recupera la query e la serve immutata TODO
-		this.lasciaParametrica = BooleanUtils.toBoolean(req.getParameter("lasciaQueryParametrica"));
+		lasciaParametrica = BooleanUtils.toBoolean(req.getParameter("lasciaQueryParametrica"));
+		// 
+		retroCompatibilitaTemplate = BooleanUtils.toBoolean(req.getParameter("noYamlPicker"));
 	}
+	
+	
 	
 	/**
 	 * 
@@ -210,27 +258,29 @@ public class SqlLoaderFilter extends BasicFilterV2
 		return mappaParametriAggiuntivi;
 	}
 	
+	
+	
 	/**
 	 * Carica e restituisce una mappa con i dati di configurazione contenuti nel file passato.
 	 * @param configFile
 	 * @throws SqlLoaderFilterException
 	 */
 	@SuppressWarnings( "unchecked" )
-	private Map<String, String> loadMapFromConfFile(String configFile) throws SqlLoaderFilterException
+	private Map<String, String> getMapFromConfFile(String configFile) throws SqlLoaderFilterException
 	{
 		Map<String, String> contentMap;
 		Yaml yaml = new Yaml();
 		InputStream is = null;
 		try {
-			is =  this.ctx.getResourceAsStream( configFile );
+			is =  ctx.getResourceAsStream( configFile );
 			String configFileContent = IOUtils.toString( is );
 			contentMap = (Map<String, String>) yaml.load( configFileContent );
 			
 		} catch ( IOException e ) {
-			if ( this.printStackTrace )
+			if ( printStackTrace )
 				e.printStackTrace();
 			throw new SqlLoaderFilterException( "Filtro " + this.filterConfig.getFilterName()
-					+ ": errore caricamento file configurazione. Classe: "+this.getClass().getName(), e );
+					+ ": errore caricamento file configurazione: '"+configFile+"'. Classe: "+this.getClass().getName(), e );
 		} finally {
 			IOUtils.closeQuietly( is );
 		}
