@@ -20,9 +20,9 @@ import org.apache.commons.dbutils.handlers.MapListHandler;
 /**
  * 
  * @author Daniele
- * @version 0.3.1-b2013-07-19
+ * @version 0.3.2-b2013-08-03
  */
-public class BasicDAO
+public class BasicDAO implements DAO
 {
 	private DataSource dataSource;
 	private ConnectionProvider provider;
