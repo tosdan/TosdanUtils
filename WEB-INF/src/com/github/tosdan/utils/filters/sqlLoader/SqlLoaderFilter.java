@@ -276,6 +276,11 @@ public class SqlLoaderFilter extends BasicFilterV2
 			String configFileContent = IOUtils.toString( is );
 			contentMap = (Map<String, String>) yaml.load( configFileContent );
 			
+		} catch (NullPointerException e) {
+			if ( printStackTrace )
+				e.printStackTrace();
+			throw new SqlLoaderFilterException( "Filtro " + this.filterConfig.getFilterName()
+					+ ": errore, file configurazione: '"+configFile+"' mancante. Classe: "+this.getClass().getName(), e );
 		} catch ( IOException e ) {
 			if ( printStackTrace )
 				e.printStackTrace();
