@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Validator per T-SQL
  * @author Daniele
- * @version 0.2.4-b2013-08-05
+ * @version 0.2.5-b2013-08-05
  */
 public class MapFormatTypeValidatorSQL extends MapFormatAbstractTypeValidator
 {
@@ -91,13 +91,13 @@ public class MapFormatTypeValidatorSQL extends MapFormatAbstractTypeValidator
         		result = parseDate(source);        		
         	}
         	else if ( type.equalsIgnoreCase("table") ) {
-        		result = this.checkMatching( "[[^;'\\/]a-zA-Z_@#][a-zA-Z0-9_@#$]*", source, type );   
+        		result = this.checkMatching( "[a-zA-Z_@#][a-zA-Z0-9_ @#$]*", source, type );   
         	}
         	else if ( type.equalsIgnoreCase("tablePart") ) {
-        		result = this.checkMatching( "[[^;'\\/]a-zA-Z0-9_@#]+", source, type );   
+        		result = this.checkMatching( "[a-zA-Z0-9_ @#$]+", source, type );   
         	}
         	else if ( type.equalsIgnoreCase("orderBy") ) {
-        		result = this.checkMatching( "[[^;'\\/]a-zA-Z0-9_, ]+", source, type );   
+        		result = this.checkMatching( "[a-zA-Z0-9_, @#$]+", source, type );   
         	}
         	else if ( type.equalsIgnoreCase("free") ) {
         		result = source;   
