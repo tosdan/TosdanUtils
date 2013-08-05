@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.activation.MimetypesFileTypeMap;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -21,7 +22,7 @@ import com.github.tosdan.utils.io.ReadToOutputStream;
 /**
  * 
  * @author Daniele
- * @version 0.1.2-r13.06.05
+ * @version 0.1.3-r2013-08-04
  */
 @SuppressWarnings( "serial" )
 public class DownloadServlet extends HttpServlet
@@ -30,6 +31,31 @@ public class DownloadServlet extends HttpServlet
 	private boolean debug = false;
 	public static final String filenameParam = "nomeFileDS";
 
+	@Override
+	protected void doPost( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException {
+		this.nomeFile = this.getNomeFile( req );
+		this.doService( req, resp );
+	}
+	
+	@Override
+	protected void doGet( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException {
+//		String uri = req.getRequestURI();		
+//		String percorsoDownloadServlet = req.getContextPath() + req.getServletPath();	
+//		this.nomeFile = uri.replaceAll( (percorsoDownloadServlet + "/"), "" );
+		
+		this.nomeFile = this.getNomeFile( req );
+		this.nomeFile = URLDecoder.decode( nomeFile, "UTF-8" );		
+		this.nomeFile = StringEscapeUtils.unescapeHtml4( nomeFile );
+		this.doService( req, resp );
+//		System.out.println( "nome file : " + nomeFile + "\npercorso servlet: "+ percorsoDownloadServlet );
+				
+		//String[] tokens = uri.split( "/" );
+		//String filesDir = ( String ) getServletContext().getInitParameter( "filesDir" );
+		//String filePath = filesDir + tokens[ tokens.length - 1 ];
+	}
+	
+	
+	
 	protected void doService( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException {
 		File file = new File(this.nomeFile);		
 		if (debug) {
@@ -67,29 +93,6 @@ public class DownloadServlet extends HttpServlet
 		out.close();
 		
 	}
-	
-	@Override
-	protected void doPost( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException {
-		this.nomeFile = this.getNomeFile( req );
-		this.doService( req, resp );
-	}
-	
-	@Override
-	protected void doGet( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException {
-//		String uri = req.getRequestURI();		
-//		String percorsoDownloadServlet = req.getContextPath() + req.getServletPath();	
-//		this.nomeFile = uri.replaceAll( (percorsoDownloadServlet + "/"), "" );
-		
-		this.nomeFile = this.getNomeFile( req );
-		this.nomeFile = URLDecoder.decode( nomeFile, "UTF-8" );		
-		this.nomeFile = StringEscapeUtils.unescapeHtml4( nomeFile );
-		this.doService( req, resp );
-//		System.out.println( "nome file : " + nomeFile + "\npercorso servlet: "+ percorsoDownloadServlet );
-				
-		//String[] tokens = uri.split( "/" );
-		//String filesDir = ( String ) getServletContext().getInitParameter( "filesDir" );
-		//String filePath = filesDir + tokens[ tokens.length - 1 ];
-	}
 
 	/**
 	 * 
@@ -113,7 +116,8 @@ public class DownloadServlet extends HttpServlet
 			
 			resp.setHeader( "Content-Disposition", "attachment; filename=\"" + file.getName() + "\"" );
 			
-			ReadToOutputStream.readInputStream( new FileInputStream( file ), out );
+			IOUtils.copy( new FileInputStream( file ), out );
+//			ReadToOutputStream.readInputStream( new FileInputStream( file ), out );
 			
 		} catch ( Exception e ) {
 			e.printStackTrace();
