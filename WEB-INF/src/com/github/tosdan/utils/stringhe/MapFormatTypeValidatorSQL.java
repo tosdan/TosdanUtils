@@ -96,6 +96,9 @@ public class MapFormatTypeValidatorSQL extends MapFormatAbstractTypeValidator
         	else if ( type.equalsIgnoreCase("tablePart") ) {
         		result = this.checkMatching( "[[^;'\\/]a-zA-Z0-9_@#]+", source, type );   
         	}
+        	else if ( type.equalsIgnoreCase("orderBy") ) {
+        		result = this.checkMatching( "[[^;'\\/]a-zA-Z0-9_, ]+", source, type );   
+        	}
         	else if ( type.equalsIgnoreCase("free") ) {
         		result = source;   
         	} else
