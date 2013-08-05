@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * 
  * @author Daniele
- * @version 0.0.2-b2013-07-22
+ * @version 0.0.3-b2013-08-05
  */
 @SuppressWarnings( "serial" )
 public abstract class BasicHttpServletV2 extends HttpServlet
@@ -143,9 +143,8 @@ public abstract class BasicHttpServletV2 extends HttpServlet
 	 */
 	protected Map<String, List<String>> getRequestMultipleValuesParamsMap(HttpServletRequest req)
 	{
-		if (this.requestMultipleValuesParamsMap == null)
-			this.processRequestForParams( req );
-		
+		this.processRequestForParams( req );
+	
 		return requestMultipleValuesParamsMap;
 	}
 
@@ -156,8 +155,7 @@ public abstract class BasicHttpServletV2 extends HttpServlet
 	 */
 	protected Map<String, Object> getRequestAttributes(HttpServletRequest req)
 	{
-		if (this.requestAttributes == null)
-			this.processRequestForParams( req );
+		this.processRequestForParams( req );
 		
 		return requestAttributes;
 	}
@@ -169,9 +167,8 @@ public abstract class BasicHttpServletV2 extends HttpServlet
 	 */
 	protected String getRequestParamsProcessLog(HttpServletRequest req)
 	{
-		if (this.reqLog == null)
-			this.processRequestForParams( req );
-		
+		this.processRequestForParams( req );
+	
 		return reqLog;
 	}
 

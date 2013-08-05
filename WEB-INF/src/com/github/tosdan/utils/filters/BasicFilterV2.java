@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * 
  * @author Daniele
- * @version 0.0.2-b2013-07-23
+ * @version 0.0.3-b2013-08-05
  */
 public abstract class BasicFilterV2 implements Filter
 {
@@ -137,8 +137,7 @@ public abstract class BasicFilterV2 implements Filter
 	 */
 	protected Map<String, String> getRequestParamsMap(HttpServletRequest req)
 	{
-		if (this.requestParamsMap == null)
-			this.processRequestForParams( req );
+		this.processRequestForParams( req );
 		
 		return requestParamsMap;
 	}
@@ -150,8 +149,7 @@ public abstract class BasicFilterV2 implements Filter
 	 */
 	protected String getRequestParamsProcessLog(HttpServletRequest req)
 	{
-		if (this.reqLog == null)
-			this.processRequestForParams( req );
+		this.processRequestForParams( req );
 		
 		return reqLog;
 	}
@@ -163,8 +161,7 @@ public abstract class BasicFilterV2 implements Filter
 	 */
 	protected Map<String, List<String>> getRequestMultipleValuesParamsMap(HttpServletRequest req)
 	{
-		if (this.requestMultipleValuesParamsMap == null)
-			this.processRequestForParams( req );
+		this.processRequestForParams( req );
 		
 		return requestMultipleValuesParamsMap;
 	}
@@ -176,8 +173,7 @@ public abstract class BasicFilterV2 implements Filter
 	 */
 	protected Map<String, Object> getRequestAttributes(HttpServletRequest req)
 	{
-		if (this.requestAttributes == null)
-			this.processRequestForParams( req );
+		this.processRequestForParams( req );
 		
 		return requestAttributes;
 	}
