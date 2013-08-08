@@ -14,6 +14,7 @@
 			<li><a href="./UploadFlieServlet/FormConScriptlet.jsp">Pagina con Form che gestisce tutto all'interno del jsp</a></li>
 			<li><a href="./jsp/FolderTree/ftree.jsp">Folder Tree</a></li>
 			<li><a href="./jsp/QueriesFormatter/qformatter.jsp">Folder Tree</a></li>
+			<li><a href="./jsp/jquery-downloadjs/jquery-downloadjs.jsp">jquery-downloadjs</a></li>
 		</ul>
 	</div>
 </body>
