@@ -17,8 +17,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import com.github.tosdan.utils.io.ReadToOutputStream;
-
 /**
  * 
  * @author Daniele
@@ -74,7 +72,6 @@ public class DownloadServlet extends HttpServlet
 				System.out.println( msg );
 			
 			if (req.getParameter("returnToCaller") != null) {
-				out.close();
 				this.returnToCaller( req, resp );
 				
 			} else { // per chiamate ajax (ramo di esecuzione di default)
@@ -82,7 +79,6 @@ public class DownloadServlet extends HttpServlet
 				resp.setContentType( "text/html" );
 				msg = "<span>"+msg+"</span>";
 				out.print( msg );
-				out.close();
 				
 			}
 			
@@ -90,7 +86,6 @@ public class DownloadServlet extends HttpServlet
 			this.transferFile( out, resp, file );
 			
 		}		
-		out.close();
 		
 	}
 
@@ -103,7 +98,7 @@ public class DownloadServlet extends HttpServlet
 	private void transferFile(ServletOutputStream out, HttpServletResponse resp, File file) {
 		try {
 			resp.setContentLength( ( int ) file.length() );
-			resp.setContentType( "application/x-download" ); // oppure octect-stream . Il browser non deve riconoscere il contenuto come qualcosa di associato ad una operazione speciale
+			resp.setContentType( "application/octect-stream" ); // octect-stream | x-download . Il browser non deve riconoscere il contenuto come qualcosa di associato ad una operazione speciale
 //			response.setContentType( getMimeType( file ) );
 			
 			/**/
