@@ -30,8 +30,8 @@
 	<!--[if lt IE 8]>	<link rel="stylesheet" href="../../css-3rd-party/bootstrap-ie7buttonfix.css"> 	<![endif]-->
 	<!--[if IE 8]>		<link rel="stylesheet" href="../../css-3rd-party/bootstrap-ie8buttonfix.css"> 	<![endif]-->
 <!-- 			Tema bootstrap per Jquery UI (per ora e' fermo alla 10.0.0)			  -->
-	<link rel="stylesheet" href="../../css-3rd-party/custom-theme/jquery-ui-1.10.0.custom.css"/>
-	<link rel="stylesheet" href="../../css-3rd-party/custom-theme/jquery.ui.1.10.0.ie.css"/>
+	<link rel="stylesheet" href="../../css-3rd-party/jquery-ui-custom-theme/jquery-ui-1.10.0.custom.css"/>
+	<link rel="stylesheet" href="../../css-3rd-party/jquery-ui-custom-theme/jquery.ui.1.10.0.ie.css"/>
 	
 	<link rel="stylesheet" href="../../css-3rd-party/bootstrap_integration.css"/>
 
