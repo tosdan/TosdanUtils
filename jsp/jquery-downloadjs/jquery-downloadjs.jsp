@@ -22,6 +22,7 @@
 	<script type="text/javascript" src="../../js-3rd-party/bootstrap.js"></script> 
 	<script type="text/javascript" src="../../js-3rd-party/jquery-ui-1.10.3/ui/jquery-ui.js"></script>
 	<script type="text/javascript" src="../../js-3rd-party/jquery.fileDownload.js"></script>
+	<script type="text/javascript" src="../../js-3rd-party/IE-Version.js"></script>
 	<script type="text/javascript" src="script.js"></script>
 	
 	
@@ -42,7 +43,11 @@
 		<!--[if gte IE 9]><!--> 	<script  type="text/javascript" src="../../js-3rd-party/jquery-2.0.2.js"></script> 	<!--<![endif]-->	--%>
 
 <style type="text/css"> /* GIF per la progress bar */ .ui-progressbar-value { background-image: url("../../images/pbar-ani2.gif"); } </style>
-
+<script type="text/javascript">
+(function(){
+	console.log(ie);
+})();
+</script>
 </head>
 <body>
 
