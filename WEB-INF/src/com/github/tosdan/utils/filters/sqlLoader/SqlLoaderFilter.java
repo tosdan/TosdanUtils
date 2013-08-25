@@ -12,6 +12,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -20,13 +21,14 @@ import org.yaml.snakeyaml.Yaml;
 
 import com.github.tosdan.utils.filters.BasicFilterV2;
 import com.github.tosdan.utils.io.FileUtils;
+import com.github.tosdan.utils.servlets.ServletUtils;
 import com.github.tosdan.utils.sql.MassiveQueryCompiler;
 import com.github.tosdan.utils.stringhe.TemplateCompilerException;
 import com.github.tosdan.utils.stringhe.TemplatePickerSections;
 /**
  * 
  * @author Daniele
- * @version 0.2.4-b2013-08-02
+ * @version 0.2.6-b2013-08-25
  */
 public class SqlLoaderFilter extends BasicFilterV2
 {
@@ -177,10 +179,9 @@ public class SqlLoaderFilter extends BasicFilterV2
 	 */
 	private Map<String, Object> getAllParamsMap(HttpServletRequest req) {	
 		Map<String, Object> allParams = new HashMap<String, Object>();
-		allParams.putAll( this.getRequestParamsMap( req ) );
-		allParams.putAll( this.getRequestMultipleValuesParamsMap( req ) );
-//		allParams.putAll( this._initConfigParamsMap ); // TODO prevedere caricamento parametri costanti da file, magari su base di sqlName
-		allParams.putAll( this.getRequestAttributes( req ) );
+		allParams.putAll( ServletUtils.getReqParameters(req) );
+		allParams.putAll( ServletUtils.getReqAttributes(req) );
+		// TODO prevedere caricamento parametri costanti da file, magari su base di sqlName
 		allParams.putAll( getParametriAggiuntivi(req) );
 		return allParams;
 	}
@@ -232,28 +233,30 @@ public class SqlLoaderFilter extends BasicFilterV2
 	 */
 	@SuppressWarnings( "unchecked" )
 	private Map<String, Object> getParametriAggiuntivi(HttpServletRequest req) {
+		Map<String, Object> mappaParametriAggiuntivi = new HashMap<String, Object>();
+		
 		// Se nella chiamata del jsp sono presenti uno o entrambi i seguenti parametri viene cercata nella session e/o nella request
 		// un attributo con chiave corrispondente a quella/e recuperata/e attraverso questi due parametri.
-		String idParametriAggiuntiviDaSessione = req.getParameter( "LoaderSessionCustomParamsMap" );
+		String[] idParametriAggiuntiviDaSessione = req.getParameterValues("LoaderSessionCustomParamsMap");
 		String idParametriAggiuntiviOnCallingChain = (String) req.getParameter("LoaderCustomParamsMap"); // aggiunti da servlet nella catena di chiamate 
-
-		// tenta il recupero dalla sessione di una mappa con eventuali parametri custom che non e' stato possibile (o consigliabile) inserire nel jsp
-		// Es. chiamata JSP: /servlet/blabla?do=something&LoaderSessionCustomParamsMap=miaMappaParametriCustom
-		Map<String, Object> mappaParametriAggiuntivi = null;
-		if (idParametriAggiuntiviDaSessione != null ) // cerchera' in sessione un attribute con chiave 'miaMappaParametriCustom'
-			mappaParametriAggiuntivi = (Map<String, Object>) req.getSession().getAttribute(idParametriAggiuntiviDaSessione);
-
-		// tenta il recupero dalla request di una mappa con eventuali parametri custom che non e' stato possibile (o consigliabile) inserire nel jsp
-		Map<String, Object> mappaParametriAggiuntiviOnCallingChain = null;
-		if (idParametriAggiuntiviOnCallingChain != null)
-		mappaParametriAggiuntiviOnCallingChain = (Map<String, Object>) req.getAttribute(idParametriAggiuntiviOnCallingChain);
-
-		// unisce le due mappe o alla peggio crea una mappa vuota (no parametri custom)
-		if (mappaParametriAggiuntivi == null) 
-			mappaParametriAggiuntivi = new HashMap<String, Object>();
-		if (mappaParametriAggiuntiviOnCallingChain != null)
-			mappaParametriAggiuntivi.putAll( mappaParametriAggiuntiviOnCallingChain );
 		
+		// Tenta il recupero dalla sessione di una (o piu') mappa(e) con eventuali parametri custom che non e' stato possibile (o consigliabile) inserire nel jsp
+		// Es. chiamata JSP: /servlet/blabla?do=something&LoaderSessionCustomParamsMap=miaMappaParametriCustom
+		// specificando piu' parametri 'LoaderSessionCustomParamsMap' si possono caricare piu' mappe con parametri custom. 
+		if (idParametriAggiuntiviDaSessione != null ) { // cerchera' in sessione un attribute con chiave 'miaMappaParametriCustom'
+			HttpSession session = req.getSession();
+			for( int i = 0 ; i < idParametriAggiuntiviDaSessione.length ; i++ ) {
+				mappaParametriAggiuntivi.putAll( (Map<String, Object>)session.getAttribute(idParametriAggiuntiviDaSessione[i]) );
+			}
+		}
+		
+		// Tenta il recupero dalla request di una mappa con eventuali parametri custom che non e' stato possibile (o consigliabile) inserire nel jsp
+		if (idParametriAggiuntiviOnCallingChain != null) {
+			Map<String, Object> mappaParametriAggiuntiviFromCallingChain = (Map<String, Object>) req.getAttribute(idParametriAggiuntiviOnCallingChain);
+			
+			if (mappaParametriAggiuntiviFromCallingChain != null)
+				mappaParametriAggiuntivi.putAll( mappaParametriAggiuntiviFromCallingChain ); // unisce le due mappe 
+		}
 		
 		return mappaParametriAggiuntivi;
 	}
