@@ -14,7 +14,7 @@ import com.github.tosdan.utils.stringhe.TemplatePicker;
 /**
  * 
  * @author Daniele
- * @version 0.1.1-b2013-07-29
+ * @version 0.1.2-b2013-08-28
  */
 public class MassiveQueryCompiler
 {
@@ -92,6 +92,19 @@ public class MassiveQueryCompiler
 	 */
 	public Map<String, List<String>> getQueriesListMap(String nomeQueriesDaCompilare, Map<String, Object> paramsMap) throws TemplateCompilerException {
 		return this.getQueriesListMap( new String[] {nomeQueriesDaCompilare}, paramsMap );
+		
+	}
+	
+	/**
+	 *
+	 * @param nomeQueriesDaCompilare
+	 * @param paramsMap Mappa per la sostituzione dei parameti nelle queries (parametriche) da compilare
+	 * @return
+	 * @throws TemplateCompilerException 
+	 */
+	public Map<String, List<String>> getQueriesListMap(List<String> nomeQueriesDaCompilare, Map<String, Object> paramsMap) throws TemplateCompilerException {
+		String[] temp = new String[1];
+		return this.getQueriesListMap( nomeQueriesDaCompilare.toArray(temp), paramsMap );
 		
 	}
 	
