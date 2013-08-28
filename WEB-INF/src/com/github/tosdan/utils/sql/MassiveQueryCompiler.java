@@ -14,14 +14,16 @@ import com.github.tosdan.utils.stringhe.TemplatePicker;
 /**
  * 
  * @author Daniele
- * @version 0.1.2-b2013-08-28
+ * @version 0.1.3-b2013-08-28
  */
 public class MassiveQueryCompiler
 {
 	/*************************************************************************/
 	/*******************              Campi            ***********************/
 	/*************************************************************************/
-	
+	/**
+	 *  (null-tolerant)
+	 */
 	private List<Map<String, Object>> shiftingParamsMapsList;
 	private Map<String, String> repositoryIndexMap;
 	private String queriesRepoFolderPath;
@@ -48,7 +50,7 @@ public class MassiveQueryCompiler
 	/**
 	 * 
 	 * @param templateContainerAsString
-	 * @param shiftingParamsMapsList
+	 * @param shiftingParamsMapsList  (null-tolerant)
 	 */
 	public MassiveQueryCompiler( String templateContainerAsString, List<Map<String, Object>> shiftingParamsMapsList ) {
 		this( null, null, shiftingParamsMapsList );
@@ -69,7 +71,7 @@ public class MassiveQueryCompiler
 	 * 
 	 * @param repositoryIndexMap Contiene le associazioni nome-query -> file-query-template. L'associazione da un id/nome di una query al file contenente il modello/template della query associata. 
 	 * @param queriesRepoFolderPath Percorso assoluto completo della cartella (radice) contenente i template delle queries da compilare
-	 * @param shiftingParamsMapsList Lista con con parametri per compilazione di piu' query dallo stesso template.
+	 * @param shiftingParamsMapsList Lista con con parametri per compilazione di piu' query dallo stesso template. (null-tolerant)
 	 */
 	public MassiveQueryCompiler(Map<String, String> repositoryIndexMap, String queriesRepoFolderPath, List<Map<String, Object>> shiftingParamsMapsList) {
 		this.shiftingParamsMapsList = shiftingParamsMapsList;
@@ -112,7 +114,7 @@ public class MassiveQueryCompiler
 	 * 
 	 * @param nomiQueriesDaCompilare
 	 * @param paramsMap Mappa per la sostituzione dei parameti nelle queries (parametriche) da compilare
-	 * @return Mappa con chiave nome/id Query e per valore una lista di queries: se 'shiftingParamsMapsList' e' nullo la lista conteiene sempre una sola query
+	 * @return Mappa con chiave nome/id Query e per valore una lista di queries: se 'shiftingParamsMapsList' e' nullo la lista conteiene sempre una sola query 
 	 * @throws TemplateCompilerException
 	 */
 	public Map<String, List<String>> getQueriesListMap(String[] nomiQueriesDaCompilare, Map<String, Object> paramsMap) throws TemplateCompilerException {
@@ -123,7 +125,7 @@ public class MassiveQueryCompiler
 		for( int i = 0 ; i < nomiQueriesDaCompilare.length ; i++ ) {
 			
 			List<String> compiledQueriesList = new ArrayList<String>();
-			if (this.shiftingParamsMapsList != null) {
+			if (this.shiftingParamsMapsList != null && !shiftingParamsMapsList.isEmpty() ) {
 				Map<String, Object> tmpSingleShiftAndConstantParamsMap = null;
 				for( Map<String, Object> singleShiftParamsMap : this.shiftingParamsMapsList ) {
 					
