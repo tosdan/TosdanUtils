@@ -21,15 +21,15 @@ function initExample2() {
         	data: { prova: 'prova' } // dati aggiuntivi
         
         })
-        .done( function (url) {
-        	
+        .always( function (url) { // sia che fallisca sia che riesca.
+        		console.log('always');
                 $preparingFileModal.dialog('close');
                 
         })
         .fail( function (responseHtml, url) {
             	
            	var risposta = $( $.trim(responseHtml) ).html();
-            $preparingFileModal.dialog('close');
+//            $preparingFileModal.dialog('close'); <- inserito nell'always
             
             // NB. Estrarla piu' di 1 volta con un altro $("#error-modal") manda in crisi IE8+
             $("#error-modal").html(risposta)
