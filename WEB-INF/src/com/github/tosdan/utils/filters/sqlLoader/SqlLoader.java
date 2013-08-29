@@ -2,26 +2,24 @@ package com.github.tosdan.utils.filters.sqlLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.yaml.snakeyaml.Yaml;
 
-import com.github.tosdan.utils.servlets.ServletUtils;
 import com.github.tosdan.utils.sql.MassiveQueryCompiler;
 import com.github.tosdan.utils.stringhe.TemplateCompilerException;
 import com.github.tosdan.utils.stringhe.TemplatePickerSections;
+import com.github.tosdan.utils.varie.BoolUtils;
 /**
  * 
  * @author Daniele
- * @version 0.3.0-b2013-08-26
+ * @version 0.4.0-b2013-08-28
  */
 public class SqlLoader
 {
@@ -44,43 +42,83 @@ public class SqlLoader
 		this.webAppPath = webAppPath;
 	}
 	
-	public Map<String, Object> loadQueries(HttpServletRequest req) throws IOException, ServletException {
-		return loadQueries(req, new HashMap<String, Object>());
+	/**
+	 * 
+	 * @param primaryParams
+	 * @param overridingParams
+	 * @return
+	 */
+	@SuppressWarnings( "unchecked" )
+	private List<String> getNomiQueriesDaCompilare(Map<String, Object> primaryParams, Map<String, Object> overridingParams) {
+		List<String> nomiQueriesDaCompilare = null;		
+		Object sqlParam = (overridingParams.get("sqlOverride") != null) ? overridingParams.get("sqlOverride") : primaryParams.get("sqlName");
+		
+		if ( sqlParam instanceof String ) {
+			nomiQueriesDaCompilare = new ArrayList<String>();
+			nomiQueriesDaCompilare.add( (String) sqlParam );
+		} else if (sqlParam instanceof List) {
+			nomiQueriesDaCompilare = (List<String>) sqlParam;
+		}
+		
+		return nomiQueriesDaCompilare;
+	}
+	
+	
+	/**
+	 * 
+	 * @param primaryParams
+	 * @return
+	 * @throws IOException
+	 * @throws ServletException
+	 */
+	public Map<String, Object> loadQueries(Map<String, Object> primaryParams) throws IOException, ServletException {
+		return loadQueries(primaryParams, null);
 		
 	}
-	public Map<String, Object> loadQueries(HttpServletRequest req, Map<String, Object> customParams) throws IOException, ServletException {
+	
+	
+	/**
+	 * 
+	 * @param primaryParams
+	 * @param overridingParams
+	 * @return
+	 * @throws IOException
+	 * @throws ServletException
+	 */
+	@SuppressWarnings( "unchecked" )
+	public Map<String, Object> loadQueries(Map<String, Object> primaryParams, Map<String, Object> overridingParams) throws IOException, ServletException {
 		Map<String, Object> retVal = new HashMap<String, Object>();
-		String[] nomiQueriesDaCompilare = getNomiQueriesDaCompilare( req );
 		
-		getSqlLoaderOptions(req);
+		List<String> nomiQueriesDaCompilare = getNomiQueriesDaCompilare(primaryParams, overridingParams);
+		
+		getSqlLoaderOptions(primaryParams);
 		loadConfiguration();
-		logParametersToFile( req );
+		logParametersToFile( primaryParams );
 		
 		if ( ! this.lasciaParametrica ) {
 			// Lista eventuali parametri per query di update (anche piu' di un update per volta essendo appunto una lista di parametri)
-			@SuppressWarnings( "unchecked" )
-			List<Map<String, Object>> updateParamsMapsList = (List<Map<String, Object>>) req.getAttribute("sqlLoaderParametriUpdate");
+			List<Map<String, Object>> updateParamsMapsList;
+			updateParamsMapsList = (List<Map<String, Object>>) primaryParams.get("sqlLoaderParametriUpdate");
+			if (overridingParams != null)
+				updateParamsMapsList = (List<Map<String, Object>>) overridingParams.get("sqlLoaderParametriUpdate");
+			
 			MassiveQueryCompiler mqc = new MassiveQueryCompiler( this.queriesRepositoryIndexMap, this.queriesRepoFolderPath, updateParamsMapsList );
 			
-			if ( retroCompatibilitaTemplate  )
-				mqc.setPicker( new TemplatePickerSections() ); // TODO convertire i template delle query vecchie in yaml
+			if ( retroCompatibilitaTemplate )
+				mqc.setPicker( new TemplatePickerSections() );
 
 			try {
-				Map<String, Object> allParams = getAllParamsMap(req);
-				allParams.putAll(customParams);
+				Map<String, Object> allParams = mergeParams(primaryParams, overridingParams);
 				Map<String, List<String>> queries = mqc.getQueriesListMap( nomiQueriesDaCompilare, allParams );
 				
 				// Ogni query e' recuperabile usando il nome specificato in sqlName nella request ajax
-				for( int i = 0 ; i < nomiQueriesDaCompilare.length ; i++ ) {
+				for( String nomeSql : nomiQueriesDaCompilare ) {
 					
-					List<String> listaQueryTemp = queries.get(nomiQueriesDaCompilare[i]);
-					
+					List<String> listaQueryTemp = queries.get(nomeSql);
 					if (listaQueryTemp.size() == 1) {
-						
-						retVal.put( nomiQueriesDaCompilare[i], listaQueryTemp.get(0) );
+						retVal.put( nomeSql, listaQueryTemp.get(0) );
 					} else {
-						
-						retVal.put( nomiQueriesDaCompilare[i], listaQueryTemp );
+						retVal.put( nomeSql, listaQueryTemp );
 					}
 					
 				}
@@ -100,68 +138,30 @@ public class SqlLoader
 	}
 	
 	
-	
-	
-	
-	
 	/**
 	 * 
-	 * @param req
+	 * @param primaryParams
 	 * @throws IOException 
 	 */
-	private void logParametersToFile(HttpServletRequest req) throws IOException {
-		Map<String, Object> reqLog = ServletUtils.getReqParameters(req);
+	private void logParametersToFile(Map<String, Object> primaryParams) throws IOException {
 		if ( isLogEnabled && settings.get("logFileName") != null )
-			FileUtils.writeStringToFile(new File(settings.get("logFileName")), reqLog.toString());// crea un file di log con il nome passato come parametro nella sottocartella della webapp
-
+			FileUtils.writeStringToFile(new File(settings.get("logFileName")), primaryParams.toString());// crea un file di log con il nome passato come parametro nella sottocartella della webapp
 	}
-	
-	
-	
-	/**
-	 * Dalla request recupera 'sqlName' (parametro) oppure 'sqlOverride' (attributo)
-	 * @param req HttpServletRequest
-	 * @return
-	 * @throws SqlLoaderFilterException
-	 */
-	private String[] getNomiQueriesDaCompilare(HttpServletRequest req) throws SqlLoaderFilterException {
-		
-		String [] nomiQueriesDaCompilare = req.getParameterValues( "sqlName" );
-		
-		// sqlOverride puo' arrivare solo da una servlet e ha precedenza su sqlName
-		Object sqlOverride = req.getAttribute("sqlOverride");
-		
-		if (sqlOverride instanceof String[]) {
-			
-			nomiQueriesDaCompilare = (String[]) sqlOverride;			
-		} else if (sqlOverride instanceof String) {
-			
-			nomiQueriesDaCompilare = new String[] { sqlOverride.toString() };
-		}		
-		
-		if (nomiQueriesDaCompilare == null)
-			throw new SqlLoaderFilterException( "Errore, parametro sqlName mancante nella request." );
-		
-		return nomiQueriesDaCompilare;
-
-	}
-	
 	
 	
 	/**
 	 * Raccoglie tutti i <code>parameters</code> della <code>request</code> compresi <code>attributes</code> eventualmente aggiunti da servlet o filtri precedenti e parametri custom contenuti in mappe inserite in sessione o in un attribute della request
-	 * @param req
+	 * @param primaryParams
+	 * @param overridingParams 
 	 * @return
 	 */
-	private Map<String, Object> getAllParamsMap(HttpServletRequest req) {	
+	private Map<String, Object> mergeParams(Map<String, Object> primaryParams, Map<String, Object> overridingParams) {	
 		Map<String, Object> allParams = new HashMap<String, Object>();
-		allParams.putAll( ServletUtils.getReqParameters(req) );
-		allParams.putAll( ServletUtils.getReqAttributes(req) );
-		// TODO prevedere caricamento parametri costanti da file, magari su base di sqlName
-		allParams.putAll( getParametriAggiuntivi(req) );
+		allParams.putAll( primaryParams );
+		if (overridingParams != null)
+			allParams.putAll(overridingParams);
 		return allParams;
 	}
-	
 	
 	
 	/**
@@ -182,59 +182,20 @@ public class SqlLoader
 	}
 	
 	
-	
 	/**
 	 * Legge dalla request eventuali opzioni inserite nella chiamata e imposta le relative variabili di istanza con i valori recuperati
-	 * @param req
+	 * @param primaryParams
 	 */
-	private void getSqlLoaderOptions(HttpServletRequest req) {
+	private void getSqlLoaderOptions(Map<String, Object> primaryParams) {
 		// Opzione per verbose stacktrace delle eccezioni catturate
-		printStackTrace = BooleanUtils.toBoolean(req.getParameter("printStackTrace"));
+		printStackTrace = BoolUtils.toBoolean(primaryParams.get("printStackTrace"));
 		// Opzione per abilitare il log
-		isLogEnabled =  BooleanUtils.toBoolean(req.getParameter("logSqlLoader"));
+		isLogEnabled =  BoolUtils.toBoolean(primaryParams.get("logSqlLoader"));
 		// Opzione per evitare la compilazione automatica della query. Fondamentalmente recupera la query e la serve immutata TODO
-		lasciaParametrica = BooleanUtils.toBoolean(req.getParameter("lasciaQueryParametrica"));
+		lasciaParametrica = BoolUtils.toBoolean(primaryParams.get("lasciaQueryParametrica"));
 		// 
-		retroCompatibilitaTemplate = BooleanUtils.toBoolean(req.getParameter("noYamlPicker"));
+		retroCompatibilitaTemplate = BoolUtils.toBoolean(primaryParams.get("noYamlPicker"));
 	}
-	
-	
-	
-	/**
-	 * 
-	 * @param req
-	 * @return
-	 */
-	@SuppressWarnings( "unchecked" )
-	private Map<String, Object> getParametriAggiuntivi(HttpServletRequest req) {
-		Map<String, Object> mappaParametriAggiuntivi = new HashMap<String, Object>();
-		
-		// Se nella chiamata del jsp sono presenti uno o entrambi i seguenti parametri viene cercata nella session e/o nella request
-		// un attributo con chiave corrispondente a quella/e recuperata/e attraverso questi due parametri.
-		String[] idParametriAggiuntiviDaSessione = req.getParameterValues("LoaderSessionCustomParamsMap");
-		String idParametriAggiuntiviOnCallingChain = (String) req.getParameter("LoaderCustomParamsMap"); // aggiunti da servlet nella catena di chiamate 
-		
-		// Tenta il recupero dalla sessione di una (o piu') mappa(e) con eventuali parametri custom che non e' stato possibile (o consigliabile) inserire nel jsp
-		// Es. chiamata JSP: /servlet/blabla?do=something&LoaderSessionCustomParamsMap=miaMappaParametriCustom
-		// specificando piu' parametri 'LoaderSessionCustomParamsMap' si possono caricare piu' mappe con parametri custom. 
-		if (idParametriAggiuntiviDaSessione != null ) { // cerchera' in sessione un attribute con chiave 'miaMappaParametriCustom'
-			HttpSession session = req.getSession();
-			for( int i = 0 ; i < idParametriAggiuntiviDaSessione.length ; i++ ) {
-				mappaParametriAggiuntivi.putAll( (Map<String, Object>)session.getAttribute(idParametriAggiuntiviDaSessione[i]) );
-			}
-		}
-		
-		// Tenta il recupero dalla request di una mappa con eventuali parametri custom che non e' stato possibile (o consigliabile) inserire nel jsp
-		if (idParametriAggiuntiviOnCallingChain != null) {
-			Map<String, Object> mappaParametriAggiuntiviFromCallingChain = (Map<String, Object>) req.getAttribute(idParametriAggiuntiviOnCallingChain);
-			
-			if (mappaParametriAggiuntiviFromCallingChain != null)
-				mappaParametriAggiuntivi.putAll( mappaParametriAggiuntiviFromCallingChain ); // unisce le due mappe 
-		}
-		
-		return mappaParametriAggiuntivi;
-	}
-	
 	
 	
 	/**
