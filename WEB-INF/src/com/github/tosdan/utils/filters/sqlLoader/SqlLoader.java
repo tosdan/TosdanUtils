@@ -19,7 +19,7 @@ import com.github.tosdan.utils.varie.BoolUtils;
 /**
  * 
  * @author Daniele
- * @version 0.4.0-b2013-08-28
+ * @version 0.4.1-b2013-08-29
  */
 public class SqlLoader
 {
@@ -50,8 +50,10 @@ public class SqlLoader
 	 */
 	@SuppressWarnings( "unchecked" )
 	private List<String> getNomiQueriesDaCompilare(Map<String, Object> primaryParams, Map<String, Object> overridingParams) {
-		List<String> nomiQueriesDaCompilare = null;		
-		Object sqlParam = (overridingParams.get("sqlOverride") != null) ? overridingParams.get("sqlOverride") : primaryParams.get("sqlName");
+		List<String> nomiQueriesDaCompilare = null;
+		Object sqlParam = (overridingParams != null && overridingParams.get("sqlOverride") != null) 
+				? overridingParams.get("sqlOverride") 
+				: primaryParams.get("sqlName");
 		
 		if ( sqlParam instanceof String ) {
 			nomiQueriesDaCompilare = new ArrayList<String>();
