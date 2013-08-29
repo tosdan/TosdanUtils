@@ -1,5 +1,6 @@
 package com.github.tosdan.utils.varie;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,12 +10,12 @@ import java.util.Map.Entry;
 /**
  * 
  * @author Daniele
- * @version 0.0.2-b2013-08-10
+ * @version 0.0.3-b2013-08-29
  */
 public class MapUtils
 {
 	/**
-	 * 
+	 * Trasforma una mappa di liste di mappe in una mappa di oggetti. Ad ogni chiave della mappa deve esser associata una lista di mappe che costituiranno i dati da inserire nell'oggetto creato che dovra' sostituire la lista
 	 * @param sourceMap
 	 * @param type
 	 * @return
@@ -56,4 +57,18 @@ public class MapUtils
 		return destMap;
 	}
 	
+
+	/**
+	 * Fonde due o piu' mappe.
+	 * @param maps
+	 * @return
+	 */
+	public static Map<String, Object> mergeMaps(Map<String, ? extends Object>... maps) {
+		Map<String, Object> retVal = new HashMap<String, Object>();
+		for( int i = 0 ; i < maps.length ; i++ ) {
+			if (maps[i] != null)
+				retVal.putAll( maps[i] );
+		}
+		return retVal;
+	}
 }
