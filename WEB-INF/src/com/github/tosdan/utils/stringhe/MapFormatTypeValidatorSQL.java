@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Validator per T-SQL
  * @author Daniele
- * @version 0.2.5-b2013-08-05
+ * @version 0.2.6-b2013-09-01
  */
 public class MapFormatTypeValidatorSQL extends MapFormatAbstractTypeValidator
 {
@@ -88,6 +88,10 @@ public class MapFormatTypeValidatorSQL extends MapFormatAbstractTypeValidator
         	}
         	else if ( type.equalsIgnoreCase("reverseDate") ) {
         		setDateFormat( new SimpleDateFormat( "yyyy-MM-dd") );
+        		result = parseDate(source);        		
+        	}
+        	else if ( type.equalsIgnoreCase("isoDate") ) {
+        		setDateFormat( new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.S") );
         		result = parseDate(source);        		
         	}
         	else if ( type.equalsIgnoreCase("table") ) {
