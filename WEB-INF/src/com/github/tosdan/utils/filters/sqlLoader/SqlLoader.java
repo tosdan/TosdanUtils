@@ -19,7 +19,7 @@ import com.github.tosdan.utils.varie.BoolUtils;
 /**
  * 
  * @author Daniele
- * @version 0.4.1-b2013-08-29
+ * @version 0.4.2-b2013-09-01
  */
 public class SqlLoader
 {
@@ -47,9 +47,10 @@ public class SqlLoader
 	 * @param primaryParams
 	 * @param overridingParams
 	 * @return
+	 * @throws SqlLoaderFilterException 
 	 */
 	@SuppressWarnings( "unchecked" )
-	private List<String> getNomiQueriesDaCompilare(Map<String, Object> primaryParams, Map<String, Object> overridingParams) {
+	private List<String> getNomiQueriesDaCompilare(Map<String, Object> primaryParams, Map<String, Object> overridingParams) throws SqlLoaderFilterException {
 		List<String> nomiQueriesDaCompilare = null;
 		Object sqlParam = (overridingParams != null && overridingParams.get("sqlOverride") != null) 
 				? overridingParams.get("sqlOverride") 
@@ -61,6 +62,9 @@ public class SqlLoader
 		} else if (sqlParam instanceof List) {
 			nomiQueriesDaCompilare = (List<String>) sqlParam;
 		}
+
+		if (nomiQueriesDaCompilare == null || nomiQueriesDaCompilare.isEmpty())
+			throw new SqlLoaderFilterException( "Errore parametro 'sqlName' mancante nella request.");
 		
 		return nomiQueriesDaCompilare;
 	}
@@ -128,7 +132,7 @@ public class SqlLoader
 			} catch ( TemplateCompilerException e ) {
 				if ( printStackTrace )
 					e.printStackTrace();
-				throw new SqlLoaderFilterException( "Errore compilazione query. Classe: "+this.getClass().getName(), e );
+				throw new SqlLoaderFilterException( "Errore compilazione query.", e );
 			}
 			
 		} else {
@@ -217,11 +221,11 @@ public class SqlLoader
 		} catch (NullPointerException e) {
 			if ( printStackTrace )
 				e.printStackTrace();
-			throw new SqlLoaderFilterException( "Errore, file configurazione: '"+filename+"' mancante. Classe: "+this.getClass().getName(), e );
+			throw new SqlLoaderFilterException( "Errore, file configurazione: '"+filename+"' mancante.", e );
 		} catch ( IOException e ) {
 			if ( printStackTrace )
 				e.printStackTrace();
-			throw new SqlLoaderFilterException( "Errore caricamento file configurazione: '"+filename+"'. Classe: "+this.getClass().getName(), e );
+			throw new SqlLoaderFilterException( "Errore caricamento file configurazione: '"+filename+"'.", e );
 		}
 		
 		return contentMap;
