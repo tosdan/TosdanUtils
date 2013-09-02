@@ -14,7 +14,7 @@ import com.github.tosdan.utils.stringhe.TemplatePicker;
 /**
  * 
  * @author Daniele
- * @version 0.1.3-b2013-08-28
+ * @version 0.1.4-b2013-09-02
  */
 public class MassiveQueryCompiler
 {
@@ -40,7 +40,7 @@ public class MassiveQueryCompiler
 	
 	/**
 	 * 
-	 * @param templateContainerAsString
+	 * @param templateContainerAsString Contenuto testale del file template. Puo' contenere piu' di una query. Ogni query deve avere un identificativo distinto
 	 */
 	public MassiveQueryCompiler( String templateContainerAsString ) {
 		this( templateContainerAsString, null );
@@ -49,8 +49,8 @@ public class MassiveQueryCompiler
 
 	/**
 	 * 
-	 * @param templateContainerAsString
-	 * @param shiftingParamsMapsList  (null-tolerant)
+	 * @param templateContainerAsString Contenuto testale del file template. Puo' contenere piu' di una query. Ogni query deve avere un identificativo distinto
+	 * @param shiftingParamsMapsList Lista con con parametri per compilazione di piu' query dallo stesso template. (null-tolerant)
 	 */
 	public MassiveQueryCompiler( String templateContainerAsString, List<Map<String, Object>> shiftingParamsMapsList ) {
 		this( null, null, shiftingParamsMapsList );
@@ -60,8 +60,8 @@ public class MassiveQueryCompiler
 
 	/**
 	 * 
-	 * @param repositoryFilesIndex
-	 * @param queriesRepoFolderFullPath
+	 * @param repositoryFilesIndex Contiene le associazioni nome-query -> file-query-template. L'associazione da un id/nome di una query al file contenente il modello/template della query associata. 
+	 * @param queriesRepoFolderFullPath Percorso assoluto completo della cartella (radice) contenente i template delle queries da compilare
 	 */
 	public MassiveQueryCompiler(Map<String, String> repositoryFilesIndex, String queriesRepoFolderFullPath ) {
 		this( repositoryFilesIndex, queriesRepoFolderFullPath, null );
@@ -87,8 +87,8 @@ public class MassiveQueryCompiler
 	
 	/**
 	 *
-	 * @param nomeQueriesDaCompilare
-	 * @param paramsMap Mappa per la sostituzione dei parameti nelle queries (parametriche) da compilare
+	 * @param nomeQueriesDaCompilare  Nomi della query da recuperare dal template e compilare
+	 * @param paramsMap Mappa per la sostituzione dei parameti nelle queries da compilare
 	 * @return
 	 * @throws TemplateCompilerException 
 	 */
@@ -99,21 +99,21 @@ public class MassiveQueryCompiler
 	
 	/**
 	 *
-	 * @param nomeQueriesDaCompilare
-	 * @param paramsMap Mappa per la sostituzione dei parameti nelle queries (parametriche) da compilare
+	 * @param nomiQueriesDaCompilare Lista dei nomi delle queries da recuperare dal template e compilare
+	 * @param paramsMap Mappa per la sostituzione dei parameti nelle queries da compilare
 	 * @return
 	 * @throws TemplateCompilerException 
 	 */
-	public Map<String, List<String>> getQueriesListMap(List<String> nomeQueriesDaCompilare, Map<String, Object> paramsMap) throws TemplateCompilerException {
+	public Map<String, List<String>> getQueriesListMap(List<String> nomiQueriesDaCompilare, Map<String, Object> paramsMap) throws TemplateCompilerException {
 		String[] temp = new String[1];
-		return this.getQueriesListMap( nomeQueriesDaCompilare.toArray(temp), paramsMap );
+		return this.getQueriesListMap( nomiQueriesDaCompilare.toArray(temp), paramsMap );
 		
 	}
 	
 	/**
 	 * 
-	 * @param nomiQueriesDaCompilare
-	 * @param paramsMap Mappa per la sostituzione dei parameti nelle queries (parametriche) da compilare
+	 * @param nomiQueriesDaCompilare Array dei nomi delle queries da recuperare dal template e compilare
+	 * @param paramsMap Mappa per la sostituzione dei parameti nelle queries da compilare
 	 * @return Mappa con chiave nome/id Query e per valore una lista di queries: se 'shiftingParamsMapsList' e' nullo la lista conteiene sempre una sola query 
 	 * @throws TemplateCompilerException
 	 */
@@ -149,8 +149,8 @@ public class MassiveQueryCompiler
 
 	/**
 	 * 
-	 * @param templateName
-	 * @param substitutesValuesMap
+	 * @param templateName Nome che identifica il template all'interno dei file di configurazione e all'interno del file template
+	 * @param substitutesValuesMap Mappa dei valori sostitutivi per i parametri (a valore costante) 
 	 * @return
 	 * @throws TemplateCompilerException
 	 */
