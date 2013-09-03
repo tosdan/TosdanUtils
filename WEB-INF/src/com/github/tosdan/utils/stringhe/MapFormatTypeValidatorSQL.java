@@ -61,7 +61,7 @@ public class MapFormatTypeValidatorSQL extends MapFormatAbstractTypeValidator
         		result = this.checkMatching( "(?i)true|false", source, type );
         	}
         	else if ( type.equalsIgnoreCase("integer") ) {
-        		result = this.checkMatching( "[0-9]+", source, type );
+        		result = this.checkMatching( "(-)?[0-9]+", source, type );
         	}
         	else if ( type.equalsIgnoreCase("numeric") ) {
         		result = this.checkMatching( "([0-9])+(.([0-9])+)?", source, type );
