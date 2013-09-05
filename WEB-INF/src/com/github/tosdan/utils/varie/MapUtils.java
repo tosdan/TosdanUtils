@@ -76,8 +76,6 @@ public class MapUtils
 		}
 		return retVal;
 	}
-	
-	
 
 	/**
 	 * Trasforma una Mappa di Mappe in una Lista di Mappe ordinata.
@@ -137,8 +135,8 @@ public class MapUtils
 	public static <T extends Object> void sortMapList(List<Map<String, T>> mapList, final String orderKey, final Boolean reverse) {
 			Collections.sort(mapList, new Comparator<Map<String, T>>() {
 				@Override public int compare( Map<String, T> o1, Map<String, T> o2 ) {
-					String s1 = StrUtils.safeToStr(o1);
-					String s2 = StrUtils.safeToStr(o2);
+					String s1 = StrUtils.safeToStr(o1.get(orderKey));
+					String s2 = StrUtils.safeToStr(o2.get(orderKey));
 					if (reverse != null && reverse)
 						return s2.compareTo(s1);
 					else 
