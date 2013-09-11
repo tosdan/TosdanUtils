@@ -53,7 +53,7 @@
 	
 	<filter>
 		<filter-name>AuthFilter</filter-name>
-		<filter-class>com.github.tosdan.utils.filters.AuthFilter</filter-class>		
+		<filter-class>com.github.tosdan.beta.utils.servlets.AuthFilter</filter-class>		
 		<init-param>
 			<param-name>userIDIdentifier</param-name>
 			<param-value>UserID</param-value>
@@ -124,7 +124,7 @@
     
     <servlet>
 		<servlet-name>QueryRunnerServlet</servlet-name>
-        <servlet-class>com.github.tosdan.utils.servlets.QueryRunnerServlet</servlet-class>
+        <servlet-class>com.github.tosdan.beta.utils.servlets.QueryRunnerServlet</servlet-class>
         <init-param>
         	<param-name>file_dbConf</param-name>
         	<param-value>/WEB-INF/dbconf.properties</param-value>
@@ -164,7 +164,7 @@
     
 	<servlet>
         <servlet-name>ExcelOutServlet</servlet-name>
-        <servlet-class>com.github.tosdan.utils.servlets.ExcelOutServlet</servlet-class>
+        <servlet-class>com.github.tosdan.beta.utils.servlets.ExcelOutServlet</servlet-class>
         <init-param>
         	<param-name>dummy</param-name>
         	<param-value>dummy</param-value>
@@ -197,7 +197,7 @@
     
     <servlet>
         <servlet-name>SqlManagerServlet</servlet-name>
-        <servlet-class>com.github.tosdan.utils.servlets.SqlManagerServlet</servlet-class>
+        <servlet-class>com.github.tosdan.beta.utils.servlets.SqlManagerServlet</servlet-class>
         <init-param>
 	        <param-name>logFileName</param-name>
 	        <param-value>/WEB-INF/WebAppsLogFiles/SqlManger/logSqlMangerServlet.txt</param-value>

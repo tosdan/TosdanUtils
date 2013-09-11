@@ -1,4 +1,4 @@
-package com.github.tosdan.utils.servlets;
+package com.github.tosdan.beta.utils.servlets;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.github.tosdan.utils.servlets.BasicHttpServlet;
 import com.github.tosdan.utils.sql.QueriesUtils;
 import com.github.tosdan.utils.sql.QueriesUtilsException;
 import com.github.tosdan.utils.stringhe.MapFormatTypeValidator;

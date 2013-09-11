@@ -1,29 +1,29 @@
-package com.github.tosdan.utils.servlets;
+package com.github.tosdan.beta.utils.servlets;
 
 import javax.servlet.ServletException;
 
 @SuppressWarnings( "serial" )
-public class QueryRunnerServletException extends ServletException
+public class SqlManagerServletException extends ServletException
 {
 
-	public QueryRunnerServletException()
+	public SqlManagerServletException()
 	{
 		// TODO Auto-generated constructor stub
 	}
 
-	public QueryRunnerServletException( String message )
+	public SqlManagerServletException( String message )
 	{
 		super( message );
 		// TODO Auto-generated constructor stub
 	}
 
-	public QueryRunnerServletException( Throwable rootCause )
+	public SqlManagerServletException( Throwable rootCause )
 	{
 		super( rootCause );
 		// TODO Auto-generated constructor stub
 	}
 
-	public QueryRunnerServletException( String message, Throwable rootCause )
+	public SqlManagerServletException( String message, Throwable rootCause )
 	{
 		super( message, rootCause );
 		// TODO Auto-generated constructor stub

@@ -1,4 +1,4 @@
-package com.github.tosdan.utils.io;
+package com.github.tosdan.beta.utils.io;
 
 import java.io.File;
 import java.io.FileOutputStream;

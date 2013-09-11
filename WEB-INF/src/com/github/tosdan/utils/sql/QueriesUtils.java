@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import com.github.tosdan.utils.io.IOfrw;
+import com.github.tosdan.beta.utils.io.IOfrw;
 import com.github.tosdan.utils.stringhe.MapFormat;
 import com.github.tosdan.utils.stringhe.MapFormatTypeValidator;
 import com.github.tosdan.utils.stringhe.StrUtils;

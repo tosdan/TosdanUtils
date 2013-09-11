@@ -1,4 +1,4 @@
-package com.github.tosdan.utils.filters;
+package com.github.tosdan.beta.utils.servlets;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package com.github.tosdan.utils.servlets;
+package com.github.tosdan.beta.utils.servlets;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -8,6 +8,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.github.tosdan.utils.servlets.BasicHttpServlet;
 import com.github.tosdan.utils.sql.ConnectionProvider;
 import com.github.tosdan.utils.sql.ConnectionProviderException;
 import com.github.tosdan.utils.sql.ConnectionProviderImpl;
