@@ -15,6 +15,7 @@ function debugSwitch(inputFields, combo, debugValue) {
 						 'box-shadow': '1px 1px 9px #888',
 						 'height': 30,
 						 'width': 300,
+						 'line-height': '26px',
 						 'margin': '0 auto'} ,
 			$divDebug = $("<div id='divModalitaDebugAttiva'>").hide()
 															.css(styleDIV)
@@ -28,7 +29,7 @@ function debugSwitch(inputFields, combo, debugValue) {
 		var FF = !(window.mozInnerScreenX == null),
 			top = -4;
 		if (FF) top = -6;
-		return $('<a>').css({'position': 'absolute', 'padding-left': 2, 'top': top, 'font-size':24, 'font-weight': 'bold'}).append('&#215;');
+		return $('<a>').css({'position': 'absolute','text-decoration':'none', 'padding-left': 2, 'top': top, 'font-size':24, 'font-weight': 'bold'}).append('&#215;');
 	}
 	
 	function getCloseDiv() {
