@@ -9,6 +9,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -19,12 +20,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import com.github.tosdan.utils.servlets.BasicHttpServlet;
+import com.github.tosdan.utils.servlets.BasicHttpServletV2;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 @SuppressWarnings( "serial" )
-public class ExcelOutServlet extends BasicHttpServlet
+public class ExcelOutServlet extends BasicHttpServletV2
 {
 	@Override
 	protected void doGet( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException { this.doService( req, resp ); }
@@ -34,8 +35,8 @@ public class ExcelOutServlet extends BasicHttpServlet
 	protected void doService( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
 	{
 		int riga = 0;
-		String nomeFoglio = this._defaultString( req.getParameter("nomeFoglioXls").replaceAll( "__", " " ), "Foglio 1" );
-		String titolo = this._blankIfNull( req.getParameter("titoloXls").replaceAll( "__", " " ) );
+		String nomeFoglio = StringUtils.defaultString(req.getParameter("nomeFoglioXls").replaceAll( "__", " " ), "Foglio 1");
+		String titolo = StringUtils.defaultString(req.getParameter("titoloXls").replaceAll( "__", " " ));
 		
 		Workbook wb = new HSSFWorkbook();
 		CreationHelper helper = wb.getCreationHelper();

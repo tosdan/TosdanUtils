@@ -1,4 +1,4 @@
-package com.github.tosdan.utils.servlets;
+package com.github.tosdan.beta.utils.servlets;
 
 import java.io.File;
 import java.io.FileOutputStream;

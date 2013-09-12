@@ -25,13 +25,17 @@
 		<welcome-file>default.jsp</welcome-file>
 	</welcome-file-list>
 
+	<context-param>
+		<param-name>SqlLoaderConf_File</param-name>
+		<param-value>/WEB-INF/WebAppsConfigFiles/SqlLoader/SqlLoaderConf.yml</param-value>
+	</context-param>
 	
 	<filter>
 		<filter-name>SqlLoaderFilter</filter-name>
 		<filter-class>com.github.tosdan.utils.filters.sqlLoader.SqlLoaderFilter</filter-class>        
         <init-param>
 	        <param-name>SqlLoaderConf_File</param-name>
-	        <param-value>/WEB-INF/WebAppsConfigFiles/SqlLoader/SqlLoaderConf.yaml</param-value>
+	        <param-value>/WEB-INF/WebAppsConfigFiles/SqlLoader/SqlLoaderConf.yml</param-value>
 	    </init-param>        
 	</filter>
 	<filter-mapping>
@@ -53,7 +57,7 @@
 	
 	<filter>
 		<filter-name>AuthFilter</filter-name>
-		<filter-class>com.github.tosdan.beta.utils.servlets.AuthFilter</filter-class>		
+		<filter-class>com.github.tosdan.beta.utils.filters.AuthFilter</filter-class>		
 		<init-param>
 			<param-name>userIDIdentifier</param-name>
 			<param-value>UserID</param-value>

@@ -2,12 +2,9 @@ package com.github.tosdan.beta.utils.servlets;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,10 +15,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.tosdan.utils.servlets.BasicHttpServlet;
+import com.github.tosdan.utils.servlets.BasicHttpServletV2;
 
 @SuppressWarnings( "serial" )
-public class SqlManagerConfig extends BasicHttpServlet
+public class SqlManagerConfig extends BasicHttpServletV2
 {	
 	@Override
 	protected void doPost( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException { this.doService( req, resp ); }
@@ -44,11 +41,11 @@ public class SqlManagerConfig extends BasicHttpServlet
 	{
 //		this.stampaMappa(this._initConfigParamsMap);
 //		this.stampaMappa( this._requestParamsMap );
-		System.out.println( this.get_requestMultipleValuesParamsMap( req ) );
-		System.out.println( this.get_requestParamsMap( req ) );
-		this.configPath = this._initConfigParamsMap.get( "SqlManagerServletConf_Path" );	
-		this.configFileName =  this._initConfigParamsMap.get( "SqlManagerServletConf_File" );
-		this.configDir = new File( this._appRealPath + this.configPath );
+		System.out.println( getRequestParamsProcessLog(req) );
+		System.out.println( getRequestParamsMap(req) );
+		this.configPath = getInitParameter( "SqlManagerServletConf_Path" );	
+		this.configFileName =  getInitParameter( "SqlManagerServletConf_File" );
+		this.configDir = new File( realPath + this.configPath );
 		
 		this.loadPropFile();
 		this.readQueriesRepoList();
@@ -65,7 +62,7 @@ public class SqlManagerConfig extends BasicHttpServlet
 	 */
 	protected void loadPropFile() throws IOException {
 //		System.out.println(confDir.getAbsolutePath());
-		File propFile = new File( this._appRealPath + this.configFileName );
+		File propFile = new File( realPath + this.configFileName );
 		FileReader reader = new FileReader( propFile );
 		this.prop.load( reader );
 		reader.close();

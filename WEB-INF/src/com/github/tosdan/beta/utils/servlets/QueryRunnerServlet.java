@@ -1,19 +1,20 @@
 package com.github.tosdan.beta.utils.servlets;
 
+import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.util.Properties;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.tosdan.utils.servlets.BasicHttpServlet;
-import com.github.tosdan.utils.sql.ConnectionProvider;
-import com.github.tosdan.utils.sql.ConnectionProviderException;
-import com.github.tosdan.utils.sql.ConnectionProviderImpl;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import com.github.tosdan.utils.servlets.BasicHttpServletV2;
 import com.github.tosdan.utils.sql.BasicDAO;
 import com.github.tosdan.utils.sql.BasicDAOException;
+import com.github.tosdan.utils.sql.ConnectionProviderImplV2;
 
 /**
  * 
@@ -21,7 +22,7 @@ import com.github.tosdan.utils.sql.BasicDAOException;
  *
  */
 @SuppressWarnings( "serial" )
-public class QueryRunnerServlet extends BasicHttpServlet
+public class QueryRunnerServlet extends BasicHttpServletV2
 {
 	private boolean printStackTrace;
 
@@ -33,13 +34,13 @@ public class QueryRunnerServlet extends BasicHttpServlet
 			throws QueryRunnerServletException, IOException
 	{
 		// inizializza la mappa contenente i parametri della request
-		String reqLog = this._processRequestForParams( req );
-		if ( this._booleanSafeParse(req.getParameter("logQueryRunner")) && this._initConfigParamsMap.get("logFileName") != null ) 
+		String reqLog = getRequestParamsProcessLog(req);
+		if ( BooleanUtils.toBoolean(req.getParameter("logQueryRunner")) && getInitParameter("logFileName") != null ) 
 			// crea un file di log con il nome passato come parametro nella sottocartella della webapp
-			this._logOnFile( this._ctx.getRealPath(this._initConfigParamsMap.get("logFileName")), reqLog );
+			FileUtils.writeStringToFile(new File(ctx.getRealPath(getInitParameter("logFileName"))), reqLog);
 
 		// flag per verbose stacktrace delle eccezioni catturate da questa servlet
-		this.printStackTrace = this._booleanSafeParse( req.getParameter("printStackTrace") );
+		this.printStackTrace = BooleanUtils.toBoolean( req.getParameter("printStackTrace") );
 		
 		// query da eseguire		
 		String querySql = "";
@@ -52,7 +53,7 @@ public class QueryRunnerServlet extends BasicHttpServlet
 		
 		int esito = this.eseguiQuery( querySql );
 
-		if ( this._blankIfNull(req.getParameter("reqMethod")).equalsIgnoreCase("ajax") )
+		if ( StringUtils.defaultString(req.getParameter("reqMethod")).equalsIgnoreCase("ajax") )
 		{
 			ServletOutputStream out = resp.getOutputStream();
 			out.print(esito);
@@ -81,8 +82,8 @@ public class QueryRunnerServlet extends BasicHttpServlet
 	private int eseguiQuery( String sql )
 			throws QueryRunnerServletException
 	{
-		String fileDBConf = this._appRealPath + this._initConfigParamsMap.get( "file_dbConf" );
-		BasicDAO dao = new BasicDAO( this.getConnectionProvider(fileDBConf) );
+		String fileDBConf = realPath + getInitParameter( "file_dbConf" );
+		BasicDAO dao = new BasicDAO( new ConnectionProviderImplV2( fileDBConf ) );
 		try {
 			return dao.update( sql );
 			
@@ -91,27 +92,6 @@ public class QueryRunnerServlet extends BasicHttpServlet
 				e1.printStackTrace();
 			throw new QueryRunnerServletException(  "Servlet " + this.getServletName() 
 					+ ": errore di accesso al database. Classe: "+this.getClass().getName(), e1 );
-		}
-	}
-	
-
-	/**
-	 * Configura e restituisce un {@link ConnectionProvider}
-	 * @param fileDBConf file {@link Properties} contenente la confiurazione per l'accesso al database.
-	 * @return un oggetto {@link ConnectionProvider} dal quale poter ottenere, senza ulteriori configurazioni, un oggetto {@link Connection} 
-	 * @throws QueryRunnerServletException 
-	 */
-	private ConnectionProvider getConnectionProvider(String fileDBConf)
-			throws QueryRunnerServletException
-	{
-		try {
-			return new ConnectionProviderImpl( fileDBConf );
-			
-		} catch ( ConnectionProviderException e ) {
-			if ( printStackTrace )
-				e.printStackTrace();
-			throw new QueryRunnerServletException(  "Servlet " + this.getServletName()
-					+": errore creazione ConnectionProvider. Classe: "+this.getClass().getName(), e );
 		}
 	}
 } //***Chiusura classe

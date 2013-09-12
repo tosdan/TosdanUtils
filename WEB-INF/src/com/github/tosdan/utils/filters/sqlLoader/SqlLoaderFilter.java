@@ -1,5 +1,6 @@
 package com.github.tosdan.utils.filters.sqlLoader;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -14,12 +15,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
-import com.github.tosdan.beta.utils.io.FileUtils;
 import com.github.tosdan.utils.filters.BasicFilterV2;
 import com.github.tosdan.utils.servlets.ServletUtils;
 import com.github.tosdan.utils.sql.MassiveQueryCompiler;
@@ -108,11 +109,12 @@ public class SqlLoaderFilter extends BasicFilterV2
 	/**
 	 * 
 	 * @param req
+	 * @throws IOException 
 	 */
-	private void logParametersToFile(HttpServletRequest req) {
+	private void logParametersToFile(HttpServletRequest req) throws IOException {
 		String reqLog = getRequestParamsProcessLog(req);
 		if ( isLogEnabled && settings.get("logFileName") != null ) 
-			FileUtils.toFile( realPath + settings.get("logFileName"), reqLog ); // crea un file di log con il nome passato come parametro nella sottocartella della webapp
+			FileUtils.writeStringToFile( new File(realPath + settings.get("logFileName")), reqLog);// crea un file di log con il nome passato come parametro nella sottocartella della webapp
 
 	}
 	
@@ -276,14 +278,13 @@ public class SqlLoaderFilter extends BasicFilterV2
 		InputStream is = null;
 		try {
 			is =  ctx.getResourceAsStream( configFile );
+			if (is == null)
+				throw new SqlLoaderFilterException( "Filtro " + this.filterConfig.getFilterName()
+						+ ": errore, file configurazione: '"+configFile+"' mancante. Classe: "+this.getClass().getName());
+			
 			String configFileContent = IOUtils.toString( is );
 			contentMap = (Map<String, String>) yaml.load( configFileContent );
 			
-		} catch (NullPointerException e) {
-			if ( printStackTrace )
-				e.printStackTrace();
-			throw new SqlLoaderFilterException( "Filtro " + this.filterConfig.getFilterName()
-					+ ": errore, file configurazione: '"+configFile+"' mancante. Classe: "+this.getClass().getName(), e );
 		} catch ( IOException e ) {
 			if ( printStackTrace )
 				e.printStackTrace();

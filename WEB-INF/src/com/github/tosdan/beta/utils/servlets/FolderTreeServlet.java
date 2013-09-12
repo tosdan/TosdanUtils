@@ -11,12 +11,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.tosdan.utils.servlets.BasicHttpServlet;
+import com.github.tosdan.utils.servlets.BasicHttpServletV2;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 @SuppressWarnings( "serial" )
-public class FolderTreeServlet extends BasicHttpServlet
+public class FolderTreeServlet extends BasicHttpServletV2
 {
 	@Override
 	protected void doGet( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException { this.doService( req, resp ); }
@@ -28,7 +28,7 @@ public class FolderTreeServlet extends BasicHttpServlet
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		
 		PrintWriter w = resp.getWriter();
-		System.out.println(  this.get_requestParamsProcessLog( req ) );
+		System.out.println(  getRequestParamsProcessLog(req) );
 		String idfolder = req.getParameter("idfolder");
 		Map<String, Object> output = new HashMap<String, Object>();
 		List<Object> listaFolder = new ArrayList<Object>();

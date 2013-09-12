@@ -11,14 +11,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import com.github.tosdan.utils.servlets.BasicHttpServlet;
+import com.github.tosdan.utils.servlets.BasicHttpServletV2;
 import com.github.tosdan.utils.stringhe.MapFormat;
 import com.github.tosdan.utils.stringhe.MapFormatTypeValidatorSQL;
+import com.github.tosdan.utils.varie.BoolUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 @SuppressWarnings( "serial" )
-public class QueriesFormatterServlet extends BasicHttpServlet
+public class QueriesFormatterServlet extends BasicHttpServletV2
 {
 	private Gson gson;
 	
@@ -42,7 +43,7 @@ public class QueriesFormatterServlet extends BasicHttpServlet
 		@SuppressWarnings( "unchecked" )
 		Map<String, Object> mappaParametriSostitutivi = this.gson.fromJson( jsonStringUnescaped, HashMap.class );
 		String testo = ( String ) mappaParametriSostitutivi.get("testoOriginaleReservedKeyWord");
-		boolean flagValidator = this._booleanSafeParse( mappaParametriSostitutivi.get("flagPerUtilizzoMapFormatSQLValidator") );
+		boolean flagValidator = BoolUtils.toBoolean(mappaParametriSostitutivi.get("flagPerUtilizzoMapFormatSQLValidator"));
 		
 		
 		

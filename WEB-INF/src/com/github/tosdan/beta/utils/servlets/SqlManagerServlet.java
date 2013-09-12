@@ -1,5 +1,6 @@
 package com.github.tosdan.beta.utils.servlets;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +11,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.tosdan.utils.servlets.BasicHttpServlet;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.BooleanUtils;
+
+import com.github.tosdan.utils.servlets.BasicHttpServletV2;
 import com.github.tosdan.utils.sql.QueriesUtils;
 import com.github.tosdan.utils.sql.QueriesUtilsException;
 import com.github.tosdan.utils.stringhe.MapFormatTypeValidator;
@@ -27,7 +31,7 @@ import com.github.tosdan.utils.stringhe.MapFormatTypeValidatorSQL;
  * @version 0.9
  */
 @SuppressWarnings( "serial" )
-public class SqlManagerServlet extends BasicHttpServlet
+public class SqlManagerServlet extends BasicHttpServletV2
 {
 	private boolean printStackTrace;
 
@@ -38,17 +42,17 @@ public class SqlManagerServlet extends BasicHttpServlet
 	protected void doPost( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
 	{
 		// inizializza la mappa contenente i parametri della request
-		String reqLog = this._processRequestForParams( req );
-		if ( this._booleanSafeParse(req.getParameter("logSqlManager")) && this._initConfigParamsMap.get("logFileName") != null ) 
+		String reqLog = getRequestParamsProcessLog(req);
+		if ( BooleanUtils.toBoolean(req.getParameter("logSqlManager")) && getInitParameter("logFileName") != null ) 
 			// crea un file di log con il nome passato come parametro nella sottocartella della webapp
-			this._logOnFile( this._ctx.getRealPath(this._initConfigParamsMap.get("logFileName")), reqLog );
-		
+			FileUtils.writeStringToFile(new File(ctx.getRealPath(getInitParameter("logFileName"))), reqLog);
+			
 		// flag per verbose stacktrace delle eccezioni catturate da questa servlet
-		this.printStackTrace = this._booleanSafeParse( req.getParameter("printStackTrace") );
+		this.printStackTrace = BooleanUtils.toBoolean( req.getParameter("printStackTrace") );
 		// percorso file settings
-		String queriesRepoFolderFullPath = this._appRealPath + this._initConfigParamsMap.get( "SqlManagerServletConf_Path" );
+		String queriesRepoFolderFullPath = realPath + getInitParameter( "SqlManagerServletConf_Path" );
 		// nome file settings
-		String propertiesFile = this._initConfigParamsMap.get( "SqlManagerServletConf_File" );
+		String propertiesFile = getInitParameter( "SqlManagerServletConf_File" );
 		// carica la configurazione dal file properties
 		Properties dtrProperties = this.loadProperties( propertiesFile );
 
@@ -64,12 +68,11 @@ public class SqlManagerServlet extends BasicHttpServlet
 		
 		// raccoglie i parametri della request, degli initConf della servlet e degli attributes eventualmente aggiunti da servlet o filtri precedenti
 		Map<String, Object> allParams = new HashMap<String, Object>();
-		allParams.putAll( this._requestParamsMap );
-		allParams.putAll( this._requestMultipleValuesParamsMap );
-		allParams.putAll( this._initConfigParamsMap );
-		allParams.putAll( this._requestAttributes );
+		allParams.putAll( getRequestParamsMap(req) );
+		allParams.putAll( getRequestMultipleValuesParamsMap(req) );
+		allParams.putAll( getRequestAttributes(req) );
 
-		if ( !_booleanSafeParse(req.getParameter("lasciaQueryParametrica")) )
+		if ( ! BooleanUtils.toBoolean(req.getParameter("lasciaQueryParametrica")) )
 		{
 			try {
 				// istanza l'oggetto per la validazione dei parametri rispetto ai valori effettivamente passati per evitare problemi sui Tipi
@@ -92,7 +95,7 @@ public class SqlManagerServlet extends BasicHttpServlet
 		
 //		String destinazione = nextHandlerServlet + "/go"; // URL Relativo
 //		RequestDispatcher dispatcher = req.getRequestDispatcher( destinazione );
-		RequestDispatcher dispatcher = _ctx.getNamedDispatcher( nextHandlerServlet );
+		RequestDispatcher dispatcher = ctx.getNamedDispatcher( nextHandlerServlet );
 		
 		dispatcher.forward( req, resp );
 
@@ -109,7 +112,7 @@ public class SqlManagerServlet extends BasicHttpServlet
 		
 		try {
 			// carica, dal file passato, l'oggetto Properties salvandolo in un campo della servlet 
-			dtrSettings.load( this._ctx.getResourceAsStream( propertiesFile ) );
+			dtrSettings.load( ctx.getResourceAsStream( propertiesFile ) );
 			
 		} catch ( IOException e2 ) {
 			if ( printStackTrace )

@@ -1,5 +1,6 @@
 package com.github.tosdan.utils.sql;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import com.github.tosdan.beta.utils.io.IOfrw;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
 import com.github.tosdan.utils.stringhe.MapFormat;
 import com.github.tosdan.utils.stringhe.MapFormatTypeValidator;
 import com.github.tosdan.utils.stringhe.StrUtils;
@@ -73,7 +76,7 @@ public class QueriesUtils
 			if (nomeFile != null)
 				// Se viene passato un file (percorso completo) l'eventuale InputStream passato verrebbe sovrasritto 
 				is = new FileInputStream( nomeFile );
-			contenutoFile = IOfrw.leggiInputStream( is );
+			contenutoFile = IOUtils.toString(is);
 		} catch ( IOException e ) {
 			String msg = (nomeFile == null) 
 					? "Errore in lettura dalla sorgente." 
@@ -115,7 +118,7 @@ public class QueriesUtils
 			throw new QueriesUtilsException( "Nessun file per lo store delle queries associato alla query '" + nomeQuery + "' nel file di configurazione della webapp." );
 		String contenutoFile = null;
 		try {
-			contenutoFile = IOfrw.leggiFile( queriesRepoFolderFullPath + nomeFile );
+			contenutoFile = FileUtils.readFileToString(new File(queriesRepoFolderFullPath + nomeFile));
 		} catch ( IOException e ) {
 			throw new QueriesUtilsException( "Errore di nel tentativo di lettura del file '"+queriesRepoFolderFullPath + nomeFile+"'", e );
 		}
@@ -189,7 +192,7 @@ public class QueriesUtils
 	public static String compilaQueryDaFile(String fileAbsPath, String nomeQuery, Map<String, Object> parametri, MapFormatTypeValidator validator)
 			throws IOException
 	{
-		String contenutoFile = IOfrw.leggiFile( fileAbsPath );
+		String contenutoFile = FileUtils.readFileToString(new File(fileAbsPath));
 		String query = StrUtils.findSection( contenutoFile, nomeQuery );
 		
 		return MapFormat.format( query, parametri, validator );
