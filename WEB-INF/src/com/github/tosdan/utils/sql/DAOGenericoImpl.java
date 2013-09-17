@@ -21,6 +21,10 @@ import org.apache.commons.dbutils.handlers.MapListHandler;
 public class DAOGenericoImpl extends DAOGenericoAbstract {
 	
 
+	private RowProcessorFormatter formatter;
+
+
+
 	/**
 	 * 
 	 * @param conn
@@ -32,9 +36,21 @@ public class DAOGenericoImpl extends DAOGenericoAbstract {
 	/**
 	 * 
 	 * @param conn
+	 * @param closeConn
 	 */
 	public DAOGenericoImpl(Connection conn,  boolean closeConn) {
+		this(conn, closeConn, null);
+	}
+	
+	/**
+	 * 
+	 * @param conn
+	 * @param closeConn
+	 * @param formatter
+	 */
+	public DAOGenericoImpl(Connection conn,  boolean closeConn, RowProcessorFormatter formatter) {
 		this.conn = conn;
+		this.formatter = formatter;
 		setCloseConn(closeConn);
 	}
 	
@@ -48,7 +64,7 @@ public class DAOGenericoImpl extends DAOGenericoAbstract {
 	 */
 	@Override
 	public List<Map<String, Object>> getMapList(String sql) throws SQLException {
-		ResultSetHandler<List<Map<String, Object>>> rsh = new MapListHandler( new BasicRowProcessorMod() );
+		ResultSetHandler<List<Map<String, Object>>> rsh = new MapListHandler( new BasicRowProcessorMod(formatter) );
 		return query( sql, rsh );
 	}
 	
@@ -60,7 +76,7 @@ public class DAOGenericoImpl extends DAOGenericoAbstract {
 	 */
 	@Override
 	public Map<String, Object> getMap(String sql) throws SQLException {
-		ResultSetHandler<Map<String, Object>> rsh = new MapHandler( new BasicRowProcessorMod() );
+		ResultSetHandler<Map<String, Object>> rsh = new MapHandler( new BasicRowProcessorMod(formatter) );
 		return query( sql, rsh );
 	}
 	
@@ -73,7 +89,7 @@ public class DAOGenericoImpl extends DAOGenericoAbstract {
 	 */
 	@Override
 	public List<Object[]> getArrayList(String sql) throws SQLException {
-		ResultSetHandler<List<Object[]>> rsh = new ArrayListHandler( new BasicRowProcessorMod() );
+		ResultSetHandler<List<Object[]>> rsh = new ArrayListHandler( new BasicRowProcessorMod(formatter) );
 		return query( sql, rsh );
 	}
 	
@@ -86,7 +102,7 @@ public class DAOGenericoImpl extends DAOGenericoAbstract {
 	 */
 	@Override
 	public Object[] getArray(String sql) throws SQLException {
-		ResultSetHandler<Object[]> rsh = new ArrayHandler( new BasicRowProcessorMod() );
+		ResultSetHandler<Object[]> rsh = new ArrayHandler( new BasicRowProcessorMod(formatter) );
 		return query( sql, rsh );
 	}
 	
@@ -114,7 +130,7 @@ public class DAOGenericoImpl extends DAOGenericoAbstract {
 	 */
 	@Override
 	public Map<String, List<Map<String, Object>>> getKeyedMapList(String sql, String columnToBeKey) throws SQLException {
-		ResultSetHandler<Map<String, List<Map<String, Object>>>> rsh = new KeyedMapListHandler<String>( columnToBeKey );
+		ResultSetHandler<Map<String, List<Map<String, Object>>>> rsh = new KeyedMapListHandler<String>( columnToBeKey, formatter );
 		return query( sql, rsh );
 	}
 	
