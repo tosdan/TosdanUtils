@@ -16,8 +16,23 @@ public abstract class HttpReallyBasicServlet extends HttpServlet {
 	@Override protected void doPost( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException { this.doService(req, resp); }
 	@Override
 	public void init() throws ServletException {
-		ctx = getServletContext();
 		super.init();
+		ctx = getServletContext();
+		inizializza();
 	}
+
+	/**
+	 * Metodo da sovrascrivere per effettuare operazioni di inizilizzazione. Se viene sovrascritto init() si perde il campo <code>ServletContext</code> ctx
+	 */
+	protected void inizializza() {
+	}
+	
+	/**
+	 * Metodo astratto chiamato sia in caso di request GET che POST.
+	 * @param req
+	 * @param resp
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	public abstract void doService( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException;
 }
