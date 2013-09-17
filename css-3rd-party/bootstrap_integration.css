@@ -17,6 +17,18 @@
    background-color: #EAEAEA !important; /* grigio un poco piu' scuro */
 }
 
+/*  Input piu' sottili */
+input[type="text"].input-slim , select.slim  {
+   height: 25px !important;
+   padding-top: 1px !important;
+   padding-bottom: 0 !important;
+   line-height: 12px !important;
+}
+
+input[type="text"].input-micro {
+	width: 28px;	
+}
+
 /*  Pensato per mettere in evidenza porzioni di testo con un colore diverso 
 	rispetto a come Bootstrap colora il tag <code> */
 span.hhcode1 {
