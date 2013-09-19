@@ -12,7 +12,6 @@ import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
 import org.apache.commons.dbutils.handlers.ArrayListHandler;
-import org.apache.commons.dbutils.handlers.KeyedHandler;
 import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 
@@ -231,7 +230,7 @@ public class BasicDAO implements DAO
 	 */
 	public Map<String, Map<String, Object>> runAndGetKeyedMap(String sql, String columnToBeKey) throws BasicDAOException 
 	{
-		ResultSetHandler<Map<String, Map<String, Object>>> rsh = new KeyedHandler<String>( columnToBeKey );
+		ResultSetHandler<Map<String, Map<String, Object>>> rsh = new MyKeyedHandler<String>( columnToBeKey );
 		return runAndGetSomething( sql, rsh );
 	}
 	

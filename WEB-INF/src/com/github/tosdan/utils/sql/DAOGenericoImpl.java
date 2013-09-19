@@ -8,7 +8,6 @@ import java.util.Map;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
 import org.apache.commons.dbutils.handlers.ArrayListHandler;
-import org.apache.commons.dbutils.handlers.KeyedHandler;
 import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 
@@ -115,7 +114,7 @@ public class DAOGenericoImpl extends DAOGenericoAbstract {
 	 */
 	@Override
 	public Map<String, Map<String, Object>> getKeyedMap(String sql, String columnToBeKey) throws SQLException {
-		ResultSetHandler<Map<String, Map<String, Object>>> rsh = new KeyedHandler<String>( columnToBeKey );
+		ResultSetHandler<Map<String, Map<String, Object>>> rsh = new MyKeyedHandler<String>( columnToBeKey );
 		return query( sql, rsh );
 	}
 	
