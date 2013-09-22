@@ -62,6 +62,42 @@ public class MapUtils
 		return destMap;
 	}
 	
+	/**
+	 * Trasforma una mappa di liste di mappe in una mappa di oggetti. Ad ogni chiave della mappa deve esser associata una lista di mappe che costituiranno i dati da inserire nell'oggetto creato che dovra' sostituire la lista
+	 * @param sourceMap
+	 * @param type
+	 * @return
+	 */
+	public static <T extends MapFeadable> Map<String, List<T>> turnKeyedMapListIntoKeyedMapListOfT(Map<String, List<Map<String, Object>>> sourceMap, Class<T> type) {
+		Map<String, List<T>> retVal = new LinkedHashMap<String, List<T>>();
+		
+		List<Map<String, Object>> tempMapListToConvert;
+
+		List<T> listOfT = null;
+		T tempInstanceOfT = null;
+		for( String key : sourceMap.keySet() ) {
+			tempMapListToConvert =sourceMap.get(key);	
+			listOfT = new ArrayList<T>();
+			for( Map<String, Object> map : tempMapListToConvert ) {		
+				try {
+					tempInstanceOfT = type.newInstance();
+					
+				} catch ( InstantiationException e ) {
+					throw new UnsupportedOperationException( e.getMessage(), e );
+				} catch ( IllegalAccessException e ) {
+					throw new TypeNotPresentException( e.getMessage(), e );
+				}
+				
+				tempInstanceOfT.addRecordAsMap(map);
+				listOfT.add(tempInstanceOfT);
+			}
+			
+			retVal.put( key, listOfT );
+		}
+		
+		return retVal;
+	}
+	
 
 	/**
 	 * Fonde due o piu' mappe.
