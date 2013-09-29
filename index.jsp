@@ -15,6 +15,7 @@
 			<li><a href="./jsp/FolderTree/ftree.jsp">Folder Tree</a></li>
 			<li><a href="./jsp/QueriesFormatter/qformatter.jsp">Folder Tree</a></li>
 			<li><a href="./jsp/jquery-downloadjs/jquery-downloadjs.jsp">jquery-downloadjs</a></li>
+			<li><a href="./jsp/debug_switch/debugswitch.jsp">debugSwitch</a></li>
 		</ul>
 	</div>
 </body>
