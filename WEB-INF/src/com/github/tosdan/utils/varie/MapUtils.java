@@ -97,6 +97,35 @@ public class MapUtils
 		
 		return retVal;
 	}
+
+	/**
+	 * Trasforma una liste di mappe in una lista di oggetti. 
+	 * @param sourceList
+	 * @param type
+	 * @return
+	 */
+	public static <T extends MapFeadable> List<T> turnMapListIntoListOfT(List<Map<String, Object>> sourceList, Class<T> type) {
+		List<T> retVal = new ArrayList<T>();
+		T tempInstanceOfT = null;
+		
+		for( Map<String, Object> elem : sourceList ) {
+			
+			try {
+				
+				tempInstanceOfT = type.newInstance();
+				
+			} catch ( InstantiationException e ) {
+				throw new UnsupportedOperationException( e.getMessage(), e );
+			} catch ( IllegalAccessException e ) {
+				throw new TypeNotPresentException( e.getMessage(), e );
+			}
+			
+			tempInstanceOfT.addRecordAsMap(elem);
+			retVal.add(tempInstanceOfT);
+		}
+		
+		return retVal;
+	}
 	
 
 	/**
