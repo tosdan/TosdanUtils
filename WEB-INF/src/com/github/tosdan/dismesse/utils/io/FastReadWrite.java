@@ -1,4 +1,4 @@
-package com.github.tosdan.beta.utils.io;
+package com.github.tosdan.dismesse.utils.io;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;

@@ -1,4 +1,4 @@
-package com.github.tosdan.utils.sql;
+package com.github.tosdan.dismesse.utils.sql;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,6 +7,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+
+import com.github.tosdan.utils.sql.ConnectionProvider;
+import com.github.tosdan.utils.sql.ConnectionProviderException;
 
 /**
  * Utilizzare ConnectionProviderImplV2 

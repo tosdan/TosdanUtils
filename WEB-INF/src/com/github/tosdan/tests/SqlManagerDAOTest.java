@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.github.tosdan.dismesse.utils.sql.ConnectionProviderImpl;
 import com.github.tosdan.utils.sql.ConnectionProvider;
-import com.github.tosdan.utils.sql.ConnectionProviderImpl;
 import com.github.tosdan.utils.sql.BasicDAO;
 import com.github.tosdan.utils.sql.BasicDAOException;
 

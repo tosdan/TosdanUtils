@@ -11,7 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.github.tosdan.utils.servlets.BasicHttpServletV2;
+import com.github.tosdan.dismesse.utils.servlets.BasicHttpServletV2;
 import com.github.tosdan.utils.sql.BasicDAO;
 import com.github.tosdan.utils.sql.BasicDAOException;
 import com.github.tosdan.utils.sql.ConnectionProviderImplV2;

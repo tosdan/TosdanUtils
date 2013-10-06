@@ -1,4 +1,4 @@
-package com.github.tosdan.utils.filters.sqlLoader;
+package com.github.tosdan.dismesse.utils.filters;
 
 import javax.servlet.ServletException;
 

@@ -1,4 +1,4 @@
-package com.github.tosdan.utils.sql;
+package com.github.tosdan.dismesse.utils.sql;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;

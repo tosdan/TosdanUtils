@@ -1,4 +1,4 @@
-package com.github.tosdan.utils.sql;
+package com.github.tosdan.dismesse.utils.sql;
 
 @SuppressWarnings( "serial" )
 public class QueriesUtilsException extends Exception

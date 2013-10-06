@@ -1,4 +1,4 @@
-package com.github.tosdan.beta.utils.servlets;
+package com.github.tosdan.dismesse.utils.servlets;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,9 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
 
-import com.github.tosdan.utils.servlets.BasicHttpServletV2;
-import com.github.tosdan.utils.sql.QueriesUtils;
-import com.github.tosdan.utils.sql.QueriesUtilsException;
+import com.github.tosdan.dismesse.utils.sql.QueriesUtils;
+import com.github.tosdan.dismesse.utils.sql.QueriesUtilsException;
 import com.github.tosdan.utils.stringhe.MapFormatTypeValidator;
 import com.github.tosdan.utils.stringhe.MapFormatTypeValidatorSQL;
 

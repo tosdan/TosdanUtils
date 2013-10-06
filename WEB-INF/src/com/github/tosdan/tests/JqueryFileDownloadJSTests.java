@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 
 import com.github.tosdan.beta.utils.servlets.DownloadServlet;
-import com.github.tosdan.utils.servlets.BasicHttpServletV2;
+import com.github.tosdan.dismesse.utils.servlets.BasicHttpServletV2;
 
 /**
  * 

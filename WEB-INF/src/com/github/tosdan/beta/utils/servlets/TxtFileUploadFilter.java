@@ -20,7 +20,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileCleaningTracker;
 
-import com.github.tosdan.utils.filters.BasicFilter;
+import com.github.tosdan.dismesse.utils.filters.BasicFilter;
 
 public class TxtFileUploadFilter extends BasicFilter
 {

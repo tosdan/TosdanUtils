@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import com.github.tosdan.utils.servlets.BasicHttpServletV2;
+import com.github.tosdan.dismesse.utils.servlets.BasicHttpServletV2;
 import com.github.tosdan.utils.stringhe.MapFormat;
 import com.github.tosdan.utils.stringhe.MapFormatTypeValidatorSQL;
 import com.github.tosdan.utils.varie.BoolUtils;

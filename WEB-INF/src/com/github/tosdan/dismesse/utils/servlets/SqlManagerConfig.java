@@ -1,4 +1,4 @@
-package com.github.tosdan.beta.utils.servlets;
+package com.github.tosdan.dismesse.utils.servlets;
 
 import java.io.File;
 import java.io.FileReader;
@@ -15,7 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.tosdan.utils.servlets.BasicHttpServletV2;
 
 @SuppressWarnings( "serial" )
 public class SqlManagerConfig extends BasicHttpServletV2
