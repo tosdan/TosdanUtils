@@ -9,7 +9,7 @@ $(function () {
  * Sicuramente il metodo con maggior leggibilita'
  */
 function initExample2() {
-    $(document).on("click", "a.jqueryFileDownload", function () {
+    $(document).on("click", "a.jqueryFileDownload", function (evt) {
    	 
         var $preparingFileModal = $("#please-wait-modal");
         $preparingFileModal.dialog({ modal: true });
@@ -22,24 +22,30 @@ function initExample2() {
         
         })
         .always( function (url) { // sia che fallisca sia che riesca.
-        		console.log('always');
                 $preparingFileModal.dialog('close');
-                
+                // NB. un qualsiasi console.log blocca always/done/fail. Non ha senso, ma e' cosi'
+            	var json = $.parseJSON(url);
+            	if (json.error)
+            		showErrorModal(json.errMsg);
         })
         .fail( function (responseHtml, url) {
-            	
            	var risposta = $( $.trim(responseHtml) ).html();
 //            $preparingFileModal.dialog('close'); <- inserito nell'always
-            
+           	showErrorModal(risposta);
             // NB. Estrarla piu' di 1 volta con un altro $("#error-modal") manda in crisi IE8+
-            $("#error-modal").html(risposta)
-                			 .dialog({ modal: true, width: 720, height: 520 });
+//            $("#error-modal").html(risposta).dialog({ modal: true, width: 720, height: 520 });
         });
         
+        evt.preventDefault();
         return false; //this is critical to stop the click event which will trigger a normal file download!
     });
 }
 
+
+
+function showErrorModal(msg) {
+	$("#error-modal").html(msg).dialog({ modal: true, width: 720, height: 520 });
+}
 
 
 

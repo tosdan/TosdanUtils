@@ -2,6 +2,8 @@ package com.github.tosdan.tests;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -14,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.github.tosdan.beta.utils.servlets.DownloadServlet;
 import com.github.tosdan.dismesse.utils.servlets.BasicHttpServletV2;
+import com.github.tosdan.utils.varie.JsonUtils;
 
 /**
  * 
@@ -29,7 +32,7 @@ public class JqueryFileDownloadJSTests extends BasicHttpServletV2
 	protected void doService( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException {
 		String richiesta = req.getParameter( "richiesta" );
 		ServletOutputStream servletOutputStream = resp.getOutputStream();
-		System.out.println( req.getParameter("prova") );
+		System.out.println( "req.getParameter('prova') = " + req.getParameter("prova") );
 		if (("successful").equalsIgnoreCase(richiesta)) {
 			
 			
@@ -65,6 +68,15 @@ public class JqueryFileDownloadJSTests extends BasicHttpServletV2
 			
 			IOUtils.copy( new FileInputStream(filename), servletOutputStream );
 			
+			
+		} else if (("successMaMessaggioErrore").equalsIgnoreCase(richiesta)) { // Messaggio Errore con json
+			resp.setContentType( "text/html; charset=UTF-8" );
+			System.out.println("req.getHeader('X-Requested-With') = " + req.getHeader("X-Requested-With"));
+			Map<String, Object> errMap = new HashMap<String, Object>();
+			errMap.put("error", true);
+			errMap.put("errMsg", "errore ebbasta");
+			
+			servletOutputStream.print(JsonUtils.toJSON(errMap));
 			
 		} else if (("fileIntrovabile").equalsIgnoreCase(richiesta)) {
 			

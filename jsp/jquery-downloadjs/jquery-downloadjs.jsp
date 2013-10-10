@@ -74,6 +74,8 @@
 			<a class="jqueryFileDownload" href="${pageContext.request.contextPath}/servlet/jqdownjs/getFile">Prova.xls (no param)</a>
 			<br />
 			<a class="jqueryFileDownload" href="${pageContext.request.contextPath}/servlet/jqdownjs/getFile?richiesta=fileIntrovabile">Prova.xls (file introvabile)</a>
+			<br />
+			<a class="jqueryFileDownload" href="${pageContext.request.contextPath}/servlet/jqdownjs/getFile?richiesta=successMaMessaggioErrore">successMaMessaggioErrore.xls (Messaggio Errore da json)</a>
 		</div>
 	</div>
 	
