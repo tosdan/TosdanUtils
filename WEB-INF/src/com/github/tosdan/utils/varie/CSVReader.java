@@ -1,6 +1,5 @@
 package com.github.tosdan.utils.varie;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,7 +35,7 @@ public class CSVReader {
 		
 		System.out.println("*\n*\n*\n**** readToList");
 		in = CSVReader.class.getResourceAsStream("file-vr.csv");
-		List<List<String>> llista = readToList(in, true);
+		List<List<String>> llista = readToListOfRow(in, true);
 		for( List<String> l : llista ) {
 			System.out.println(l);
 		}
@@ -44,7 +43,7 @@ public class CSVReader {
 
 	/**
 	 * 
-	 * @param in Viene chiuso dal metodo chiamato
+	 * @param in Chiuso al termine della lettura del file
 	 * @return
 	 * @throws IOException
 	 */
@@ -69,11 +68,11 @@ public class CSVReader {
 	
 	/**
 	 * Utile per la lettura dei csv con numero colonne variabili
-	 * @param in
+	 * @param in Chiuso al termine della lettura del file
 	 * @return
 	 * @throws IOException
 	 */
-	public static List<List<String>> readToList(InputStream in, boolean ignoreHeader) throws IOException {
+	public static List<List<String>> readToListOfRow(InputStream in, boolean ignoreHeader) throws IOException {
 		List<List<String>> listaRighe = new ArrayList<List<String>>();
 		ICsvListReader listReader = null;
 		try {
@@ -100,8 +99,8 @@ public class CSVReader {
 	
 	/**
 	 * 
-	 * @param in Viene chiuso dal metodo chiamato
-	 * @param clazz
+	 * @param in Chiuso al termine della lettura del file
+	 * @param clazz Classe dell'oggetto in cui viene trasformata ogni riga del csv
 	 * @return
 	 * @throws IOException
 	 */
