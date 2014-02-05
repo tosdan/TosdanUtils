@@ -1,7 +1,8 @@
 function blutecStats(ctxPath, options) {
 	var cookieOfTheDay = 'cookieOfTheDay_' + moment().format('L'),
+		urlServlet = ctxPath+'/servlet/fwk/uam/',
 		optionsMap;
-	
+		
 	if ($.isArray(options)) {
 		optionsMap = {};
 		for (var i = 0 ; i < options.length ; i++)
@@ -10,7 +11,7 @@ function blutecStats(ctxPath, options) {
 	options = optionsMap ? optionsMap : options;
 	
 	if( !Cookies(cookieOfTheDay) || (options && options.justTest) ) {
-		var getTodayCookie = $.getJSON(ctxPath+'/servlet/uam/do?richiesta=getTodayCookie');
+		var getTodayCookie = $.getJSON(urlServlet+'do?richiesta=getTodayCookie');
 		
 		getTodayCookie.done(function(responseData) {
 			
@@ -21,10 +22,11 @@ function blutecStats(ctxPath, options) {
 						, scrW: screen.width
 						, scrH: screen.height
 						, scrAW: screen.availWidth
-						, scrAH: screen.availHeight};			
-			
+						, scrAH: screen.availHeight
+						, richiesta: 'sendScreenStats'
+			};			
 			$.extend(data, options);
-			$.post(ctxPath+'/servlet/uam/do?richiesta=sendScreenStats', data );
+			$.post(urlServlet, data );
 		});
 		
 	} else {
