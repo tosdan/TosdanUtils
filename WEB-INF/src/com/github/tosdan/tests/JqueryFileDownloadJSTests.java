@@ -88,7 +88,7 @@ public class JqueryFileDownloadJSTests extends BasicHttpServletV2
 			}		
 			
 			String filename = "introvabile.txt";
-			String param = DownloadServlet.filenameParam;
+			String param = DownloadServlet.FILENAME_PARAM;
 			req.setAttribute( param, filename );
 			RequestDispatcher disp = req.getRequestDispatcher( "/servlet/download/fwd" );
 			disp.forward( req, resp );
@@ -105,7 +105,7 @@ public class JqueryFileDownloadJSTests extends BasicHttpServletV2
 			}		
 			
 			String filename = "prova.xls";
-			String param = DownloadServlet.filenameParam;
+			String param = DownloadServlet.FILENAME_PARAM;
 			req.setAttribute( param, filename );
 			RequestDispatcher disp = req.getRequestDispatcher( "/servlet/download/fwd" );
 			disp.forward( req, resp );

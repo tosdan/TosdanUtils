@@ -58,8 +58,8 @@ var debugSwitch = {
 		
 		function getCheckBox(id) {
 			var div = $('<div>').addClass('preventSelection').css({ 'background-color':'#C4C5DA','box-shadow': '1px 1px 5px #888', 'padding-bottom': 2,'padding-right':5,'margin': 3,'line-height': '10px','display': 'inline-block', 'border':'1px solid #777', 'border-radius':3}),
-				check = $('<input>').addClass('preventSelection').attr('type','checkbox').prop({'id': id, 'checked': true}),
-				label = $('<label>').addClass('preventSelection').append(id).css( { 'line-height':'12px','cursor':'pointer', 'font-family': 'Verdana', 'font-size': 12,'text-shadow': '1px 1px #d1d1d1'} );
+				check = $('<input>').addClass('preventSelection').attr('type','checkbox').prop({'id': id, 'checked': true}).css({'margin':'0'}),
+				label = $('<label>').addClass('preventSelection').append(id).css( { 'line-height':'12px','cursor':'pointer', 'font-family': 'Verdana', 'font-size': 12,'text-shadow': '1px 1px #d1d1d1','display': 'inline-block', 'margin-bottom':0} );
 			$(label).on('click', function() {
 				$(this).siblings('input').trigger('mousedown').trigger('mouseup').trigger('click');
 			});

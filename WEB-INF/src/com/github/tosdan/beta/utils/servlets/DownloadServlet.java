@@ -20,18 +20,16 @@ import org.apache.commons.lang3.StringEscapeUtils;
 /**
  * 
  * @author Daniele
- * @version 0.1.3-r2013-08-04
+ * @version 0.1.4-r2013-08-05
  */
 @SuppressWarnings( "serial" )
-public class DownloadServlet extends HttpServlet
-{
-	private String nomeFile;
-	private boolean debug = false;
-	public static final String filenameParam = "nomeFileDS";
+public class DownloadServlet extends HttpServlet {
+	
+	public static final String FILENAME_PARAM = "BetaDSFileName";
+	private static final String DEBUG_PARAM = "debug";
 
 	@Override
 	protected void doPost( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException {
-		this.nomeFile = this.getNomeFile( req );
 		this.doService( req, resp );
 	}
 	
@@ -41,9 +39,9 @@ public class DownloadServlet extends HttpServlet
 //		String percorsoDownloadServlet = req.getContextPath() + req.getServletPath();	
 //		this.nomeFile = uri.replaceAll( (percorsoDownloadServlet + "/"), "" );
 		
-		this.nomeFile = this.getNomeFile( req );
-		this.nomeFile = URLDecoder.decode( nomeFile, "UTF-8" );		
-		this.nomeFile = StringEscapeUtils.unescapeHtml4( nomeFile );
+		String nomeFile = getNomeFile(req);
+		nomeFile = URLDecoder.decode( nomeFile, "UTF-8" );		
+		nomeFile = StringEscapeUtils.unescapeHtml4( nomeFile );
 		this.doService( req, resp );
 //		System.out.println( "nome file : " + nomeFile + "\npercorso servlet: "+ percorsoDownloadServlet );
 				
@@ -55,8 +53,8 @@ public class DownloadServlet extends HttpServlet
 	
 	
 	protected void doService( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException {
-		File file = new File(this.nomeFile);		
-		if (debug) {
+		File file = new File( getNomeFile(req) );		
+		if (isDebug(req)) {
 			System.out.println( "file.getAbsolutePath(): " +file.getAbsolutePath() + "\nfile.getName(): " + file.getName() );
 		}
 		
@@ -67,9 +65,11 @@ public class DownloadServlet extends HttpServlet
 					? "Impossibile leggere il file: " +file.getAbsolutePath() 	// entrato nell'IF perche' !file.canRead()
 					: "File non trovato: " + file.getAbsolutePath();			// entrato nell'IF perche' !file.exists()
 					
-			req.getSession().setAttribute( "DownloadServletError", msg );	
-			if (debug)
+			req.getSession().setAttribute( "DownloadServletBeta/Error", msg );
+			
+			if (isDebug(req)) {
 				System.out.println( msg );
+			}
 			
 			if (req.getParameter("returnToCaller") != null) {
 				this.returnToCaller( req, resp );
@@ -77,6 +77,7 @@ public class DownloadServlet extends HttpServlet
 			} else { // per chiamate ajax (ramo di esecuzione di default)
 				resp.setHeader("content-type","text/html; charset=UTF-8");
 				resp.setContentType( "text/html" );
+//				msg = "{ \"name\": \"error\", \"message\": \""+msg+"\" }";
 				msg = "<span>"+msg+"</span>";
 				out.print( msg );
 				
@@ -136,12 +137,18 @@ public class DownloadServlet extends HttpServlet
 	 * @return
 	 */
 	private String getNomeFile(HttpServletRequest req) {
-		if (req.getAttribute(filenameParam) != null)
-			return (String) req.getAttribute(filenameParam);
-		else if (req.getParameter(filenameParam) != null)
-			return req.getParameter( filenameParam );
-		else 
-			throw new RuntimeException("Parametro nomeFileDS mancante.");
+		if (req.getAttribute(FILENAME_PARAM) != null) {
+			return (String) req.getAttribute(FILENAME_PARAM);
+		} else if (req.getParameter(FILENAME_PARAM) != null) {
+			return req.getParameter( FILENAME_PARAM );
+		} else {
+			throw new RuntimeException("Parametro "+FILENAME_PARAM+" mancante.");
+		}
+	}
+	
+	private boolean isDebug(HttpServletRequest req) {
+		return req.getParameter(DEBUG_PARAM) != null && req.getParameter(DEBUG_PARAM).equalsIgnoreCase("true");
+				
 	}
 	
 	/**
