@@ -25,7 +25,7 @@ import lime49.lockcrypt.WildcardURL;
 /**
  * 
  * @author Daniele
- * @version 0.1.3-b2013-08-25
+ * @version 0.1.4-b2014-05-11
  */
 public class ServletUtils
 {
@@ -65,6 +65,19 @@ public class ServletUtils
 		return null;
 	}
 	
+	public String getRefererURI() {
+		if (validReferer)
+			return getPath().replace(getCtxPath(), "");
+		return null;
+	}
+	
+	public String getRefererPage() {
+		if (validReferer)
+			return wurl.getFile();
+		return null;
+	}
+	
+	@Deprecated
 	public String getRequestedPage() {
 		if (validReferer)
 			return wurl.getFile();
@@ -133,6 +146,7 @@ public class ServletUtils
 								.append("getRef", getRef())
 								.append("getReferer", getReferer())
 								.append("getRequestedPage", getRequestedPage())
+								.append("getRequestedURI", getRefererURI())
 								.append("getUserInfo", getUserInfo())
 								.toString();
 	}

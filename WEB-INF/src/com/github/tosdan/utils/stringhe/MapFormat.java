@@ -137,10 +137,11 @@ public class MapFormat
 		String riga = "";
 		try {
 			while ( (riga = bf.readLine()) != null ) {
-				
+				if ( !result.isEmpty() ) {
+					result += "\n";
+				}
 		        StringBuffer sb = new StringBuffer();
 		        matcher.reset( riga );
-		        
 		        while ( matcher.find() ) { // <- Finche' nella riga trova un match
 		            
 		        	String placeHolderDaRimpiazzare = matcher.getPlaceHolderDaRimpiazzare();
@@ -205,11 +206,11 @@ public class MapFormat
 		        // recupera la riga con le sostituzioni dallo string buffer
 		        riga = sb.toString();
 		        
-		        // ri-testa la riga con il pattern per trovare parametri non sostituiti
-		        matcher.reset( riga );
+		        // ri-testa la riga con il pattern per trovare eventuali parametri non sostituiti
+		        matcher.reset(riga);
 		        // se non ne trova o se e' true il flag per tenerli aggiunge la riga alla variabile di output
-		        if ( keepUnMatched || ! matcher.find() ) 
-		        	result += riga + "\n";
+		        if ( keepUnMatched || !matcher.find() ) 
+		        	result += riga;
 			}
 		} catch ( IOException e ) { e.printStackTrace(); } // e' obbligatorio intercettarla per via del BufferedReader, ma qui di I/O c'e' ben poco
 		
