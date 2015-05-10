@@ -1,32 +1,198 @@
 package com.github.tosdan.utils.varie;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvBeanReader;
+import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.CsvMapReader;
+import org.supercsv.io.CsvMapWriter;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.io.ICsvListReader;
 import org.supercsv.io.ICsvMapReader;
+import org.supercsv.io.ICsvMapWriter;
 import org.supercsv.prefs.CsvPreference;
 
 /**
  * 
  * @author Daniele
- * @version 0.0.3-b2014-09-06
+ * @version 0.0.4-b2014-10-31
  */
-public class CsvUtils
-{
+public class CsvUtils {
+	
+	// *********************************************************************
+	// **********************      SCRITTURA CSV      **********************
+	// *********************************************************************
+
+
+	/**
+	 * 
+	 * @param outputCsvFile
+	 * @param mapList
+	 * @throws IOException
+	 */
+	public static void writeMap(String outputCsvFile, List<Map<String, Object>> mapList) throws IOException {
+		writeMap(outputCsvFile, null, mapList);
+	}
+	
+	/**
+	 * 
+	 * @param outputCsvFile
+	 * @param mapList
+	 * @param processor
+	 * @throws IOException
+	 */
+	public static void writeMap(String outputCsvFile, String[] nameMapping, List<Map<String, Object>> mapList) throws IOException {
+		writeMap(outputCsvFile, nameMapping, mapList, null);
+	}
+	
+	/**
+	 * 
+	 * @param outputCsvFile
+	 * @param nameMapping
+	 * @param mapList
+	 * @param processor
+	 * @throws IOException
+	 */
+	public static void writeMap(String outputCsvFile, String[] nameMapping, List<Map<String, Object>> mapList, CellProcessor[] processor) throws IOException {
+		writeMap(new FileWriter(outputCsvFile), nameMapping, mapList, processor);
+	}
+	
+
+	/**
+	 * 
+	 * @param writer
+	 * @param mapList
+	 * @throws IOException
+	 */
+	public static void writeMap(Writer writer, List<Map<String, Object>> mapList) throws IOException {
+		writeMap(writer, null, mapList);
+	}
+	
+	/**
+	 * 
+	 * @param writer
+	 * @param nameMapping
+	 * @param mapList
+	 * @throws IOException
+	 */
+	public static void writeMap(Writer writer, String[] nameMapping, List<Map<String, Object>> mapList) throws IOException {
+		writeMap(writer, nameMapping, mapList, null);
+	}
+	
+	
+	/**
+	 * 
+	 * @param writer
+	 * @param nameMapping
+	 * @param mapList
+	 * @param processor
+	 * @throws IOException
+	 */
+	public static void writeMap(Writer writer, String[] nameMapping, List<Map<String, Object>> mapList, CellProcessor[] processor) throws IOException {
+		ICsvMapWriter mapWriter = null;
+		
+		try {
+			mapWriter = new CsvMapWriter(writer, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+			
+			if (nameMapping == null) {
+				Set<String> headerSet = mapList.get(0).keySet();
+				nameMapping = new String[headerSet.size()];
+				int i = 0;
+				for( String colName : headerSet ) {
+					nameMapping[i] = colName;
+					i += 1;
+				}
+			}
+			
+			if (processor == null) {
+				processor = new CellProcessor[nameMapping.length];
+			}
+			
+			mapWriter.writeHeader(nameMapping);
+			
+			for(Map<String, Object> currMap : mapList) {
+				mapWriter.write(currMap, nameMapping, processor);
+			}
+			
+		} finally {
+			IOUtils.closeQuietly(mapWriter);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param writer
+	 * @param nameMapping
+	 * @param list
+	 * @throws IOException
+	 */
+	public static <T> void writeBean(Writer writer, String[] nameMapping, List<T> list) throws IOException {
+		writeBean(writer, nameMapping, list, null);
+	}
+	
+	/**
+	 * 
+	 * @param writer
+	 * @param nameMapping
+	 * @param list
+	 * @param processor
+	 * @throws IOException
+	 */
+	public static <T> void writeBean(Writer writer, String[] nameMapping, List<T> list, CellProcessor[] processor) throws IOException {
+		CsvBeanWriter mapWriter = null;
+		
+		try {
+			mapWriter = new CsvBeanWriter(writer, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+			
+			if (processor == null) {
+				processor = new CellProcessor[nameMapping.length];
+			}
+			
+			mapWriter.writeHeader(nameMapping);
+			
+			for(T currObj : list) {
+				mapWriter.write(currObj, nameMapping, processor);
+			}
+			
+		} finally {
+			IOUtils.closeQuietly(mapWriter);
+		}
+	}
+	
+	// *********************************************************************
+	// ***********************      LETTURA CSV      ***********************
+	// *********************************************************************
+
+	/**
+	 * 
+	 * @param csvFile
+	 * @param key
+	 * @return
+	 * @throws IOException
+	 */
+	public static Map<String, List<Map<String, Object>>> getKeyedRecords(File csvFile, String key) throws IOException {		
+		return getKeyedRecords( csvFile, key, null );
+	}
+	
+	public static Map<String, List<Map<String, Object>>> getKeyedRecords(File csvFile, String key, CellProcessor[] processor) throws IOException {
+		return getKeyedRecords(new FileInputStream(csvFile), key, processor);
+	}
+	
 	/**
 	 * 
 	 * @param csvFile Percorso file.
@@ -132,6 +298,27 @@ public class CsvUtils
 	 * @return
 	 * @throws IOException
 	 */
+	public static List<Map<String, Object>> read(File csvFile) throws IOException {
+		return read(csvFile, null);
+	}
+	
+	/**
+	 * 
+	 * @param csvFile
+	 * @param processor
+	 * @return
+	 * @throws IOException
+	 */
+	public static List<Map<String, Object>> read(File csvFile, CellProcessor[] processor) throws IOException {
+		return read(new FileInputStream(csvFile), processor);
+	}
+	
+	/**
+	 * 
+	 * @param csvFile
+	 * @return
+	 * @throws IOException
+	 */
 	public static List<Map<String, Object>> read(String csvFile) throws IOException {
 		return read(csvFile, null);
 	}
@@ -202,7 +389,7 @@ public class CsvUtils
     		
         	Map<String, Object> temp;
         	while( (temp = mapReader.read(header, processor)) != null ) {
-        		retVal.add(temp);        		
+        		retVal.add(temp);	
         	}
         	
         } finally {
@@ -210,6 +397,29 @@ public class CsvUtils
         }
         
         return retVal;
+	}
+	
+	/**
+	 * 
+	 * @param csvFile
+	 * @param clazz
+	 * @return
+	 * @throws IOException
+	 */
+	public static <T> List<T> readToBean(File csvFile, Class<T> clazz) throws IOException {
+		return readToBean(csvFile, clazz, null);
+	}
+	
+	/**
+	 * 
+	 * @param csvFile
+	 * @param clazz
+	 * @param processor
+	 * @return
+	 * @throws IOException
+	 */
+	public static <T> List<T> readToBean(File csvFile, Class<T> clazz, CellProcessor[] processor) throws IOException {
+		return readToBean(new FileInputStream(csvFile), clazz, processor);
 	}
 	
 	/**
@@ -303,6 +513,31 @@ public class CsvUtils
 		return retVal;
 	}
 	
+	
+	/**
+	 * @param in Chiuso al termine della lettura del file
+	 * @return
+	 * @throws IOException
+	 */
+	public static List<String> readHeader(InputStream in) throws IOException {
+		ICsvListReader listReader = null;
+		List<String> riga;
+		try {
+			listReader = new CsvListReader(new InputStreamReader(in), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+			
+			listReader.read();
+			
+			riga = new ArrayList<String>();
+			
+			for(int i = 1 ; i <= listReader.length() ; i++) {
+				riga.add(listReader.get(i));
+			}
+			
+		} finally {
+			IOUtils.closeQuietly(listReader);
+		}
+		return riga;
+	}
 
 	/**
 	 * @Sperimentale
