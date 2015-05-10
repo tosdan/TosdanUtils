@@ -26,6 +26,11 @@
 	</welcome-file-list>
 
 	<context-param>
+		<param-name>GlobalDownloadFolder</param-name>
+		<param-value>D:/Projects/_WEB-INF/WebAppsData/Download/</param-value>
+	</context-param>
+		 
+	<context-param>
 		<param-name>SqlLoaderConf_File</param-name>
 		<param-value>/WEB-INF/WebAppsConfigFiles/SqlLoader/SqlLoaderConf.yml</param-value>
 	</context-param>
@@ -101,27 +106,31 @@
 
 
 	<servlet>
-			<servlet-name>FolderTreeServlet</servlet-name>
-			<servlet-class>
-				com.github.tosdan.beta.utils.servlets.FolderTreeServlet
-			</servlet-class>
+		<servlet-name>FolderTreeServlet</servlet-name>
+		<servlet-class>
+			com.github.tosdan.beta.utils.servlets.FolderTreeServlet
+		</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>FolderTreeServlet</servlet-name>
 		<url-pattern>/servlet/ftree/*</url-pattern>
 	</servlet-mapping>
 	
-	
 	<servlet>
 		<servlet-name>DownloadServlet</servlet-name>
         <servlet-class>com.github.tosdan.beta.utils.servlets.DownloadServlet</servlet-class>
-        <init-param>
-        	<param-name>dummy</param-name>
-        	<param-value>dummy</param-value>
-       	</init-param>
 	</servlet>
 	<servlet-mapping>
         <servlet-name>DownloadServlet</servlet-name>
+        <url-pattern>/servlet/download_old/*</url-pattern>
+    </servlet-mapping>
+	
+	<servlet>
+		<servlet-name>DownloadServletImpl</servlet-name>
+        <servlet-class>com.github.tosdan.utils.servlets.DownloadServletImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+        <servlet-name>DownloadServletImpl</servlet-name>
         <url-pattern>/servlet/download/*</url-pattern>
     </servlet-mapping>
     
