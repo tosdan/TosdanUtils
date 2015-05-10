@@ -31,6 +31,8 @@ public class RandUtils {
 			r = getRandomString(j);
 			if (set.contains(r)) {
 				collisions += 1;
+				System.out.println(i);
+				break;
 			} else {
 				set.add(r);
 			}
