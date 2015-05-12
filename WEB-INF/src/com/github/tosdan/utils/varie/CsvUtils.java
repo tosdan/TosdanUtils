@@ -30,7 +30,7 @@ import org.supercsv.prefs.CsvPreference;
 /**
  * 
  * @author Daniele
- * @version 0.0.4-b2014-10-31
+ * @version 0.1.0-b2015-01-31
  */
 public class CsvUtils {
 	
@@ -45,7 +45,7 @@ public class CsvUtils {
 	 * @param mapList
 	 * @throws IOException
 	 */
-	public static void writeMap(String outputCsvFile, List<Map<String, Object>> mapList) throws IOException {
+	public static <T> void writeMap(String outputCsvFile, List<Map<String, T>> mapList) throws IOException {
 		writeMap(outputCsvFile, null, mapList);
 	}
 	
@@ -56,7 +56,7 @@ public class CsvUtils {
 	 * @param processor
 	 * @throws IOException
 	 */
-	public static void writeMap(String outputCsvFile, String[] nameMapping, List<Map<String, Object>> mapList) throws IOException {
+	public static <T> void writeMap(String outputCsvFile, String[] nameMapping, List<Map<String, T>> mapList) throws IOException {
 		writeMap(outputCsvFile, nameMapping, mapList, null);
 	}
 	
@@ -68,7 +68,7 @@ public class CsvUtils {
 	 * @param processor
 	 * @throws IOException
 	 */
-	public static void writeMap(String outputCsvFile, String[] nameMapping, List<Map<String, Object>> mapList, CellProcessor[] processor) throws IOException {
+	public static <T> void writeMap(String outputCsvFile, String[] nameMapping, List<Map<String, T>> mapList, CellProcessor[] processor) throws IOException {
 		writeMap(new FileWriter(outputCsvFile), nameMapping, mapList, processor);
 	}
 	
@@ -79,7 +79,7 @@ public class CsvUtils {
 	 * @param mapList
 	 * @throws IOException
 	 */
-	public static void writeMap(Writer writer, List<Map<String, Object>> mapList) throws IOException {
+	public static <T> void writeMap(Writer writer, List<Map<String, T>> mapList) throws IOException {
 		writeMap(writer, null, mapList);
 	}
 	
@@ -90,7 +90,7 @@ public class CsvUtils {
 	 * @param mapList
 	 * @throws IOException
 	 */
-	public static void writeMap(Writer writer, String[] nameMapping, List<Map<String, Object>> mapList) throws IOException {
+	public static <T> void writeMap(Writer writer, String[] nameMapping, List<Map<String, T>> mapList) throws IOException {
 		writeMap(writer, nameMapping, mapList, null);
 	}
 	
@@ -103,7 +103,7 @@ public class CsvUtils {
 	 * @param processor
 	 * @throws IOException
 	 */
-	public static void writeMap(Writer writer, String[] nameMapping, List<Map<String, Object>> mapList, CellProcessor[] processor) throws IOException {
+	public static <T> void writeMap(Writer writer, String[] nameMapping, List<Map<String, T>> mapList, CellProcessor[] processor) throws IOException {
 		ICsvMapWriter mapWriter = null;
 		
 		try {
@@ -125,7 +125,7 @@ public class CsvUtils {
 			
 			mapWriter.writeHeader(nameMapping);
 			
-			for(Map<String, Object> currMap : mapList) {
+			for(Map<String, T> currMap : mapList) {
 				mapWriter.write(currMap, nameMapping, processor);
 			}
 			

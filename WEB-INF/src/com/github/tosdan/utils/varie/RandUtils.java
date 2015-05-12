@@ -48,6 +48,7 @@ public class RandUtils {
 	 * 7 1 collisione ogni 25.000
 	 * 8 1 collisione ogni 70.000
 	 * 9 1 collisione ogni 1.200.000
+	 * 10 1 collisione ogni 10.000.000
 	 * @param length Lunghezza, in caratteri, della stringa in uscita.
 	 * @return Stringa casuale.
 	 */
