@@ -1,4 +1,4 @@
-package com.github.tosdan.utils.filters;
+package com.github.tosdan.dismesse.utils.filters;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
