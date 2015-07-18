@@ -63,11 +63,15 @@ public class DownloadServletImpl extends DownloadServletAbstract {
 	
 	protected String getAttrOrParam(HttpServletRequest req, String name) {
 		String retval = null;
+		String allowRewParams = this.getInitParameter("AllowRequestParameter");
+		
 		if (req.getAttribute(name) != null) {
 			retval = (String) req.getAttribute(name);
-		} else if (req.getParameter(name) != null) {
+			
+		} else if ("true".equalsIgnoreCase(allowRewParams) && req.getParameter(name) != null) {
 			retval = req.getParameter(name);
-		}		
+			
+		}
 		return retval;
 	}
 	/**
@@ -87,14 +91,14 @@ public class DownloadServletImpl extends DownloadServletAbstract {
 	
 	@Override protected void errorFileDoesntExists( ServletOutputStream out, HttpServletRequest req, HttpServletResponse resp, File file )
 			 throws IOException, ServletException {
-		sendError(out, req, resp, "File non trovato: " + file.getName());
+		sendError(out, req, resp, file, "File non trovato: " + file.getName());
 	}
 	@Override protected void errorCantReadFile( ServletOutputStream out, HttpServletRequest req, HttpServletResponse resp, File file ) 
 			throws IOException, ServletException {
-		sendError(out, req, resp, "Impossibile leggere il file: " +file.getName());
+		sendError(out, req, resp, file, "Impossibile leggere il file: " +file.getName());
 	}
 
-	protected void sendError(ServletOutputStream out, HttpServletRequest req, HttpServletResponse resp, String msg) 
+	protected void sendError(ServletOutputStream out, HttpServletRequest req, HttpServletResponse resp, File file, String msg) 
 			throws IOException, ServletException {
 //		req.getSession().setAttribute( "DownloadServletBeta/Error", msg );
 		

@@ -7,7 +7,6 @@
 	id="WebApp_ID" 
 	version="2.5">
 	
-<!-- Tomcat 5.5 (supporto terminato Sett 2012) Support Servlet 2.4 -->
 <!-- Tomcat 6 Support Servlet 2.5 -->
 <!-- Tomcat 7 Support Servlet 3 -->
 <!-- xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" -->
@@ -29,7 +28,8 @@
 		<param-name>GlobalDownloadFolder</param-name>
 		<param-value>D:/Projects/_WEB-INF/WebAppsData/Download/</param-value>
 	</context-param>
-		 
+	
+	<!--  
 	<context-param>
 		<param-name>SqlLoaderConf_File</param-name>
 		<param-value>/WEB-INF/WebAppsConfigFiles/SqlLoader/SqlLoaderConf.yml</param-value>
@@ -49,6 +49,7 @@
 		<dispatcher>REQUEST</dispatcher>
 		<dispatcher>FORWARD</dispatcher>		
 	</filter-mapping>
+	-->
 
 	<filter>
 	    <filter-name>NoCacheFilter</filter-name>
@@ -59,7 +60,7 @@
 		<url-pattern>*.jsp</url-pattern>
 	</filter-mapping>
 	
-	
+	<!-- 
 	<filter>
 		<filter-name>AuthFilter</filter-name>
 		<filter-class>com.github.tosdan.dismesse.utils.filters.AuthFilter</filter-class>		
@@ -76,8 +77,9 @@
 		<filter-name>AuthFilter</filter-name>
 		<url-pattern>/jsp/AuthFilter/*</url-pattern>
 	</filter-mapping>
+	-->
 	
-	
+	<!-- 
 	<filter>
 		<filter-name>SqlManagerFilter</filter-name>
 		<filter-class>com.github.tosdan.dismesse.utils.filters.SqlManagerFilter</filter-class>        
@@ -100,7 +102,7 @@
 		<dispatcher>REQUEST</dispatcher>
 		<dispatcher>FORWARD</dispatcher>			
 	</filter-mapping>
-
+ 	-->
 
 <!-- ** FINE Filtri ** Inizio Servlets ** -->
 
@@ -116,6 +118,7 @@
 		<url-pattern>/servlet/ftree/*</url-pattern>
 	</servlet-mapping>
 	
+	<!-- 
 	<servlet>
 		<servlet-name>DownloadServlet</servlet-name>
         <servlet-class>com.github.tosdan.beta.utils.servlets.DownloadServlet</servlet-class>
@@ -124,10 +127,19 @@
         <servlet-name>DownloadServlet</servlet-name>
         <url-pattern>/servlet/download_old/*</url-pattern>
     </servlet-mapping>
+	-->
 	
 	<servlet>
 		<servlet-name>DownloadServletImpl</servlet-name>
         <servlet-class>com.github.tosdan.utils.servlets.DownloadServletImpl</servlet-class>
+        <init-param>
+        	<description>Consente di passare il nome del file da scaricare anche come parametro della request
+        	invece che solo come attributo della request. A seconda dei casi può essere una scelta rischiosa.
+        	Il valore di questo parmetro e' case insenstive.
+        	</description>
+        	<param-name>AllowRequestParameter</param-name>
+        	<param-value>false</param-value>
+        </init-param>
 	</servlet>
 	<servlet-mapping>
         <servlet-name>DownloadServletImpl</servlet-name>
@@ -135,6 +147,7 @@
     </servlet-mapping>
     
     
+    <!-- 
     <servlet>
 		<servlet-name>QueryRunnerServlet</servlet-name>
         <servlet-class>com.github.tosdan.beta.utils.servlets.QueryRunnerServlet</servlet-class>
@@ -151,8 +164,9 @@
         <servlet-name>QueryRunnerServlet</servlet-name>
         <url-pattern>/servlet/dtreply/*</url-pattern>
     </servlet-mapping>
+    -->
     
-    
+    <!-- 
     <servlet>
 		<servlet-name>SqlManagerConfig</servlet-name>
         <servlet-class>com.github.tosdan.dismesse.utils.servlets.SqlManagerConfig</servlet-class>
@@ -173,8 +187,9 @@
         <servlet-name>SqlManagerConfig</servlet-name>
         <url-pattern>/servlet/sqlmanagerconf/*</url-pattern>
     </servlet-mapping>
+    -->
     
-    
+    <!-- 
 	<servlet>
         <servlet-name>ExcelOutServlet</servlet-name>
         <servlet-class>com.github.tosdan.beta.utils.servlets.ExcelOutServlet</servlet-class>
@@ -187,7 +202,9 @@
         <servlet-name>ExcelOutServlet</servlet-name>
         <url-pattern>/servlet/excelout/*</url-pattern>
     </servlet-mapping>
+    -->
     
+    <!-- 
     <servlet>
         <servlet-name>SqlManagerServlet</servlet-name>
         <servlet-class>com.github.tosdan.dismesse.utils.servlets.SqlManagerServlet</servlet-class>
@@ -208,8 +225,9 @@
         <servlet-name>SqlManagerServlet</servlet-name>
         <url-pattern>/servlet/sqlmanager/*</url-pattern>
     </servlet-mapping>
+    -->
     
-    
+    <!-- 
     <servlet>
 		<description>Servlet di Upload</description>
 		<servlet-name>UploadServlet</servlet-name>
@@ -219,7 +237,7 @@
 		<servlet-name>UploadServlet</servlet-name>
 		<url-pattern>/UploadServlet/*</url-pattern>
 	</servlet-mapping>
-	
+	-->
 	
 	<servlet>
 		<description>Test per jQueryFileDownload.js</description>
