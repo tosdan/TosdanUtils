@@ -1,5 +1,8 @@
 package com.github.tosdan.utils.varie;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 
 public class HttpReuqestUtils
@@ -45,5 +48,15 @@ public class HttpReuqestUtils
 		private String ip;
 		private String source;
 	}
-	
+
+	public static String parseRequestBody(HttpServletRequest req) throws IOException {
+		StringBuilder json = new StringBuilder();
+		BufferedReader reqReader = req.getReader();
+		String line;
+		while ( (line = reqReader.readLine()) != null ) {
+			json.append(line);
+		}
+		reqReader.close();
+		return json.toString();
+	}
 }
