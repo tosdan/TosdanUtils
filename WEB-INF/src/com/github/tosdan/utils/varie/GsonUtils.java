@@ -22,7 +22,7 @@ public class GsonUtils {
 						.setPrettyPrinting().create();
 	}	
 
-	public static String parseJsonRequest( HttpServletRequest req ) throws IOException {
+	public static String parseRequestBody(HttpServletRequest req) throws IOException {
 		StringBuilder json = new StringBuilder();
 		BufferedReader reqReader = req.getReader();
 		String line;
@@ -31,6 +31,11 @@ public class GsonUtils {
 		}
 		reqReader.close();
 		return json.toString();
+	}
+	
+	@Deprecated
+	public static String parseJsonRequest( HttpServletRequest req ) throws IOException {
+		return parseRequestBody(req);
 	}
 	
 	public static Map<String, Object> convertTreeMapToHashMap( Map<String, Object> paramsMap ) {
