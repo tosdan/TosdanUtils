@@ -50,20 +50,8 @@ public abstract class DownloadServletAbstract extends HttpServlet {
 		
 		ServletOutputStream out = resp.getOutputStream();
 		
-		if (file.exists()) {
-			if (file.canRead()) {
-				
-				this.transferFile(out, req, resp, file);
-				
-			} else {
-				errorCantReadFile(out, req, resp, file);
-				// Il file esiste ma non e' leggibile
-			}				
-			
-		} else {
-			errorFileDoesntExists(out, req, resp, file);
-			// Il file non esiste.
-		}		
+		this.transferFile(out, req, resp, file);
+		
 	}
 
 	/**
@@ -72,8 +60,6 @@ public abstract class DownloadServletAbstract extends HttpServlet {
 	 * @return Percorso assoluto del file.
 	 */
 	protected abstract String getFilenameFromRequest(HttpServletRequest req);
-	protected abstract void errorFileDoesntExists(ServletOutputStream out, HttpServletRequest req, HttpServletResponse resp, File file) throws IOException, ServletException;
-	protected abstract void errorCantReadFile(ServletOutputStream out, HttpServletRequest req, HttpServletResponse resp, File file) throws IOException, ServletException;
 
 	/**
 	 * Imposta la response per il download, effettua il recupero del file e invia il file al browser.
