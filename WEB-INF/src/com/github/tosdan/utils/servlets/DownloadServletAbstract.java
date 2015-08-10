@@ -47,11 +47,19 @@ public abstract class DownloadServletAbstract extends HttpServlet {
 		filename = URLDecoder.decode(filename, "UTF-8");
 		
 		File file = new File(filename);
-		
-		ServletOutputStream out = resp.getOutputStream();
-		
-		this.transferFile(out, req, resp, file);
-		
+		if (!file.exists()) {
+			throw new FileNotFoundException(file.getAbsolutePath() + " (File not found)");
+			
+		} else if (!file.canRead()) {
+			
+			throw new IOException(file.getAbsolutePath() + " (Can't read input file)");
+			
+		} else {
+
+			ServletOutputStream out = resp.getOutputStream();
+			this.transferFile(out, req, resp, file);
+			
+		}
 	}
 
 	/**
