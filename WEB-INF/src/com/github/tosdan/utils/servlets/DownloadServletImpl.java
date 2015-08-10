@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.activation.MimetypesFileTypeMap;
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
  *
  */
 public class DownloadServletImpl extends DownloadServletAbstract {
+
+	public static final String GLOBAL_DOWNLOAD_FOLDER_PARAM = "GlobalDownloadFolder";
 
 	/**
 	 * Per poter sfruttare la servlet è necessario inserire alcuni attributi nella request. Questo metodo semplifica questa operazione.
@@ -36,6 +39,16 @@ public class DownloadServletImpl extends DownloadServletAbstract {
 		req.setAttribute(DownloadServletImpl.DISPLAY_NAME_PARAM, outputFileDisplayName);
 		req.setAttribute(DownloadServletImpl.MIME_TYPE, mimeType);
 	}
+
+	/**
+	 * Permette di ottenere la cartella globale in cui la servlet di download cerca i file da scaricare.
+	 * @param ctx Contesto della webapp corrente.
+	 * @return File della cartella di download
+	 */
+	public static File getDownloadDir(ServletContext ctx) {
+		return new File(ctx.getInitParameter(GLOBAL_DOWNLOAD_FOLDER_PARAM));
+	}
+	
 	/**
 	 * 
 	 */
@@ -67,7 +80,7 @@ public class DownloadServletImpl extends DownloadServletAbstract {
 			throw new RuntimeException("Parametro ["+FILENAME_PARAM+"] mancante nella request.");
 		}
 		
-		String path = this.getServletContext().getInitParameter("GlobalDownloadFolder");
+		String path = this.getServletContext().getInitParameter(GLOBAL_DOWNLOAD_FOLDER_PARAM);
 		
 		if (req.getAttribute(ABSOLUTE_PATH) != null) {
 			path = "";
