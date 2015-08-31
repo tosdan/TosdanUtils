@@ -143,6 +143,23 @@
 	</servlet>
 	<servlet-mapping>
         <servlet-name>DownloadServletImpl</servlet-name>
+        <url-pattern>/servlet/download_old/*</url-pattern>
+    </servlet-mapping>
+	
+	<servlet>
+		<servlet-name>DownloadServletAlt</servlet-name>
+        <servlet-class>com.github.tosdan.utils.servlets.DownloadServletAlt</servlet-class>
+        <init-param>
+        	<description>Consente di passare il nome del file da scaricare anche come parametro della request
+        	invece che solo come attributo della request. A seconda dei casi può essere una scelta rischiosa.
+        	Il valore di questo parmetro e' case insenstive.
+        	</description>
+        	<param-name>DIRECT_DOWNLOAD_FROM_REQUEST</param-name>
+        	<param-value>true</param-value>
+        </init-param>
+	</servlet>
+	<servlet-mapping>
+        <servlet-name>DownloadServletAlt</servlet-name>
         <url-pattern>/servlet/download/*</url-pattern>
     </servlet-mapping>
     
