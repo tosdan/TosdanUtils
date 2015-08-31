@@ -87,16 +87,32 @@ public class DownloadServletAlt extends HttpServlet {
 	public static File getDownloadDir(ServletContext ctx) {
 		return new File(ctx.getInitParameter(GLOBAL_DOWNLOAD_FOLDER_PARAM));
 	}
+	
+	
+	
 
-
+	/**
+	 * Recupera dai parametri del contesto il percorso della cartella globale di download
+	 * @return
+	 */
 	protected String getDownloadPath() {
 		return this.getServletContext().getInitParameter(GLOBAL_DOWNLOAD_FOLDER_PARAM);
 	}
 	
+	/**
+	 * Recupera dalla request il nome del file da scaricare (putrebbe essere comprensivo anche di path)
+	 * @param req
+	 * @return
+	 */
 	protected String getFilename( HttpServletRequest req ) {
 		return getAttrOrParam(req, FILENAME_PARAM, true);
 	}
 	
+	/**
+	 * Produce un oggetto {@link HttpServletDownloader}
+	 * @param req
+	 * @return
+	 */
 	protected HttpServletDownloader getDownloader(HttpServletRequest req) {
 		
 		HttpServletDownloader downloader = new HttpServletDownloader();
@@ -111,17 +127,31 @@ public class DownloadServletAlt extends HttpServlet {
 		return downloader;
 	}
 	
-	
+	/**
+	 * Recupera dalla request il content type da imposatre
+	 * @param req
+	 * @return
+	 */
 	protected String getContentType(HttpServletRequest req) {
 		return getAttrOrParam(req, MIME_TYPE, false);
 	}
 	
-	
+	/**
+	 * Recupera dalla request il filename che verrà mostrato in fase di download
+	 * @param req
+	 * @return
+	 */
 	protected String getOutputFilename(HttpServletRequest req) {
 		return getAttrOrParam(req, DISPLAY_NAME_PARAM, false);
 	}
 
-	
+	/**
+	 * Recupera un parametro dalla request
+	 * @param req Oggetto {@link HttpServletRequest} corrente
+	 * @param name Nome del parametro da recuperare
+	 * @param checkExists Impone un controllo sull'effettiva presenza del parametro: se fosse assente viene lanciata un'eccezione
+	 * @return
+	 */
 	protected String getAttrOrParam(HttpServletRequest req, String name, boolean checkExists) {
 		String retval = null;
 		boolean paramsFromRequest = "true".equalsIgnoreCase(this.getInitParameter(DIRECT_DOWNLOAD_FROM_REQUEST));

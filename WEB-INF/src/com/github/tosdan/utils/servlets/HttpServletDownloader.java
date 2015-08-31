@@ -17,27 +17,12 @@ import org.apache.commons.io.IOUtils;
 
 public class HttpServletDownloader {
 
-	/**
-	 * Consente il download direttamente dalla request invece di passare per una servlet intermediaria.
-	 * Ovvero di default il nome del file da scaricare viene cecato solo negli attributi della request invece 
-	 * di controllare anche i parametri. Impostare a false per controllare anche i parametri.
-	 */
 	private boolean showContentLength;
-	
 	private List<Cookie> cookies;
 	private String contentType;
 	private String contentDisposition;
 	private String outputFilename;
 
-	
-	/**
-	 * 
-	 * @param reqFilenameParam Nome del parametro per recuperare il nome del file dalla request 
-	 * o il nome del file più path relativa alla cartella base di download. (Es. myfolder/myfile.txt oppure /tomcat/webapp1/WEB-INF/downloads/myfolder/myfile.txt)
-	 * <p>Diventa inutile se viene fornito il parametro <code><b>filename</b></code>
-	 * 
-	 * 
-	 */
 	public HttpServletDownloader() {
 		this.showContentLength = false;
 		this.cookies = new ArrayList<Cookie>();
@@ -58,8 +43,8 @@ public class HttpServletDownloader {
 	
 	/**
 	 * 
-	 * @param resp
-	 * @param filename Nome del file da scaricare. Opzionalmente può essere comprensivo di percorso relativo. 
+	 * @param resp Oggetto {@link HttpServletResponse} corrente
+	 * @param filename Nome del file da scaricare. Opzionalmente può essere comprensivo di percorso relativo (alla cartella indicata con <code>defaultDownloadFolder</code>). 
 	 * @param defaultDownloadFolder Cartella di base per tutti i download (Es. /tomcat/webapp1/WEB-INF/downloads).
 	 * @throws FileNotFoundException "File not found"
 	 * @throws IOException "Can't read input file"
@@ -94,10 +79,9 @@ public class HttpServletDownloader {
 	/**
 	 * Imposta la response per il download, effettua il recupero del file e invia il file al browser.
 	 * @param out Outputstream della servlet
-	 * @param resp Response
+	 * @param resp Response corrente
 	 * @param file File fisico.
 	 * @throws IOException 
-	 * @throws FileNotFoundException 
 	 */
 	private void transferFile(ServletOutputStream out, HttpServletResponse resp, File file)
 			throws IOException {
@@ -115,7 +99,7 @@ public class HttpServletDownloader {
 	}
 	
 	/**
-	 * 
+	 * Imposta il content type della response
 	 * @param req
 	 * @param resp
 	 */
@@ -146,12 +130,17 @@ public class HttpServletDownloader {
 	private void setContentDisposition(HttpServletResponse resp, File file) {
 		String contentDisposition = this.contentDisposition;
 		if (contentDisposition == null || contentDisposition.trim().isEmpty()) {
-			contentDisposition = this.getDefaultContentDisposition( this.getCurrentFilename(file) );
+			contentDisposition = this.getDefaultContentDisposition( this.getOutputFilename(file) );
 		}
 		resp.setHeader("Content-Disposition", contentDisposition);
 	}
 
-	private String getCurrentFilename(File file) {
+	/**
+	 * Recupera il filename come verrà mostrato in fase di download 
+	 * @param file
+	 * @return
+	 */
+	private String getOutputFilename(File file) {
 		String filename = this.outputFilename;
 		if (filename == null || filename.trim().isEmpty()) {
 			filename = file.getName();
@@ -168,7 +157,6 @@ public class HttpServletDownloader {
 	 * @param out Outputstream della servlet.
 	 * @param file File fisico per il download.
 	 * @throws IOException
-	 * @throws FileNotFoundException
 	 */
 	private void copyStream(ServletOutputStream out, File file) 
 			throws IOException {
