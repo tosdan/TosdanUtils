@@ -11,22 +11,17 @@ import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 
 public class HttpServletDownloader {
 
-	private String reqFilenameParam;
-	private String filename;
-	private String defaultDownloadFolder;
 	/**
 	 * Consente il download direttamente dalla request invece di passare per una servlet intermediaria.
 	 * Ovvero di default il nome del file da scaricare viene cecato solo negli attributi della request invece 
 	 * di controllare anche i parametri. Impostare a false per controllare anche i parametri.
 	 */
-	private boolean directFromRequest;
 	private boolean showContentLength;
 	
 	private List<Cookie> cookies;
@@ -34,56 +29,54 @@ public class HttpServletDownloader {
 	private String contentDisposition;
 	private String outputFilename;
 
-	/**
-	 * 
-	 * @param reqFilenameParam Nome del parametro per recuperare il nome del file dalla request 
-	 * o il nome del file più path relativa alla cartella base di download. (Es. myfolder/myfile.txt oppure /tomcat/webapp1/WEB-INF/downloads/myfolder/myfile.txt)
-	 * <p>Diventa inutile se viene fornito il parametro <code><b>filename</b></code>
-	 * @param filename Nome del file da scaricare. Può essere comprensivo di percorso assoluto, relativo o senza. Ovviamente,
-	 * nel caso sia con percorso assoluto, non ha senso fornire il parametro <code><b>defaultDownloadFolder</b></code>.
-	 * <p>Ha la priorità sul parametro <code><b>reqFilenameParam</b></code> che quindi può essere nullo.
-	 */
-	public HttpServletDownloader(String reqFilenameParam, String filename) {
-		this(reqFilenameParam, null, filename);
-	}
 	
 	/**
 	 * 
 	 * @param reqFilenameParam Nome del parametro per recuperare il nome del file dalla request 
 	 * o il nome del file più path relativa alla cartella base di download. (Es. myfolder/myfile.txt oppure /tomcat/webapp1/WEB-INF/downloads/myfolder/myfile.txt)
 	 * <p>Diventa inutile se viene fornito il parametro <code><b>filename</b></code>
-	 * @param defaultDownloadFolder Cartella di base per tutti i download (Es. /tomcat/webapp1/WEB-INF/downloads)
-	 * @param filename Nome del file da scaricare. Può essere comprensivo di percorso assoluto, relativo o senza. Ovviamente,
-	 * nel caso sia con percorso assoluto, non ha senso fornire il parametro <code><b>defaultDownloadFolder</b></code>.
-	 * <p>Ha la priorità sul parametro <code><b>reqFilenameParam</b></code> che quindi può essere nullo.
+	 * 
+	 * 
 	 */
-	public HttpServletDownloader(String reqFilenameParam, String defaultDownloadFolder, String filename) {
-		this.reqFilenameParam = reqFilenameParam;
-		this.defaultDownloadFolder = defaultDownloadFolder;
-		this.directFromRequest = false;
+	public HttpServletDownloader() {
 		this.showContentLength = false;
-		this.filename = filename;
 		this.cookies = new ArrayList<Cookie>();
 	}
 	
+
 	/**
 	 * 
-	 * @param req
 	 * @param resp
+	 * @param filename Nome del file da scaricare comprensivo di percorso assoluto.
 	 * @throws FileNotFoundException "File not found"
 	 * @throws IOException "Can't read input file"
 	 */
-	public void download(HttpServletRequest req, HttpServletResponse resp) throws FileNotFoundException, IOException {
+	public void download(HttpServletResponse resp, String filename) throws FileNotFoundException, IOException {
+		this.download(resp, filename, null);
+	}
+	
+	
+	/**
+	 * 
+	 * @param resp
+	 * @param filename Nome del file da scaricare. Opzionalmente può essere comprensivo di percorso relativo. 
+	 * @param defaultDownloadFolder Cartella di base per tutti i download (Es. /tomcat/webapp1/WEB-INF/downloads).
+	 * @throws FileNotFoundException "File not found"
+	 * @throws IOException "Can't read input file"
+	 */
+	public void download(HttpServletResponse resp, String filename, String defaultDownloadFolder) throws FileNotFoundException, IOException {
 
-		this.filename = this.filename == null ? this.getFilenameFromRequest(req) : this.filename;
 		try {
-			this.filename = URLDecoder.decode(this.filename, "UTF-8");
+			filename = URLDecoder.decode(filename, "UTF-8");
 			
 		} catch ( UnsupportedEncodingException e ) {			
 			throw new IllegalArgumentException(e.getMessage(), e.getCause());
 		}
 		
-		File file = new File(this.filename);
+		String path = defaultDownloadFolder == null ? "" : defaultDownloadFolder;		
+		String fileAbsolutePath = path + filename;
+		
+		File file = new File(fileAbsolutePath);
 		if (!file.exists()) {
 			throw new FileNotFoundException(file.getAbsolutePath() + " (File not found)");
 			
@@ -93,8 +86,7 @@ public class HttpServletDownloader {
 			
 		} else {
 
-			ServletOutputStream out = resp.getOutputStream();
-			this.transferFile(out, req, resp, file);
+			this.transferFile(resp.getOutputStream(), resp, file);
 			
 		}
 	}
@@ -107,7 +99,7 @@ public class HttpServletDownloader {
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	private void transferFile(ServletOutputStream out, HttpServletRequest req, HttpServletResponse resp, File file)
+	private void transferFile(ServletOutputStream out, HttpServletResponse resp, File file)
 			throws IOException {
 		
 		this.setContentLenth(resp, file);
@@ -184,44 +176,6 @@ public class HttpServletDownloader {
 	}
 	
 	/**
-	 * Recupera il nome del file da scaricare
-	 * @param req
-	 * @return
-	 */
-	private String getFilenameFromRequest(HttpServletRequest req) {
-		String fileAbsolutePath = this.getAttrOrParam(req);
-
-		if (fileAbsolutePath == null) {
-			throw new IllegalArgumentException("Parametro ["+this.reqFilenameParam+"] mancante nella request.");
-		}
-		
-		String path = this.defaultDownloadFolder == null ? "" : this.defaultDownloadFolder;
-		
-		fileAbsolutePath = path + fileAbsolutePath;
-		
-		return fileAbsolutePath;
-	}
-
-	/**
-	 * Recupera dagli attributi, o dai parametri della request, il valore del parametro contenente il nome del file da scaricare.
-	 * @param req
-	 * @return
-	 */
-	private String getAttrOrParam(HttpServletRequest req) {
-		String retval = null;
-		
-		if (req.getAttribute(this.reqFilenameParam) != null) {
-			retval = (String) req.getAttribute(this.reqFilenameParam);
-			
-		} else if (req.getParameter(this.reqFilenameParam) != null && this.directFromRequest) {
-			retval = req.getParameter(this.reqFilenameParam);
-			
-		}
-		
-		return retval;
-	}
-
-	/**
 	 * Aggiunge i cookies alla response.
 	 * @param resp Response
 	 */
@@ -262,15 +216,5 @@ public class HttpServletDownloader {
 	 */
 	public void setOutputFilename(String outputFilename) {
 		this.outputFilename = outputFilename;
-	}
-	
-	/**
-	 * <p>Imposta la possibilità di effettuare il download direttamente da request del browser, invece di imporre che  
-	 * la chiamata arrivi tramite un'altra servlet. 
-	 * <p>In pratica il parametro col nome del file viene letto anche da parameter e non solo da attribute della request.
-	 * @param directFromRequest
-	 */
-	public void setDirectFromRequest( boolean directFromRequest ) {
-		this.directFromRequest = directFromRequest;
 	}
 }

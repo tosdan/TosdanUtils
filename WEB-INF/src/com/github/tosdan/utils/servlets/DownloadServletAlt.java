@@ -1,6 +1,7 @@
 package com.github.tosdan.utils.servlets;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.servlet.ServletContext;
@@ -37,11 +38,25 @@ public class DownloadServletAlt extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		HttpServletDownloader downloader = getDownloader(req);
-		downloader.download(req, resp);
+		download(getDownloader(req), resp, getFilename(req), getDownloadPath());
 	}
 
-	
+	/**
+	 * 
+	 * @param resp Oggetto {@link HttpServletResponse}
+	 * @param downloader Oggetto {@link HttpServletDownloader}
+	 * @param downloadPath Cartella di base per tutti i download (Es. /tomcat/webapp1/WEB-INF/downloads).
+	 * @param filename Nome del file da scaricare. Opzionalmente può essere comprensivo di percorso relativo. 
+	 * @throws FileNotFoundException "File not found"
+	 * @throws IOException "Can't read input file"
+	 */
+	protected void download(HttpServletDownloader downloader, HttpServletResponse resp, String filename, String downloadPath)
+					throws FileNotFoundException, IOException {
+		
+		downloader.download(resp, filename, downloadPath);
+	}
+
+
 	/**
 	 * Per poter sfruttare la servlet è necessario inserire alcuni attributi nella request. Questo metodo semplifica questa operazione.
 	 * @param req
@@ -72,12 +87,19 @@ public class DownloadServletAlt extends HttpServlet {
 	public static File getDownloadDir(ServletContext ctx) {
 		return new File(ctx.getInitParameter(GLOBAL_DOWNLOAD_FOLDER_PARAM));
 	}
+
+
+	protected String getDownloadPath() {
+		return this.getServletContext().getInitParameter(GLOBAL_DOWNLOAD_FOLDER_PARAM);
+	}
 	
+	protected String getFilename( HttpServletRequest req ) {
+		return getAttrOrParam(req, FILENAME_PARAM, true);
+	}
 	
-	private HttpServletDownloader getDownloader(HttpServletRequest req) {
-		String path = this.getServletContext().getInitParameter(GLOBAL_DOWNLOAD_FOLDER_PARAM);
+	protected HttpServletDownloader getDownloader(HttpServletRequest req) {
 		
-		HttpServletDownloader downloader = new HttpServletDownloader(FILENAME_PARAM, path);
+		HttpServletDownloader downloader = new HttpServletDownloader();
 
 		Cookie cookie = new Cookie( "fileDownload", "true" );
 		cookie.setPath( "/" );
@@ -86,33 +108,36 @@ public class DownloadServletAlt extends HttpServlet {
 		downloader.setContentType(this.getContentType(req));
 		downloader.setOutputFilename(this.getOutputFilename(req));
 		
-		boolean requestDirectDownload = "true".equalsIgnoreCase(this.getInitParameter(DIRECT_DOWNLOAD_FROM_REQUEST));
-		downloader.setDirectFromRequest(requestDirectDownload);
-		
 		return downloader;
 	}
 	
 	
 	protected String getContentType(HttpServletRequest req) {
-		return getAttrOrParam(req, MIME_TYPE);
+		return getAttrOrParam(req, MIME_TYPE, false);
 	}
 	
 	
 	protected String getOutputFilename(HttpServletRequest req) {
-		return getAttrOrParam(req, DISPLAY_NAME_PARAM);
+		return getAttrOrParam(req, DISPLAY_NAME_PARAM, false);
 	}
 
 	
-	protected String getAttrOrParam(HttpServletRequest req, String name) {
+	protected String getAttrOrParam(HttpServletRequest req, String name, boolean checkExists) {
 		String retval = null;
+		boolean paramsFromRequest = "true".equalsIgnoreCase(this.getInitParameter(DIRECT_DOWNLOAD_FROM_REQUEST));
 		
 		if (req.getAttribute(name) != null) {
 			retval = (String) req.getAttribute(name);
 			
-		} else if (req.getParameter(name) != null) {
+		} else if (paramsFromRequest && req.getParameter(name) != null) {
 			retval = req.getParameter(name);
 			
-		}		
+		}
+		
+		if (checkExists && retval == null) {
+			throw new IllegalArgumentException("Parametro ["+name+"] mancante nella request.");
+		}
+		
 		return retval;
 	}
 	
