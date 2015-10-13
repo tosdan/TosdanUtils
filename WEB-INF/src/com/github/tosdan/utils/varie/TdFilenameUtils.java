@@ -13,7 +13,7 @@ public class TdFilenameUtils {
 
 		filename = filename.replaceAll("[_]{2,}", "_");					// Non sono ammessi due o più underscore di fila, vengono trasformati in uno singolo
 		
-		filename = filename.replaceAll("[-]{2,}", "_");					// Non sono ammessi due o più trattini di fila, vengono trasformati in uno singolo
+		filename = filename.replaceAll("[-]{2,}", "-");					// Non sono ammessi due o più trattini di fila, vengono trasformati in uno singolo
 		
 		return filename;
 	
