@@ -1,0 +1,12 @@
+# Inserire il parametro ReloadNoCacheFilter nella querystring per forzare il reload di questo file di configurazione
+#
+# Alla fin fine sembra che sia un problema di giusto ordine dei parametri in particolare dei primi 3
+Cache-Control: "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=1, private" # corretto ordine per non far impazzire IE8
+#
+#Cache-Control: "private, max-age=1, no-store, must-revalidate, proxy-revalidate" # anche con questa stringa funziona
+#
+# Con Pragma no-cache IE8 ha problemi nel download dei files
+#Pragma: "no-cache"
+Pragma: "token"
+#
+Expires: 0

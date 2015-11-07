@@ -116,6 +116,10 @@ public class MapFormat
 		
 	}
 	
+	public boolean isTemplate(String text) {
+		return matcher.reset(text).find();
+	}
+	
 	public MapFormat setMatcher(MapFormatMatcher matcher) {
 		this.matcher = matcher;
 		this.matcher.setValidatorRegExPart(this.validatorRegExPart);
