@@ -407,19 +407,44 @@ public class CsvUtils {
 	 * @throws IOException
 	 */
 	public static <T> List<T> readToBean(File csvFile, Class<T> clazz) throws IOException {
-		return readToBean(csvFile, clazz, null);
+		return readToBean(csvFile, null, clazz, null);
 	}
 	
 	/**
 	 * 
 	 * @param csvFile
+	 * @param headers
+	 * @param clazz
+	 * @return
+	 * @throws IOException
+	 */
+	public static <T> List<T> readToBean(File csvFile, String[] headers, Class<T> clazz) throws IOException {
+		return readToBean(csvFile, headers, clazz, null);
+	}
+	
+	/**
+	 * 
+	 * @param csvFile
+	 * @param headers
+	 * @param clazz
+	 * @return
+	 * @throws IOException
+	 */
+	public static <T> List<T> readToBean(File csvFile, Class<T> clazz, CellProcessor[] processor) throws IOException {
+		return readToBean(csvFile, null, clazz, processor);
+	}
+	
+	/**
+	 * 
+	 * @param csvFile
+	 * @param headers
 	 * @param clazz
 	 * @param processor
 	 * @return
 	 * @throws IOException
 	 */
-	public static <T> List<T> readToBean(File csvFile, Class<T> clazz, CellProcessor[] processor) throws IOException {
-		return readToBean(new FileInputStream(csvFile), clazz, processor);
+	public static <T> List<T> readToBean(File csvFile, String[] headers, Class<T> clazz, CellProcessor[] processor) throws IOException {
+		return readToBean(new FileInputStream(csvFile), headers, clazz, processor);
 	}
 	
 	/**
@@ -430,7 +455,19 @@ public class CsvUtils {
 	 * @throws IOException
 	 */
 	public static <T> List<T> readToBean(String csvFile, Class<T> clazz) throws IOException {
-		return readToBean(csvFile, clazz, null);
+		return readToBean(csvFile, null, clazz, null);
+	}
+	
+	/**
+	 * 
+	 * @param csvFile
+	 * @param headers
+	 * @param clazz
+	 * @return
+	 * @throws IOException
+	 */
+	public static <T> List<T> readToBean(String csvFile, String[] headers, Class<T> clazz) throws IOException {
+		return readToBean(csvFile, headers, clazz, null);
 	}
 	
 	/**
@@ -442,9 +479,22 @@ public class CsvUtils {
 	 * @throws IOException
 	 */
 	public static <T> List<T> readToBean(String csvFile, Class<T> clazz, CellProcessor[] processor) throws IOException {
-		return readToBean(new FileInputStream(csvFile), clazz, processor);
+		return readToBean(csvFile, null, clazz, processor);
 	}
 	
+	/**
+	 * 
+	 * @param csvFile
+	 * @param headers
+	 * @param clazz
+	 * @param processor
+	 * @return
+	 * @throws IOException
+	 */
+	public static <T> List<T> readToBean(String csvFile, String[] headers, Class<T> clazz, CellProcessor[] processor) throws IOException {
+		return readToBean(new InputStreamReader(new FileInputStream(csvFile)), headers, clazz, processor);
+	}
+		
 	/**
 	 * 
 	 * @param in Viene chiuso dal metodo chiamato
@@ -453,7 +503,19 @@ public class CsvUtils {
 	 * @throws IOException
 	 */
 	public static <T> List<T> readToBean(InputStream in, Class<T> clazz) throws IOException {
-		return readToBean(in, clazz, null);
+		return readToBean(in, null, clazz, null);
+	}
+	
+	/**
+	 * 
+	 * @param in
+	 * @param headers
+	 * @param clazz
+	 * @return
+	 * @throws IOException
+	 */
+	public static <T> List<T> readToBean(InputStream in, String[] headers, Class<T> clazz) throws IOException {
+		return readToBean(in, headers, clazz, null);
 	}
 	
 	/**
@@ -465,7 +527,20 @@ public class CsvUtils {
 	 * @throws IOException
 	 */
 	public static <T> List<T> readToBean(InputStream in, Class<T> clazz, CellProcessor[] processor) throws IOException {
-		return readToBean(new InputStreamReader(in), clazz, processor);
+		return readToBean(new InputStreamReader(in), null, clazz, processor);
+	}
+	
+	/**
+	 * 
+	 * @param in
+	 * @param headers
+	 * @param clazz
+	 * @param processor
+	 * @return
+	 * @throws IOException
+	 */
+	public static <T> List<T> readToBean(InputStream in, String[] headers, Class<T> clazz, CellProcessor[] processor) throws IOException {
+		return readToBean(new InputStreamReader(in), headers, clazz, processor);
 	}
 	
 	/**
@@ -476,7 +551,7 @@ public class CsvUtils {
 	 * @throws IOException
 	 */
 	public static <T> List<T> readToBean(Reader reader, Class<T> clazz) throws IOException {
-		return readToBean(reader, clazz, null);
+		return readToBean(reader, null, clazz, null);
 	}
 	
 	/**
@@ -488,6 +563,31 @@ public class CsvUtils {
 	 * @throws IOException
 	 */
 	public static <T> List<T> readToBean(Reader reader, Class<T> clazz, CellProcessor[] processor) throws IOException {
+		return readToBean(reader, null, clazz, processor);
+	}
+	
+	/**
+	 * 
+	 * @param reader
+	 * @param headers
+	 * @param clazz
+	 * @return
+	 * @throws IOException
+	 */
+	public static <T> List<T> readToBean(Reader reader, String[] headers, Class<T> clazz) throws IOException {
+		return readToBean(reader, headers, clazz, null);
+	}
+
+	/**
+	 * 
+	 * @param reader
+	 * @param headers
+	 * @param clazz
+	 * @param processor
+	 * @return
+	 * @throws IOException
+	 */
+	public static <T> List<T> readToBean(Reader reader, String[] headers, Class<T> clazz, CellProcessor[] processor) throws IOException {
 		List<T> retVal = new ArrayList<T>();
 		
 		ICsvBeanReader beanReader = null;
@@ -495,7 +595,11 @@ public class CsvUtils {
 			// CsvMapReader già incapsula il reader che riceve in un bufferedreader
 			beanReader = new CsvBeanReader(reader, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
 			
-			final String[] header = beanReader.getHeader(true);
+			String[] header = beanReader.getHeader(true);
+			
+			if (headers != null) {
+				header = headers;
+			}
 			
     		if (processor == null) {
     			processor = new CellProcessor[header.length];
