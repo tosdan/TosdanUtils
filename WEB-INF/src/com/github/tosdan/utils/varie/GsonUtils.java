@@ -23,7 +23,7 @@ public class GsonUtils {
 	
 	@Deprecated
 	public static String parseJsonRequest( HttpServletRequest req ) throws IOException {
-		return HttpReuqestUtils.parseRequestBody(req);
+		return HttpRequestUtils.parseRequestBody(req);
 	}
 	
 	public static Map<String, Object> convertTreeMapToHashMap( Map<String, Object> paramsMap ) {
