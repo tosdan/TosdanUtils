@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * 
  * @author Daniele
- *
+ * @deprecated use HttpRequestUtils instead
  */
 public class HttpReuqestUtils {
 	
