@@ -33,9 +33,9 @@ public class MapFormat
 		MapFormatTypeValidator validator = new MapFormatTypeValidatorSQL();
 		
 		Map<String, Object> mappa = new HashMap<String, Object>();
-			mappa.put( "param1", "PARAM1" );
-			mappa.put( "param2", "PARAM2" );
-			mappa.put( "param3", "PARAM3" );
+			mappa.put( "param1", "VALUE_1" );
+			mappa.put( "param2", "VALUE_2" );
+			mappa.put( "param3", "VALUE_3" );
 		MapFormat mf = new MapFormat( mappa, validator );
 		String a = mf.format( example );
 		System.out.println( a + "\n\n\n" + MapFormat.format( example2, mappa ));
@@ -118,6 +118,12 @@ public class MapFormat
 	
 	public boolean isTemplate(String text) {
 		return matcher.reset(text).find();
+	}
+	
+	public int countPatternMatches(String text) {
+		int retval = 0;
+		for (matcher.reset(text) ; matcher.find() ; retval += 1);
+		return retval;
 	}
 	
 	public MapFormat setMatcher(MapFormatMatcher matcher) {
