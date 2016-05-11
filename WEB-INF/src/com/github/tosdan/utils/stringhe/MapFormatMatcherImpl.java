@@ -12,7 +12,7 @@ public class MapFormatMatcherImpl extends MapFormatAbstractMatcher
 	}
 	
 	public String getRegExSchema() {
-		return "([a-zA-Z_][a-zA-Z0-9_-]*(\\.[a-zA-Z_][a-zA-Z0-9_-]*)*)(,[ ]*(?i)("+ getValidatorRegExPart() +"))?";
+		return "[ ]*([a-zA-Z_][a-zA-Z0-9_-]*(\\.[a-zA-Z_][a-zA-Z0-9_-]*)*)(,[ ]*(?i)("+ getValidatorRegExPart() +"))?[ ]*";
 	}
 	
 	public MapFormatAbstractMatcher resetPlaceHolder() {
