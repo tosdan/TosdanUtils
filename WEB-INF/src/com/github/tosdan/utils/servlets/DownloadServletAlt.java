@@ -31,6 +31,7 @@ public class DownloadServletAlt extends HttpServlet {
 	public static final String DISPLAY_NAME_PARAM 	= DownloadServletAlt.class.getName() + ".DisplayName";
 	public static final String ABSOLUTE_PATH 		= DownloadServletAlt.class.getName() + ".AbsolutePath";
 	public static final String MIME_TYPE 			= DownloadServletAlt.class.getName() + ".MimeType";
+	public static final String ATTACHMENT 			= DownloadServletAlt.class.getName() + ".Attachment";
 
 	@Override protected void doPost( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException { this.doGet(req, resp); }
 	
@@ -74,9 +75,21 @@ public class DownloadServletAlt extends HttpServlet {
 	 * @param mimeType Mime type del file da scaricare.
 	 */
 	public static void prepareDownload(HttpServletRequest req, String filename, String outputFileDisplayName, String mimeType) {
+		prepareDownload(req, filename, outputFileDisplayName, null, true);
+	}
+	/**
+	 * Per poter sfruttare la servlet è necessario inserire alcuni attributi nella request. Questo metodo semplifica questa operazione.
+	 * @param req
+	 * @param filename Nome (e eventualmente percorso relativo) del file da scaricare
+	 * @param outputFileDisplayName Nome file che verrà mostrato all'utente che effettua il download
+	 * @param mimeType Mime type del file da scaricare.
+	 * @param attachment Flag per mantenere o togliere il flag Content-Disposition: attachment, flag che cerca di forzare il download invece della preview nel browser
+	 */
+	public static void prepareDownload(HttpServletRequest req, String filename, String outputFileDisplayName, String mimeType, boolean attachment) {
 		req.setAttribute(FILENAME_PARAM, filename);
 		req.setAttribute(DISPLAY_NAME_PARAM, outputFileDisplayName);
 		req.setAttribute(MIME_TYPE, mimeType);
+		req.setAttribute(ATTACHMENT, attachment);
 	}
 
 	/**
@@ -105,7 +118,7 @@ public class DownloadServletAlt extends HttpServlet {
 	 * @return
 	 */
 	protected String getFilename( HttpServletRequest req ) {
-		return getAttrOrParam(req, FILENAME_PARAM, true);
+		return (String) getAttrOrParam(req, FILENAME_PARAM, true);
 	}
 	
 	/**
@@ -114,9 +127,13 @@ public class DownloadServletAlt extends HttpServlet {
 	 * @return
 	 */
 	protected HttpServletDownloader getDownloader(HttpServletRequest req) {
+		Object attachmentParamValue = getAttrOrParam(req, ATTACHMENT, false);
+		// attachment è true di default a meno che non sia presente un valore per il parametro ATTACHMENT
+		Boolean attachment = attachmentParamValue == null || (Boolean) attachmentParamValue;
 		
 		HttpServletDownloader downloader = new HttpServletDownloader();
-
+		downloader.setContentDispositionAttachment(attachment);
+		
 		Cookie cookie = new Cookie( "fileDownload", "true" );
 		cookie.setPath( "/" );
 		downloader.addCookie(cookie);
@@ -133,7 +150,7 @@ public class DownloadServletAlt extends HttpServlet {
 	 * @return
 	 */
 	protected String getContentType(HttpServletRequest req) {
-		return getAttrOrParam(req, MIME_TYPE, false);
+		return (String) getAttrOrParam(req, MIME_TYPE, false);
 	}
 	
 	/**
@@ -142,7 +159,7 @@ public class DownloadServletAlt extends HttpServlet {
 	 * @return
 	 */
 	protected String getOutputFilename(HttpServletRequest req) {
-		return getAttrOrParam(req, DISPLAY_NAME_PARAM, false);
+		return (String) getAttrOrParam(req, DISPLAY_NAME_PARAM, false);
 	}
 
 	/**
@@ -152,12 +169,12 @@ public class DownloadServletAlt extends HttpServlet {
 	 * @param checkExists Impone un controllo sull'effettiva presenza del parametro: se fosse assente viene lanciata un'eccezione
 	 * @return
 	 */
-	protected String getAttrOrParam(HttpServletRequest req, String name, boolean checkExists) {
-		String retval = null;
+	protected Object getAttrOrParam(HttpServletRequest req, String name, boolean checkExists) {
+		Object retval = null;
 		boolean paramsFromRequest = "true".equalsIgnoreCase(this.getInitParameter(DIRECT_DOWNLOAD_FROM_REQUEST));
 		
 		if (req.getAttribute(name) != null) {
-			retval = (String) req.getAttribute(name);
+			retval = req.getAttribute(name);
 			
 		} else if (paramsFromRequest && req.getParameter(name) != null) {
 			retval = req.getParameter(name);
