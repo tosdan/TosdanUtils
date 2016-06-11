@@ -17,14 +17,16 @@ import org.apache.commons.io.IOUtils;
 
 public class HttpServletDownloader {
 
-	private boolean showContentLength;
 	private List<Cookie> cookies;
 	private String contentType;
 	private String contentDisposition;
 	private String outputFilename;
+	private boolean showContentLength;
+	private boolean contentDispositionAttachment;
 
 	public HttpServletDownloader() {
 		this.showContentLength = false;
+		this.contentDispositionAttachment = true;
 		this.cookies = new ArrayList<Cookie>();
 	}
 	
@@ -149,7 +151,17 @@ public class HttpServletDownloader {
 	}
 	
 	private String getDefaultContentDisposition(String filename) {
-		return "attachment; filename=\"" + filename + "\"";
+		String attachment = this.contentDispositionAttachment ? "attachment; " : "";
+		return attachment + "filename=\"" + filename + "\"";
+	}
+	
+	/**
+	 * Flag per mantenere o rimuovere il flag <code>attachment</code>. <br>
+	 * La presenza di questo flag impedisce l'anteprima dei PDF nei browser.
+	 * @param contentDispositionAttachment
+	 */
+	public void setContentDispositionAttachment(boolean contentDispositionAttachment) {
+		this.contentDispositionAttachment = contentDispositionAttachment;
 	}
 
 	/**
