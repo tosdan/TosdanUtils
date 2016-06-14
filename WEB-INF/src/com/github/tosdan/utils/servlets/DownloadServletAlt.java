@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class DownloadServletAlt extends HttpServlet {
 	public static final String GLOBAL_DOWNLOAD_FOLDER_PARAM = "GlobalDownloadFolder";
+	public static final String WEB_APP_FOLDER_PARAM = "WebAppsData";
 	public static final String DIRECT_DOWNLOAD_FROM_REQUEST = "DIRECT_DOWNLOAD_FROM_REQUEST";
 	/**
 	 * 
@@ -32,6 +33,7 @@ public class DownloadServletAlt extends HttpServlet {
 	public static final String ABSOLUTE_PATH 		= DownloadServletAlt.class.getName() + ".AbsolutePath";
 	public static final String MIME_TYPE 			= DownloadServletAlt.class.getName() + ".MimeType";
 	public static final String ATTACHMENT 			= DownloadServletAlt.class.getName() + ".Attachment";
+	public static final String FOLDER	 			= DownloadServletAlt.class.getName() + ".Folder";
 
 	@Override protected void doPost( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException { this.doGet(req, resp); }
 	
@@ -39,7 +41,7 @@ public class DownloadServletAlt extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		download(getDownloader(req), resp, getFilename(req), getDownloadPath());
+		download(getDownloader(req), resp, getFilename(req), getDownloadPath(req));
 	}
 
 	/**
@@ -67,18 +69,20 @@ public class DownloadServletAlt extends HttpServlet {
 	public static void prepareDownload(HttpServletRequest req, String filename, String outputFileDisplayName) {
 		prepareDownload(req, filename, outputFileDisplayName, null);
 	}
+
 	/**
-	 * Per poter sfruttare la servlet è necessario inserire alcuni attributi nella request. Questo metodo semplifica questa operazione.
+	 * 
 	 * @param req
 	 * @param filename Nome (e eventualmente percorso relativo) del file da scaricare
 	 * @param outputFileDisplayName Nome file che verrà mostrato all'utente che effettua il download
 	 * @param mimeType Mime type del file da scaricare.
 	 */
 	public static void prepareDownload(HttpServletRequest req, String filename, String outputFileDisplayName, String mimeType) {
-		prepareDownload(req, filename, outputFileDisplayName, null, true);
+		prepareDownload(req, filename, outputFileDisplayName, mimeType, true);
 	}
+	
 	/**
-	 * Per poter sfruttare la servlet è necessario inserire alcuni attributi nella request. Questo metodo semplifica questa operazione.
+	 * 
 	 * @param req
 	 * @param filename Nome (e eventualmente percorso relativo) del file da scaricare
 	 * @param outputFileDisplayName Nome file che verrà mostrato all'utente che effettua il download
@@ -86,10 +90,32 @@ public class DownloadServletAlt extends HttpServlet {
 	 * @param attachment Flag per mantenere o togliere il flag Content-Disposition: attachment, flag che cerca di forzare il download invece della preview nel browser
 	 */
 	public static void prepareDownload(HttpServletRequest req, String filename, String outputFileDisplayName, String mimeType, boolean attachment) {
-		req.setAttribute(FILENAME_PARAM, filename);
-		req.setAttribute(DISPLAY_NAME_PARAM, outputFileDisplayName);
-		req.setAttribute(MIME_TYPE, mimeType);
-		req.setAttribute(ATTACHMENT, attachment);
+		prepareDownload(req, filename, outputFileDisplayName, mimeType, attachment, null);
+	}
+	
+	/**
+	 * Per poter sfruttare la servlet è necessario inserire alcuni attributi nella request. Questo metodo semplifica questa operazione.
+	 * @param req
+	 * @param filename Nome (e eventualmente percorso relativo) del file da scaricare
+	 * @param outputFileDisplayName Nome file che verrà mostrato all'utente che effettua il download
+	 * @param mimeType Mime type del file da scaricare.
+	 * @param attachment Flag per mantenere o togliere il flag Content-Disposition: attachment, flag che cerca di forzare il download invece della preview nel browser
+	 * @param folder Cartella alternativa alla cartella Download predefinita. E' sottocartella nel percorso assoluto contenuto nel parametro del ceontex <code>WebAppsData</code>.
+	 */
+	public static void prepareDownload(HttpServletRequest req, String filename, String outputFileDisplayName, String mimeType, boolean attachment, String folder) {
+		prepareDownload(req, new DownloadServletAltParams(filename, outputFileDisplayName, mimeType, attachment, folder));
+	}
+	/**
+	 * Per poter sfruttare la servlet è necessario inserire alcuni attributi nella request. Questo metodo semplifica questa operazione.
+	 * @param req
+	 * @param params
+	 */
+	public static void prepareDownload(HttpServletRequest req, DownloadServletAltParams params) {
+		req.setAttribute(FILENAME_PARAM, params.getFilename());
+		req.setAttribute(DISPLAY_NAME_PARAM, params.getOutputFileDisplayName());
+		req.setAttribute(MIME_TYPE, params.getMimeType());
+		req.setAttribute(ATTACHMENT, params.getAttachment());
+		req.setAttribute(FOLDER, params.getFolder());
 	}
 
 	/**
@@ -101,15 +127,33 @@ public class DownloadServletAlt extends HttpServlet {
 		return new File(ctx.getInitParameter(GLOBAL_DOWNLOAD_FOLDER_PARAM));
 	}
 	
+	/**
+	 * 
+	 * @param ctx
+	 * @param altFolder Cartella alternativa alla canonica Download
+	 * @return
+	 */
+	public static File getDownloadDir(ServletContext ctx, String altFolder) {
+		return new File(ctx.getInitParameter(WEB_APP_FOLDER_PARAM) + "/" +altFolder);
+	}
+	
 	
 	
 
 	/**
 	 * Recupera dai parametri del contesto il percorso della cartella globale di download
+	 * @param req 
 	 * @return
 	 */
-	protected String getDownloadPath() {
-		return this.getServletContext().getInitParameter(GLOBAL_DOWNLOAD_FOLDER_PARAM);
+	protected String getDownloadPath(HttpServletRequest req) {
+		String paramName = GLOBAL_DOWNLOAD_FOLDER_PARAM;
+		String alternativeDownloadFolder = (String) getAttrOrParam(req, FOLDER, false);
+		String altFolder = "";
+		if (alternativeDownloadFolder != null) {
+			paramName = WEB_APP_FOLDER_PARAM;
+			altFolder = "/" + alternativeDownloadFolder;
+		}
+		return this.getServletContext().getInitParameter(paramName) + altFolder;
 	}
 	
 	/**

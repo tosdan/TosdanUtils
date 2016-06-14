@@ -88,8 +88,7 @@ public class NoCacheFilterParametrized implements Filter {
 			retval = (Map<String, Object>) new Yaml().load(is);
 			if (retval.containsKey("info")) {
 				System.out.println("Loading NoCacheFilter config file...");
-				System.out.printf("NoCacheFilter: %s params loaded.\n",
-						(retval == null) ? 0 : retval.size());
+				System.out.printf("NoCacheFilter: %s params loaded.\n", (retval == null) ? 0 : retval.size());
 			}
 			is.close();
 		} else {

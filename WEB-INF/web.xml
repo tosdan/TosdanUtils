@@ -29,6 +29,11 @@
 		<param-value>D:/Projects/_WEB-INF/WebAppsData/Download/</param-value>
 	</context-param>
 	
+	<context-param>
+		<param-name>WebAppsData</param-name>
+		<param-value>D:/Projects/_WEB-INF/WebAppsData/</param-value>
+	</context-param>
+	
 	<!--  
 	<context-param>
 		<param-name>SqlLoaderConf_File</param-name>
