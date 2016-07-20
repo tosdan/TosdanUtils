@@ -40,7 +40,9 @@ public abstract class MapFormatAbstractMatcher implements MapFormatMatcher
 		if (esito) {
 	        placeHolderDaRimpiazzare = matcher.group(); 	// puo' esser 	-> ${stringaDaSostituire} oppure ${stringaDaSostituire, integer}
 	        strDentroAlPlaceHolder = matcher.group(1);		// sempre 		-> "stringaDaSostituire"
-	        type = matcher.group(4);		 				// se presente	-> "integer"
+	        if (matcher.groupCount() > 3) {
+				type = matcher.group(4); // se presente	-> "integer"
+			}
 		}
 		
         return esito;
