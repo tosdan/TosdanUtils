@@ -595,10 +595,12 @@ public class CsvUtils {
 			// CsvMapReader già incapsula il reader che riceve in un bufferedreader
 			beanReader = new CsvBeanReader(reader, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
 			
-			String[] header = beanReader.getHeader(true);
+			String[] header;
 			
 			if (headers != null) {
 				header = headers;
+			} else {
+				header = beanReader.getHeader(true);
 			}
 			
     		if (processor == null) {
