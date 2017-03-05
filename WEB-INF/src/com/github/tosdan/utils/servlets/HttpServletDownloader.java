@@ -172,7 +172,13 @@ public class HttpServletDownloader {
 	 */
 	private void copyStream(ServletOutputStream out, File file) 
 			throws IOException {
-		IOUtils.copy(new FileInputStream(file), out);
+		FileInputStream fileInputStream = null;
+		try {
+			fileInputStream = new FileInputStream(file);
+			IOUtils.copy(fileInputStream, out);
+		} finally {
+			IOUtils.closeQuietly(fileInputStream);			
+		}
 	}
 	
 	/**
