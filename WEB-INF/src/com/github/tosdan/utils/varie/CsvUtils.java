@@ -142,7 +142,19 @@ public class CsvUtils {
 	 * @throws IOException
 	 */
 	public static <T> void writeBean(Writer writer, String[] nameMapping, List<T> list) throws IOException {
-		writeBean(writer, nameMapping, list, null);
+		writeBean(writer, nameMapping, nameMapping, list, null);
+	}
+	
+	/**
+	 * 
+	 * @param writer
+	 * @param nameMapping
+	 * @param headers
+	 * @param list
+	 * @throws IOException
+	 */
+	public static <T> void writeBean(Writer writer, String[] nameMapping, String[] headers, List<T> list) throws IOException {
+		writeBean(writer, nameMapping, headers, list, null);
 	}
 	
 	/**
@@ -153,7 +165,7 @@ public class CsvUtils {
 	 * @param processor
 	 * @throws IOException
 	 */
-	public static <T> void writeBean(Writer writer, String[] nameMapping, List<T> list, CellProcessor[] processor) throws IOException {
+	public static <T> void writeBean(Writer writer, String[] nameMapping, String[] headers, List<T> list, CellProcessor[] processor) throws IOException {
 		CsvBeanWriter mapWriter = null;
 		
 		try {
@@ -163,7 +175,9 @@ public class CsvUtils {
 				processor = new CellProcessor[nameMapping.length];
 			}
 			
-			mapWriter.writeHeader(nameMapping);
+			if (headers != null) {
+				mapWriter.writeHeader(headers);
+			}
 			
 			for(T currObj : list) {
 				mapWriter.write(currObj, nameMapping, processor);
