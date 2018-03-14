@@ -64,6 +64,19 @@ public class HttpServletDownloader {
 		String fileAbsolutePath = path + filename;
 		
 		File file = new File(fileAbsolutePath);
+		
+		download(resp, file);
+	}
+	
+	
+	/**
+	 * 
+	 * @param resp Oggetto {@link HttpServletResponse} corrente
+	 * @param file File da scaricare. 
+	 * @throws FileNotFoundException "File not found"
+	 * @throws IOException "Can't read input file"
+	 */
+	public void download(HttpServletResponse resp, File file) throws FileNotFoundException, IOException {
 		if (!file.exists()) {
 			throw new FileNotFoundException(file.getAbsolutePath() + " (File not found)");
 			
@@ -72,12 +85,13 @@ public class HttpServletDownloader {
 			throw new IOException(file.getAbsolutePath() + " (Can't read input file)");
 			
 		} else {
-
+			
 			this.transferFile(resp.getOutputStream(), resp, file);
 			
 		}
 	}
 
+	
 	/**
 	 * Imposta la response per il download, effettua il recupero del file e invia il file al browser.
 	 * @param out Outputstream della servlet

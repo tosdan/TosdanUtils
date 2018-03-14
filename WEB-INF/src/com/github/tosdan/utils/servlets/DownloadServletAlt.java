@@ -30,10 +30,10 @@ public class DownloadServletAlt extends HttpServlet {
 	 */
 	public static final String FILENAME_PARAM 		= DownloadServletAlt.class.getName() + ".Filename";
 	public static final String DISPLAY_NAME_PARAM 	= DownloadServletAlt.class.getName() + ".DisplayName";
-	public static final String ABSOLUTE_PATH 		= DownloadServletAlt.class.getName() + ".AbsolutePath";
 	public static final String MIME_TYPE 			= DownloadServletAlt.class.getName() + ".MimeType";
 	public static final String ATTACHMENT 			= DownloadServletAlt.class.getName() + ".Attachment";
 	public static final String FOLDER	 			= DownloadServletAlt.class.getName() + ".Folder";
+	public static final String ABSOLUTE_FILE	 	= DownloadServletAlt.class.getName() + ".AbsoluteFile";
 
 	@Override protected void doPost( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException { this.doGet(req, resp); }
 	
@@ -41,7 +41,16 @@ public class DownloadServletAlt extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		download(getDownloader(req), resp, getFilename(req), getDownloadPath(req));
+		HttpServletDownloader downloader = getDownloader(req);
+
+		File absoluteFile = getAbsoluteFile(req);
+		if (absoluteFile != null) {
+			download(downloader, resp, absoluteFile);
+			
+		} else {
+			download(downloader, resp, getFilename(req), getDownloadPath(req));
+			
+		}
 	}
 
 	/**
@@ -53,10 +62,27 @@ public class DownloadServletAlt extends HttpServlet {
 	 * @throws FileNotFoundException "File not found"
 	 * @throws IOException "Can't read input file"
 	 */
-	protected void download(HttpServletDownloader downloader, HttpServletResponse resp, String filename, String downloadPath)
+	protected void download(HttpServletDownloader downloader, HttpServletResponse resp, File file)
 					throws FileNotFoundException, IOException {
+
+		downloader.download(resp, file);
+		
+	}
+	
+	/**
+	 * 
+	 * @param resp Oggetto {@link HttpServletResponse}
+	 * @param downloader Oggetto {@link HttpServletDownloader}
+	 * @param downloadPath Cartella di base per tutti i download (Es. /tomcat/webapp1/WEB-INF/downloads).
+	 * @param filename Nome del file da scaricare. Opzionalmente può essere comprensivo di percorso relativo. 
+	 * @throws FileNotFoundException "File not found"
+	 * @throws IOException "Can't read input file"
+	 */
+	protected void download(HttpServletDownloader downloader, HttpServletResponse resp, String filename, String downloadPath)
+			throws FileNotFoundException, IOException {
 		
 		downloader.download(resp, filename, downloadPath);
+		
 	}
 
 
@@ -103,8 +129,24 @@ public class DownloadServletAlt extends HttpServlet {
 	 * @param folder Cartella alternativa alla cartella Download predefinita. E' sottocartella nel percorso assoluto contenuto nel parametro del ceontex <code>WebAppsData</code>.
 	 */
 	public static void prepareDownload(HttpServletRequest req, String filename, String outputFileDisplayName, String mimeType, boolean attachment, String folder) {
-		prepareDownload(req, new DownloadServletAltParams(filename, outputFileDisplayName, mimeType, attachment, folder));
+		prepareDownload(req, filename, outputFileDisplayName, mimeType, attachment, folder, null);
 	}
+	
+	/**
+	 * Per poter sfruttare la servlet è necessario inserire alcuni attributi nella request. Questo metodo semplifica questa operazione.
+	 * @param req
+	 * @param filename Nome (e eventualmente percorso relativo) del file da scaricare
+	 * @param outputFileDisplayName Nome file che verrà mostrato all'utente che effettua il download
+	 * @param mimeType Mime type del file da scaricare.
+	 * @param attachment Flag per mantenere o togliere il flag Content-Disposition: attachment, flag che cerca di forzare il download invece della preview nel browser
+	 * @param folder Cartella alternativa alla cartella Download predefinita. E' sottocartella nel percorso assoluto contenuto nel parametro del ceontex <code>WebAppsData</code>.
+	 * @param absoluteFile Cartella (con percorso assoluto) alternativa alla cartella Download predefinita.
+	 */
+	public static void prepareDownload(HttpServletRequest req, String filename, String outputFileDisplayName, String mimeType, boolean attachment, String folder, File absoluteFile) {
+		DownloadServletAltParams params = new DownloadServletAltParams(filename, outputFileDisplayName, mimeType, attachment, folder, absoluteFile);
+		prepareDownload(req, params);
+	}
+	
 	/**
 	 * Per poter sfruttare la servlet è necessario inserire alcuni attributi nella request. Questo metodo semplifica questa operazione.
 	 * @param req
@@ -116,6 +158,7 @@ public class DownloadServletAlt extends HttpServlet {
 		req.setAttribute(MIME_TYPE, params.getMimeType());
 		req.setAttribute(ATTACHMENT, params.getAttachment());
 		req.setAttribute(FOLDER, params.getFolder());
+		req.setAttribute(ABSOLUTE_FILE, params.getAbsoluteFile());
 	}
 
 	/**
@@ -134,7 +177,11 @@ public class DownloadServletAlt extends HttpServlet {
 	 * @return
 	 */
 	public static File getDownloadDir(ServletContext ctx, String altFolder) {
-		return new File(ctx.getInitParameter(WEB_APP_FOLDER_PARAM) + "/" +altFolder);
+		return new File(ctx.getInitParameter(WEB_APP_FOLDER_PARAM) + "/" +altFolder + "/");
+	}
+
+	private File getAbsoluteFile(HttpServletRequest req) {
+		return (File) getAttrOrParam(req, ABSOLUTE_FILE, false);
 	}
 	
 	
@@ -146,14 +193,20 @@ public class DownloadServletAlt extends HttpServlet {
 	 * @return
 	 */
 	protected String getDownloadPath(HttpServletRequest req) {
-		String paramName = GLOBAL_DOWNLOAD_FOLDER_PARAM;
+		
 		String alternativeDownloadFolder = (String) getAttrOrParam(req, FOLDER, false);
+		String paramName = GLOBAL_DOWNLOAD_FOLDER_PARAM;
 		String altFolder = "";
+		
 		if (alternativeDownloadFolder != null) {
 			paramName = WEB_APP_FOLDER_PARAM;
-			altFolder = "/" + alternativeDownloadFolder;
+			altFolder = "/" + alternativeDownloadFolder;		
 		}
-		return this.getServletContext().getInitParameter(paramName) + altFolder;
+		
+		String rootFolder = this.getServletContext().getInitParameter(paramName);
+		String absolutePath = rootFolder + altFolder + "/";
+		
+		return absolutePath;
 	}
 	
 	/**
@@ -177,7 +230,7 @@ public class DownloadServletAlt extends HttpServlet {
 		
 		HttpServletDownloader downloader = new HttpServletDownloader();
 		downloader.setContentDispositionAttachment(attachment);
-		
+
 		Cookie cookie = new Cookie( "fileDownload", "true" );
 		cookie.setPath( "/" );
 		downloader.addCookie(cookie);

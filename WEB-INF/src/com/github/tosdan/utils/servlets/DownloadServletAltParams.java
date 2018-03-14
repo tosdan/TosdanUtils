@@ -1,5 +1,7 @@
 package com.github.tosdan.utils.servlets;
 
+import java.io.File;
+
 public class DownloadServletAltParams {
 	/**
 	 * Nome (e eventualmente percorso relativo) del file da scaricare
@@ -18,21 +20,29 @@ public class DownloadServletAltParams {
 	 */
 	private boolean attachment;
 	/**
-	 * Cartella alternativa alla cartella Download predefinita. E' sottocartella nel percorso assoluto contenuto nel parametro del ceontex <code>WebAppsData</code>.
+	 * Cartella alternativa alla cartella Download predefinita. E' sottocartella nel percorso assoluto contenuto nel parametro del context <code>WebAppsData</code>.
 	 */
 	private String folder;
+	/**
+	 * File da scaricare.
+	 */
+	private File absoluteFile;
 	public DownloadServletAltParams(String filename, String outputFileDisplayName, String mimeType) {
 		this(filename, outputFileDisplayName, mimeType, true);
 	}
-	public DownloadServletAltParams(String filename, String outputFileDisplayName, String mimeType, Boolean attachment) {
+	public DownloadServletAltParams(String filename, String outputFileDisplayName, String mimeType, boolean attachment) {
 		this(filename, outputFileDisplayName, mimeType, attachment, null);
 	}
 	public DownloadServletAltParams(String filename, String outputFileDisplayName, String mimeType, boolean attachment, String folder) {
+		this(filename, outputFileDisplayName, mimeType, attachment, folder, null);
+	}
+	public DownloadServletAltParams(String filename, String outputFileDisplayName, String mimeType, boolean attachment, String folder, File absoluteFile) {
 		this.filename = filename;
 		this.outputFileDisplayName = outputFileDisplayName;
 		this.mimeType = mimeType;
 		this.attachment = attachment;
 		this.folder = folder;
+		this.absoluteFile = absoluteFile;
 	}
 	public String getFilename() {
 		return filename;
@@ -55,7 +65,7 @@ public class DownloadServletAltParams {
 	public boolean getAttachment() {
 		return attachment;
 	}
-	public void isAttachment(boolean attachment) {
+	public void setAttachment(boolean attachment) {
 		this.attachment = attachment;
 	}
 	public String getFolder() {
@@ -63,5 +73,11 @@ public class DownloadServletAltParams {
 	}
 	public void setFolder(String folder) {
 		this.folder = folder;
+	}
+	public File getAbsoluteFile() {
+		return absoluteFile;
+	}
+	public void setAbsoluteFile(File absoluteFile) {
+		this.absoluteFile = absoluteFile;
 	}
 }
