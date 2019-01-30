@@ -42,6 +42,7 @@ public class HttpRequestUtils {
     	
     	if (isInvalidIp(ip)) {
     		ip = request.getRemoteAddr();
+    		source = "RemoteAddr";
     	}
     	
     	return (new HttpRequestUtils())
