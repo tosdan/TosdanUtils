@@ -3,8 +3,10 @@ package com.github.tosdan.utils.filters;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -72,6 +74,11 @@ public class NoCacheFilterParametrized implements Filter {
 				}
 
 			}
+			Random rand = new Random();
+			long etag = Long.valueOf(rand.nextLong());
+			response.setDateHeader("ETag", etag);
+			response.setDateHeader("Last-Modified", new Date().getTime());
+			
 		} catch ( Exception e ) {
 			// TODO log
 			e.printStackTrace();
@@ -85,11 +92,10 @@ public class NoCacheFilterParametrized implements Filter {
 		if (url != null) {
 			InputStream is = url.openStream();
 
+			System.out.println("Loading NoCacheFilter config file...");
 			retval = (Map<String, Object>) new Yaml().load(is);
-			if (retval.containsKey("info")) {
-				System.out.println("Loading NoCacheFilter config file...");
-				System.out.printf("NoCacheFilter: %s params loaded.\n", (retval == null) ? 0 : retval.size());
-			}
+			System.out.printf("NoCacheFilterParametrized: %s params loaded.\n", (retval == null) ? 0 : retval.size());
+
 			is.close();
 		} else {
 			// TODO Warning
