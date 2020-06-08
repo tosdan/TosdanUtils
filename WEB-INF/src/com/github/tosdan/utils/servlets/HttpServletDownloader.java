@@ -237,4 +237,14 @@ public class HttpServletDownloader {
 	public void setOutputFilename(String outputFilename) {
 		this.outputFilename = outputFilename;
 	}
+
+
+	/**
+	 * Se true aggiunte l'header content-length impostando il valore ottenuto dal file.
+	 * @param showContentLength
+	 */
+	public void setShowContentLength(boolean showContentLength) {
+		this.showContentLength = showContentLength;
+	}
+	
 }

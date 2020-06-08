@@ -32,6 +32,7 @@ public class DownloadServletAlt extends HttpServlet {
 	public static final String DISPLAY_NAME_PARAM 	= DownloadServletAlt.class.getName() + ".DisplayName";
 	public static final String MIME_TYPE 			= DownloadServletAlt.class.getName() + ".MimeType";
 	public static final String ATTACHMENT 			= DownloadServletAlt.class.getName() + ".Attachment";
+	public static final String SHOW_CONTENT_LENGTH 	= DownloadServletAlt.class.getName() + ".ShowContentLength";
 	public static final String FOLDER	 			= DownloadServletAlt.class.getName() + ".Folder";
 	public static final String ABSOLUTE_FILE	 	= DownloadServletAlt.class.getName() + ".AbsoluteFile";
 
@@ -143,7 +144,7 @@ public class DownloadServletAlt extends HttpServlet {
 	 * @param absoluteFile Cartella (con percorso assoluto) alternativa alla cartella Download predefinita.
 	 */
 	public static void prepareDownload(HttpServletRequest req, String filename, String outputFileDisplayName, String mimeType, boolean attachment, String folder, File absoluteFile) {
-		DownloadServletAltParams params = new DownloadServletAltParams(filename, outputFileDisplayName, mimeType, attachment, folder, absoluteFile);
+		DownloadServletAltParams params = new DownloadServletAltParams(filename, outputFileDisplayName, mimeType, null, attachment, folder, absoluteFile);
 		prepareDownload(req, params);
 	}
 	
@@ -157,6 +158,7 @@ public class DownloadServletAlt extends HttpServlet {
 		req.setAttribute(DISPLAY_NAME_PARAM, params.getOutputFileDisplayName());
 		req.setAttribute(MIME_TYPE, params.getMimeType());
 		req.setAttribute(ATTACHMENT, params.getAttachment());
+		req.setAttribute(SHOW_CONTENT_LENGTH, params.getShowContentLength());
 		req.setAttribute(FOLDER, params.getFolder());
 		req.setAttribute(ABSOLUTE_FILE, params.getAbsoluteFile());
 	}
@@ -237,6 +239,7 @@ public class DownloadServletAlt extends HttpServlet {
 		
 		downloader.setContentType(this.getContentType(req));
 		downloader.setOutputFilename(this.getOutputFilename(req));
+		downloader.setShowContentLength(this.isShowContentLength(req));
 		
 		return downloader;
 	}
@@ -248,6 +251,15 @@ public class DownloadServletAlt extends HttpServlet {
 	 */
 	protected String getContentType(HttpServletRequest req) {
 		return (String) getAttrOrParam(req, MIME_TYPE, false);
+	}
+	
+	/**
+	 * Recupera dalla request il flag per determinare se mostrare l'header content-length
+	 * @param req
+	 * @return
+	 */
+	protected Boolean isShowContentLength(HttpServletRequest req) {
+		return (Boolean) getAttrOrParam(req, SHOW_CONTENT_LENGTH, false);
 	}
 	
 	/**
