@@ -259,7 +259,19 @@ public class DownloadServletAlt extends HttpServlet {
 	 * @return
 	 */
 	protected Boolean isShowContentLength(HttpServletRequest req) {
-		return (Boolean) getAttrOrParam(req, SHOW_CONTENT_LENGTH, false);
+		Object value = getAttrOrParam(req, SHOW_CONTENT_LENGTH, false);
+		
+		if (value == null) {
+			return false;
+			
+		} else {
+			if (value instanceof Boolean) {
+				return (Boolean) value;
+				
+			} else {
+				return new Boolean(value.toString().toLowerCase());
+			}
+		}
 	}
 	
 	/**
