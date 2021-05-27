@@ -6,8 +6,6 @@ import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.sun.xml.internal.txw2.IllegalAnnotationException;
-
 /**
  * 
  * @author Daniele
@@ -59,10 +57,10 @@ public class RandUtils {
 			SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
 			
 			BigInteger randomInteger = BigInteger.probablePrime(5 * length, secureRandom);
-			randomString = randomInteger.toString(32); // 2^5 1 carattere è rappresentato da 5 bits
+			randomString = randomInteger.toString(32); // 2^5 1 carattere ï¿½ rappresentato da 5 bits
 			
 		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalAnnotationException(e);
+			throw new IllegalArgumentException(e);
 		}
 		return randomString;
 	}
